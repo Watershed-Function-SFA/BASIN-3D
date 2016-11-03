@@ -1,0 +1,3 @@
+[console_scripts]
+keyczart = keyczar.tool.keyczart:_main_setuptools
+

@@ -1,0 +1,5 @@
+*.pyc
+.idea
+.venv
+BASIN_3D.egg-info/
+basin3d/local.py
