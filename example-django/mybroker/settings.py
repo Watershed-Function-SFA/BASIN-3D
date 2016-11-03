@@ -12,12 +12,10 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENCRYPTED_FIELD_KEYS_DIR = os.path.join(BASE_DIR, '.keyset/')
-print("DJango BASEDIR: {}".format(BASE_DIR))
 
 
 # Quick-start development settings - unsuitable for production
