@@ -2,4 +2,5 @@
 .idea
 .venv
 BASIN_3D.egg-info/
+_build
 basin3d/local.py
