@@ -2,8 +2,12 @@
 
 from setuptools import setup
 
+with open("basin3d/version.py") as f:
+    code = compile(f.read(), "basin3d/version.py", 'exec')
+    exec(code)
+
 setup(name='BASIN-3D',
-      version='1.0',
+      version=__release__,
       description='Broker for Assimilation, Synthesis and Integration of eNvironmental Diverse, Distributed Datasets',
       author='Val Hendrix',
       author_email='vchendrix@lbl.gov',
@@ -35,4 +39,4 @@ setup(name='BASIN-3D',
           'Programming Language :: Python :: 3.5',
           'Topic :: Software Development :: Libraries :: Python Modules',
       ]
-     )
+      )

@@ -10,7 +10,7 @@ class DataSourceAdmin(ModelAdmin):
 
 
 @admin.register(MeasurementVariable)
-class ParamterAdmin(ModelAdmin):
+class MeasurementVariableAdmin(ModelAdmin):
     list_display = ('name','broker_id','primary_category')
 
 

@@ -14,17 +14,43 @@ Broker for Assimilation, Synthesis and Integration of eNvironmental Diverse, Dis
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for 
-development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
 ### Prerequisities
-
 BASIN-D3 is a Django application which requires:
 
 * Python (>= 3.4, 3.5)
 * Django (1.8, 1.9)
 
+### Get the code
+
+These instructions will get you a copy of the project up and running on your local machine for 
+development and testing purposes. 
+
+    $ git clone git@bitbucket.org:<your bitbucket username>/basin-3d.git
+    $ cd basin-3d
+    
+
+## Documentation
+Sphinx is used to generate documentation. You first need
+to create a virtual environment for generating the docs.
+
+    $ source .venv/bin/activate
+    $ pip install sphinx
+    $ python setup.py develop
+    
+Generate the documentation
+   
+    $ cd docs
+    $ make html
+
+Review the generated documentation
+
+    $ open _build/html/index.html
+
 ## Develop
+Setup virtualenv for development and testing purposes. All basin-3d tests
+are in `basin3d.tests`. They can be
+
+### Example Django Project
 There is an example project for testing in directory `example-django`. 
    
 Build the example Django project
@@ -40,7 +66,9 @@ Create a superuser
 
     $ bin/python manage.py createsuperuser
     
-Test the basin-3d framework
+Test the basin-3d framework. The basin-3d test reside in `basin3d.tests`. Tests
+for new features should be added to this Python package.  They will be
+automatically picked up by the test command.
 
     $ make test
     
