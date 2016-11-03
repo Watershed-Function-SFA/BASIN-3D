@@ -74,7 +74,7 @@ class AlphaSourcePlugin(BrokerSourcePluginPoint):
             datapoint.type = "Geochemistry"
             datapoint.measure_variable = "As"
             datapoint.site_id = datasource.name
-            datapoint.location = "A-{}".format(num % 10)
+            datapoint.location = "{}{}".format(self.prefix, num % 10)
             datapoint.value = num * 0.324234
             datapoint.depth = 100 / num
 
@@ -90,7 +90,7 @@ class AlphaSourcePlugin(BrokerSourcePluginPoint):
         assert AlphaSourcePlugin.datasource_location == url
 
         for num in range(10):
-            location = Location(location_id="{}{}".format(AlphaSourcePlugin.prefix,
+            location = Location(location_id="{}{}".format(self.prefix,
                                                           num),
                                 site_id=datasource.name,
                                 name="FOO",
