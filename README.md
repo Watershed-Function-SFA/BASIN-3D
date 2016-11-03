@@ -72,7 +72,7 @@ see the [tags on this repository](https://github.com/Watershed-Function-SFA/wfsf
 * **Charuleka Varadharajan** - [LBL](http://eesa.lbl.gov/profiles/charuleka-varadharajan/)
 * **Valerie Hendrix**  - [LBL](https://dst.lbl.gov/people.php?p=ValHendrix)
 
-See also the list of [contributors](https://github.com/Watershed-Function-SFA/wfsfa-broker/contributors) who 
+See also the list of [contributors](contributors.txt) who 
 participated in this project.
 
 ## License
