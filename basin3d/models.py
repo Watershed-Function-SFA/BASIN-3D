@@ -1,10 +1,64 @@
+"""
+`basin3d.models`
+**************************
+
+.. currentmodule:: basin3d.models
+
+:synopsis: The BASIN-3D  Models
+:module author: Val Hendrix <vhendrix@lbl.gov>
+
+Database models
+
+* :class:`Base` - The base model class that all synthesis extend from
+* :class:`Region` - An arbitrary area
+
+----------------------------------
+
+"""
 from __future__ import unicode_literals
 
+from basin3d.plugins import DataSourcePluginPoint
 from django.db import models
 from django_extensions.db.fields.encrypted import EncryptedTextField
 from djangoplugins.fields import PluginField
 
-from basin3d.plugins import BrokerSourcePluginPoint
+
+class StringListField(models.TextField):
+    """
+    StringListField stored delimited strings in the database.
+
+    :param: delimiter
+    :type: str
+    """
+    __metaclass__ = models.SubfieldBase
+
+    def __init__(self,*args, **kwargs):
+        self.delimiter=","
+        if "delimiter" in kwargs.keys():
+            self.delimiter = kwargs["delimiter"]
+
+        super(StringListField, self).__init__(*args,**kwargs)
+
+    def to_python(self,value):
+        if not value:
+            value =  []
+
+        if isinstance(value,list) or isinstance(value,tuple):
+            return value
+        elif isinstance(value,str):
+            return value.split(self.delimiter)
+
+        raise ValueError("ListField must be delimited string")
+
+    def get_prep_value(self,value):
+        if value is None:
+            return value
+        else:
+            return value
+
+    def value_to_string(self,obj):
+        value = self._get_val_from_obj(obj)
+        return self.get_db_prep_value(value, None)
 
 
 class DataSource(models.Model):
@@ -13,7 +67,7 @@ class DataSource(models.Model):
     """
     name = models.CharField(max_length=20, unique=True, blank=False)
     location = models.TextField(blank=True)
-    plugin = PluginField(BrokerSourcePluginPoint, blank=True)
+    plugin = PluginField(DataSourcePluginPoint, blank=True)
     credentials = EncryptedTextField(blank=True)
 
     def __str__(self):
@@ -28,36 +82,39 @@ class DataSource(models.Model):
 
 class MeasurementVariable(models.Model):
     """
-    Broker Parameter Definitions
+    Defining what is being measured. See http://vocabulary.odm2.org/variablename/ for controlled vocabulary
+
+        Attributes:
+            - *id:* string,
+            - *full_name:* string,
+            - *symbol:* string,
+            - *categories:* Array of strings (in order of priority).
+
+    See http://vocabulary.odm2.org/variabletype/ for options, although I think we should have our own list (theirs is a bit funky).
+
 
     """
 
-    # Unique string Identifier for the Broker Parameter
-    broker_id = models.CharField(max_length=50, unique=True, blank=False)
+    # Unique string Identifier for the Measurement Variable
+    id = models.CharField(max_length=50, unique=True, blank=False, primary_key=True)
 
-    # Long name of the Broker Parameters
-    name = models.CharField(max_length=255, blank=False)
+    # Long name of the Measurement Variable
+    full_name = models.CharField(max_length=255)
 
-    # Unit of measurement
-    unit = models.CharField(max_length=100)
-
-    # Primary Category of the parameter
-    primary_category = models.CharField(max_length=100)
-
-    # Secondary Category of the parameter
-    secondary_category = models.CharField(max_length=100)
+    # Ordered list of categories
+    categories = StringListField(blank=True,null=True)
 
     class Meta:
-        ordering = ('broker_id',)
+        ordering = ('id',)
 
     def __str__(self):
         return self.__unicode__()
 
     def __unicode__(self):
-        return self.name
+        return self.full_name
 
     def __repr__(self):
-        return "<MeasurementVariable {}>".format(self.broker_id)
+        return "<MeasurementVariable {}>".format(self.id)
 
 
 class DataSourceMeasurementVariable(models.Model):

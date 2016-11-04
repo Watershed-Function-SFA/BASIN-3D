@@ -14,7 +14,7 @@ class DataSourceAdmin(ModelAdmin):
 
 @admin.register(MeasurementVariable)
 class MeasurementVariableAdmin(ModelAdmin):
-    list_display = ('name','broker_id','primary_category')
+    list_display = ('id','full_name','categories')
 
     actions = None
 

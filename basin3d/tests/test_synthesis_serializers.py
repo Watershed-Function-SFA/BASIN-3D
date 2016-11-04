@@ -1,68 +1,80 @@
+from basin3d.tests import configure
+
+# Load test settings
+configure()
 import json
 
 from django.test import TestCase
 from rest_framework.renderers import JSONRenderer
 
 from basin3d.synthesis import models
-from basin3d.synthesis.serializers import SiteSerializer, LocationSerializer, DataPointSerializer
+from basin3d.synthesis.serializers import RegionSerializer, ModelSerializer, ModelDomainSerializer, MeshSerializer
 
 
-class SiteSerializerTests(TestCase):
+class RegionSerializerTests(TestCase):
     def test_serializer(self):
-        """ Test Sites Serialization"""
+        """ Test Regions Serialization"""
 
-        a_site = models.Site(name="a site", site_id="SI123", country="US",
-                             state_province="CA", geom="[]",
-                             contact_name="David Gruber", contact_email="gruber@david.com",
-                             contact_institution="Museum of Natural History")
+        a_region = models.Region(name="a site", id="SI123", description="US", geom={})
 
-        s = SiteSerializer(a_site)
+        s = RegionSerializer(a_region)
 
         json_obj = JSONRenderer().render(s.data)
         self.assertEqual(json.loads(json_obj.decode('utf-8')),
-                         {"site_id": "SI123", "country": "US", "contact_name": "David Gruber",
-                          "contact_email": "gruber@david.com", "contact_institution": "Museum of Natural History",
-                          "urls": [], "geom": "[]", "site": None}
-
-                         )
+                         {"id": "SI123", "description": "US", "geom": {}, "url": None})
 
 
-class LocationSerializerTests(TestCase):
-    def test_create(self):
-        """ Test Location Serialization"""
+class ModelSerializerTests(TestCase):
+    def test_serializer(self):
+        """ Test Model Serialization"""
 
-        a_loc = models.Location(site_id="SI123", location_id="ER984375", site="http://example.com/url/SI123",
-                                group="agroup", geom={"latitude": 38, "longitude": 140, "elevation": 55},
-                                type="TBD")
+        a_region = models.simulations.Model(verion="1.0", id="M1", dimensionality="1D")
 
-        s = LocationSerializer(a_loc)
+        s = ModelSerializer(a_region)
 
         json_obj = JSONRenderer().render(s.data)
         self.assertEqual(json.loads(json_obj.decode('utf-8')),
-                         {"site_id": "SI123",
-                          "site": None,
-                          "location_id": "ER984375",
-                          "name": None,
-                          "measure_variables": [],
-                          "group": "agroup",
-                          "type": "TBD",
-                          "geom": {"latitude": 38, "elevation": 55, "longitude": 140}}
-                         )
+                         {'dimensionality': '1D', 'version': None, 'id': 'M1', 'url': None})
 
 
-class DataPointSerializerTests(TestCase):
-    def test_create(self):
-        """ Test Location Serialization"""
+class ModelDomainSerializerTests(TestCase):
+    def test_serializer(self):
+        """ Test Model Domain Serialization"""
 
-        a_loc = models.DataPoint(type="foo", location_id="SFGSDF", site_id="FODOJF",
-                                 depth=9.342484538, timestamp='2016-10-17T21:52:10.016788', value=9.38734568,
-                                 unit="aunit",
-                                 average="average")
+        a_region = models.simulations.ModelDomain(model_domain_name="a model domain",
+                                                  model_domain_id="SI123",
+                                                  meshes=[], geom={})
 
-        s = DataPointSerializer(a_loc)
+        s = ModelDomainSerializer(a_region)
 
         json_obj = JSONRenderer().render(s.data)
         self.assertEqual(json.loads(json_obj.decode('utf-8')),
-                         {"type": "foo", "location_id": "SFGSDF", "depth": 9.342484538,
-                          "timestamp": "2016-10-17T21:52:10.016788", "value": 9.38734568, "unit": "aunit",
-                          "average": "average", "site": None})
+                         {'geom': {},
+                          'meshes': [],
+                          'model_domain_id': 'SI123',
+                          'model_domain_name': 'a model domain',
+                          'url': None})
+
+
+class MeshSerializerTests(TestCase):
+    def test_serializer(self):
+        """ Test Mesh Serialization"""
+
+        model_parameters = []
+        for num in range(5):
+            model_parameters.append(
+                models.simulations.ModelParameter(id=num, name="param_{}".format(num), value=float(1 / (num + 1))))
+
+        obj = models.simulations.Mesh(mesh_id="ME1", parameters=model_parameters, initial_conditions=[])
+
+        s = MeshSerializer(obj)
+
+        json_obj = JSONRenderer().render(s.data)
+        self.assertEqual(json.loads(json_obj.decode('utf-8')),
+                         {"mesh_id": "ME1", "parameters": [{"id": "0", "name": "param_0", "value": 1.0, "url": None},
+                                                           {"id": "1", "name": "param_1", "value": 0.5, "url": None},
+                                                           {"id": "2", "name": "param_2", "value": 0.3333333333333333,
+                                                            "url": None},
+                                                           {"id": "3", "name": "param_3", "value": 0.25, "url": None},
+                                                           {"id": "4", "name": "param_4", "value": 0.2, "url": None}],
+                          "initial_conditions": []})

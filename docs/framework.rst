@@ -7,11 +7,18 @@ This is the main package, containing the BASIN-3D Django Framework for building 
 brokering service.
 
 .. contents::
-:depth: 3
+    :depth: 3
     :local:
-        :backlinks: top
+    :backlinks: top
 
 .. automodule:: basin3d
-:members:
+    :members:
 
 .. automodule:: basin3d.synthesis
+    :members:
+
+.. automodule:: basin3d.synthesis.models
+    :members: Base, Region
+
+.. automodule:: basin3d.synthesis.models.simulations
+    :members:

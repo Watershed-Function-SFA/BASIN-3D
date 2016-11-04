@@ -1,6 +1,6 @@
 import logging
 
-from rest_framework import filters, versioning
+from rest_framework import filters
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
     """
-        Returns a list of all  Data Sources available to the wfsfa_broker service
+        Returns a list of all  Data Sources available to the BASIN-3D service
 
     """
     queryset = DataSource.objects.all()
@@ -45,7 +45,7 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
 
 class MeasurementVariableViewSet(viewsets.ReadOnlyModelViewSet):
     """
-        Returns a list of available Data Broker parameters
+        Returns a list of available BASIN-3D MeasurementVariables
 
     """
     queryset = MeasurementVariable.objects.all()

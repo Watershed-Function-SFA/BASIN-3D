@@ -27,11 +27,20 @@
 #
 # needs_sphinx = '1.0'
 
+# The version info for the project you're documenting, acts as replacement for
+# |version| and |release|, also used in various other places throughout the
+# built documents.
+#
+# The short X.Y version.
+import basin3d  # part of setuptools
+version = basin3d.__version__
+
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
@@ -60,14 +69,7 @@ project = 'BASIN-3D'
 copyright = '2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory \n(subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved.'
 author = 'Charuleka Varadharajan, Valerie Hendrix'
 
-# The version info for the project you're documenting, acts as replacement for
-# |version| and |release|, also used in various other places throughout the
-# built documents.
-#
-# The short X.Y version.
-import basin3d  # part of setuptools
 
-version = basin3d.__version__
 
 # The full version, including alpha/beta/rc tags.
 release = basin3d.__release__

@@ -1,25 +1,30 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("basin3d/version.py") as f:
     code = compile(f.read(), "basin3d/version.py", 'exec')
     exec(code)
 
+with open('docs/quickstart.rst') as readme:
+    INSTALL = readme.read()
+
 setup(name='BASIN-3D',
       version=__release__,
       description='Broker for Assimilation, Synthesis and Integration of eNvironmental Diverse, Distributed Datasets',
+      long_description=INSTALL,
       author='Val Hendrix',
       author_email='vchendrix@lbl.gov',
-      packages = ['basin3d'],
+      packages=find_packages(),
       py_modules = ['manage'],
+      include_package_data=True,
       install_requires=[
             "django >= 1.8, <= 1.9",
             "djangorestframework == 3.4.3",
             "django-filter ==  0.13.0",
             "django-plugins >= 0.3.0",
             "django-extensions >= 1.7.4",
-            "python3-keyczar > 0.7",
+          "python3-keyczar",
             "pyyaml"
       ],
       classifiers=[
