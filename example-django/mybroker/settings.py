@@ -33,9 +33,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'mybroker',
-    'djangoplugins', # This needs to be before BrokerConfig
-    'basin3d.apps.Basin3DConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'rest_framework',
+    'djangoplugins',
+    'basin3d',
+    'mybroker'
 
 ]
 

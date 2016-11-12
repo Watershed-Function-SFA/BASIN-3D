@@ -1,3 +1,8 @@
+from basin3d.tests import configure
+
+# Load test settings
+configure()
+
 from django.test import TestCase
 
 from basin3d.models import DataSource, MeasurementVariable
@@ -24,17 +29,13 @@ class ParameterTestCase(TestCase):
         """
         Load some fake data to use in the tests
         """
-        MeasurementVariable.objects.create(broker_id="FOO",
-                                           name="Groundwater Flux",
-                                           unit='',
-                                           primary_category="Hydrology",
-                                           secondary_category="Subsurface")
+        MeasurementVariable.objects.create(id="FOO",
+                                           full_name="Groundwater Flux",
+                                           categories="Hydrology,Subsurface")
 
     def test_get(self):
         """ Was the object created correctly? """
-        obj = MeasurementVariable.objects.get(broker_id="FOO")
-        self.assertEqual(obj.name, "Groundwater Flux")
-        self.assertEqual(obj.unit, "")
-        self.assertEqual(obj.primary_category, "Hydrology")
-        self.assertEqual(obj.secondary_category, "Subsurface")
+        obj = MeasurementVariable.objects.get(id="FOO")
+        self.assertEqual(obj.full_name, "Groundwater Flux")
+        self.assertEqual(obj.categories, "Hydrology,Subsurface")
 

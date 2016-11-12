@@ -1,106 +1,139 @@
+from basin3d.serializers import MeasurementVariableSerializer
+from basin3d.tests.test_synthesis_models import ModelDomain
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from basin3d.synthesis.models import Site, Location, DataPoint
+from basin3d.synthesis.models import Region
 
 
-class SiteUrlSerializerMixin(object):
-    """
-    SerilizerMixin that add a Site Url to a serizliaer
-
-    """
-    site = serializers.SerializerMethodField(method_name='site_url')  # see get_site()
+class IdUrlSerializerMixin(object):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the serializer superclass
-        super(SiteUrlSerializerMixin, self).__init__(*args, **kwargs)
+        super(IdUrlSerializerMixin, self).__init__(*args, **kwargs)
 
-        self.fields["site"] = SiteUrlSerializerMixin.site
+        self.fields["url"] = serializers.SerializerMethodField()
 
-    def site_url(self, obj):
+    def get_url(self, obj):
         """
         Get the Site url based on the current context
         :param obj:
         :return:
         """
         if "request" in self.context and self.context["request"]:
-            return reverse(viewname='site-detail', kwargs={'pk': obj.site_id}, request=self.context["request"], )
+            return reverse(viewname='{}-detail'.format(obj.__class__.__name__.lower()),
+                           kwargs={'pk': obj.id},
+                           request=self.context["request"], )
 
 
-class SiteSerializer(SiteUrlSerializerMixin, serializers.Serializer):
+class RegionSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
-    Serializes a synthesis.models.Site
+    Serializes a synthesis.models.Region
     """
 
-    site_id = serializers.CharField()
-    country = serializers.CharField(max_length=50)
-    contact_name = serializers.CharField()
-    contact_email = serializers.EmailField()
-    contact_institution = serializers.CharField()
-    urls = serializers.ListSerializer(child=serializers.URLField())
+    id = serializers.CharField()
     geom = serializers.JSONField()
+    description = serializers.CharField()
 
     def create(self, validated_data):
-        return Site(**validated_data)
+        return Region(**validated_data)
 
     def update(self, instance, validated_data):
-        instance.site_id = validated_data.get('site_id', instance.site_id)
-        instance.country = validated_data.get('country', instance.country)
-        instance.contact_name = validated_data.get('contact_name', instance.contact_name)
-        instance.contact_email = validated_data.get('contact_email', instance.contact_email)
-        instance.contact_institution = validated_data.get('contact_institution', instance.contact_institution)
-        instance.geom = validated_data.get('geom', instance.geom)
-        return instance
-
-
-class LocationSerializer(SiteUrlSerializerMixin, serializers.Serializer):
-    """
-    Serializes a synthesis.models.Location
-    """
-
-    site_id = serializers.CharField()
-    location_id = serializers.CharField()
-    name = serializers.CharField()
-    group = serializers.CharField()
-    type = serializers.CharField()
-    geom = serializers.JSONField()
-    measure_variables = serializers.ListField()
-
-    def create(self, validated_data):
-        return Location(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.site_id = validated_data.get('site_id', instance.site_id)
-        instance.location_id = validated_data.get('location_id', instance.location_id)
+        instance.id = validated_data.get('id', instance.id)
         instance.name = validated_data.get('name', instance.name)
-        instance.group = validated_data.get('group', instance.group)
-        instance.type = validated_data.get('type', instance.type)
+        instance.description = validated_data.get('description', instance.description)
         instance.geom = validated_data.get('geom', instance.geom)
         return instance
 
 
-class DataPointSerializer(SiteUrlSerializerMixin, serializers.Serializer):
+class ModelSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
-    Serializes a synthesis.models.Location
+    Serializes a synthesis.models.simulations.Model
     """
 
-    type = serializers.CharField()
-    location_id = serializers.CharField()
-    depth = serializers.FloatField()
-    timestamp = serializers.DateTimeField()
-    value = serializers.FloatField()
-    unit = serializers.CharField()
-    average = serializers.CharField()
+    id = serializers.CharField()
+    version = serializers.CharField()
+    dimensionality = serializers.CharField()
 
     def create(self, validated_data):
-        return DataPoint(**validated_data)
+        return ModelSerializer(**validated_data)
 
     def update(self, instance, validated_data):
-        instance.type = validated_data.get('type', instance.type)
-        instance.location_id = validated_data.get('location_id', instance.location_ud)
-        instance.depth = validated_data.get('depth', instance.depth)
-        instance.timestamp = validated_data.get('timestamp', instance.timestamp)
-        instance.value = validated_data.get('value', instance.value)
-        instance.unit = validated_data.get('unit', instance.unit)
-        instance.average = validated_data.get('average', instance.average)
+        instance.id = validated_data.get('id', instance.id)
+        instance.version = validated_data.get('version', instance.version)
+        instance.dimensionality = validated_data.get('dimensionality', instance.dimensionality)
         return instance
+
+
+class ModelParameterSerializer(IdUrlSerializerMixin, serializers.Serializer):
+    """
+    Serializes a synthesis.model.simulations.ModelParameter
+
+    """
+
+    id = serializers.CharField()
+    name = serializers.CharField()
+    value = serializers.FloatField()
+
+    def create(self, validated_data):
+        return ModelParameterSerializer(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.id = validated_data.get('id', instance.id)
+        instance.name = validated_data.get('name', instance.name)
+        instance.value = validated_data.get('value', instance.value)
+        return instance
+
+
+class MeshSerializer(serializers.Serializer):
+    """
+    Serializes a synthesis.model.simulations.Mesh
+
+    """
+
+    mesh_id = serializers.CharField()
+    parameters = serializers.ListSerializer(child=ModelParameterSerializer())
+    initial_conditions = serializers.ListSerializer(child=MeasurementVariableSerializer())
+
+    def create(self, validated_data):
+        return MeshSerializer(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.mesh_id = validated_data.get('mesh_id', instance.mesh_id)
+        instance.parameters = validated_data.get('parameters', instance.parameters)
+        instance.initial_conditions = validated_data.get('initial_conditions', instance.initial_conditions)
+        return instance
+
+
+class ModelDomainSerializer(serializers.Serializer):
+    """
+    Serializes a synthesis.models.simulations.ModelDomain
+
+    """
+
+    model_domain_id = serializers.CharField()
+    model_domain_name = serializers.CharField()
+    meshes = serializers.ListSerializer(child=MeshSerializer())
+    geom = serializers.JSONField()
+    url = serializers.SerializerMethodField()
+
+    def create(self, validated_data):
+        return ModelDomain(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.model_domain_id = validated_data.get('model_domain_id', instance.model_domain_id)
+        instance.model_domain_name = validated_data.get('model_domain_name', instance.model_domain_name)
+        instance.geom = validated_data.get('geom', instance.geom)
+        instance.meshes = validated_data.get('meshes', instance.meshes)
+        return instance
+
+    def get_url(self, obj):
+        """
+        Get the url based on the current context
+        :param obj:
+        :return:
+        """
+        if "request" in self.context and self.context["request"]:
+            return reverse(viewname='modeldomain-detail', kwargs={'pk': obj.model_domain_id}, request=self.context["request"], )
+
+

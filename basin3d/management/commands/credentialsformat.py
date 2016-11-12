@@ -1,6 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
-
 from basin3d.models import DataSource
+from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
@@ -13,6 +12,6 @@ class Command(BaseCommand):
         datasource_id = options['datasource_id']
         try:
             datasource = DataSource.objects.get(name=datasource_id)
-            self.stdout.write(datasource.plugin.get_plugin().datasource_credentials_format)
+            self.stdout.write(datasource.plugin.get_plugin().get_meta().credentials_format)
         except DataSource.DoesNotExist:
             raise CommandError('DataSource "%s" does not exist' % datasource_id)

@@ -3,7 +3,8 @@ all: bin/python keyset db.sqlite3
 
 bin/python:
 	virtualenv --no-site-packages -p `which python3` .
-	cd .. && $(CURDIR)/bin/python setup.py develop && cd $(CURDIR)
+	cd ../ && example-django/bin/python setup.py sdist && cd $(CURDIR)
+	bin/pip install ../dist/BASIN-3D-1.0.0a0.tar.gz
 
 db.sqlite3:
 	bin/python manage.py migrate
@@ -20,7 +21,7 @@ run:
 
 .PHONY: test
 test:
-	cd .. && $(CURDIR)/bin/python $(CURDIR)/manage.py test && cd $(CURDIR)
+	cd .. && PYTHONPATH="$(PYTHONPATH):." $(CURDIR)/bin/python  $(CURDIR)/manage.py test && cd $(CURDIR)
 
 
 .PHONY: clean

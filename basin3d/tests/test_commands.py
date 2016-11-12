@@ -1,3 +1,8 @@
+from basin3d.tests import configure
+
+# Load test settings
+configure()
+
 import sys
 
 from django.core.management import CommandError
@@ -42,7 +47,7 @@ class UploadcredentialsTest(TestCase):
         out = StringIO()
 
         call_command('uploadcredentials', 'Alpha', stdin=input, stdout=out)
-        self.assertIn("\x1b[32;1mCredentials have been uploaded to Data Source 'Alpha'\x1b[0m\n", out.getvalue())
+        self.assertIn("Credentials have been uploaded to Data Source 'Alpha'", out.getvalue())
 
         sys.stdin = oldstdin
 

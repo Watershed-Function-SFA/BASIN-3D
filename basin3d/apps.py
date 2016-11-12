@@ -19,13 +19,13 @@ def load_data_sources(sender, **kwargs):
 
     for plugin_model in Plugin.objects.all():
         plugin = plugin_model.get_plugin()
-        datasource = DataSource.objects.filter(name=plugin.datasource_id)
+        datasource = DataSource.objects.filter(name=plugin.get_meta().id)
         if len(datasource) ==0:
-            print("Registering Data Source '{}'".format(plugin.datasource_id))
+            print("Registering Data Source '{}'".format(plugin.get_meta().id))
             d = DataSource()
-            d.name = plugin.datasource_id
-            d.location = plugin.datasource_location
-            d.credentials = plugin.datasource_credentials_format
+            d.name = plugin.get_meta().id
+            d.location = plugin.get_meta().location
+            d.credentials = plugin.get_meta().credentials_format
             d.plugin = plugin_model
             d.save()
 
@@ -47,17 +47,16 @@ def load_parameters(sender, **kwargs):
         idx = plugin_path.index('plugins')
         module_name = plugin_path[0:idx+len('plugins')]
         app_plugins = importlib.import_module(module_name)
-        for param in app_plugins.BROKER_MEASUREMENT_VARIABLES:
+        for param in app_plugins.MEASUREMENT_VARIABLES:
             try:
                 p = MeasurementVariable()
-                p.broker_id=param[0]
-                p.name = param[1]
-                p.unit = param[2]
-                p.primary_category = param[3]
-                p.secondary_category= param[4]
+                p.id=param[0]
+                p.full_name = param[1]
+                p.categories = ",".join(param[2])
                 p.save()
-                print("Registered Broker Parameter '{}'".format(p.broker_id))
+                print("Registered Measurement'{}'".format(p.id))
             except IntegrityError as e:
+
                 # We don't care about the Integrity Errors
                 pass
 
@@ -74,15 +73,15 @@ def load_datasource_parameters(sender,**kwargs):
 
     for datasource in DataSource.objects.all():
 
-        for broker_id, param in datasource.plugin.get_plugin().datasource_measure_variable_map.items():
+        for id, param in datasource.plugin.get_plugin().get_meta().measure_variable_map.items():
             try:
-                broker_param = MeasurementVariable.objects.get(broker_id=broker_id)
+                broker_param = MeasurementVariable.objects.get(id=id)
                 datasource_parameter = DataSourceMeasurementVariable()
                 datasource_parameter.measure_variable = broker_param
                 datasource_parameter.datasource = datasource
                 datasource_parameter.name = param
                 datasource_parameter.save()
-                print("Registered  Parameter '{}' for Data Source '{}'".format(broker_id,datasource.name))
+                print("Registered  Measurement Variable '{}' for Data Source '{}'".format(id,datasource.name))
             except IntegrityError as e:
                 # We don't care about the Integrity Errors
                 pass
@@ -97,3 +96,5 @@ class Basin3DConfig(AppConfig):
         post_migrate.connect(load_data_sources, sender=self)
         post_migrate.connect(load_parameters, sender=self)
         post_migrate.connect(load_datasource_parameters, sender=self)
+
+
