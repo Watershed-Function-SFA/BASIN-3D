@@ -2,7 +2,8 @@ import logging
 from collections import OrderedDict
 
 from basin3d.plugins import DataSourcePluginPoint, DataSourcePluginViewMeta
-from basin3d.synthesis.models import Region, simulations
+from basin3d.synthesis.models import simulations
+from basin3d.synthesis.models.field import Region
 from basin3d.synthesis.models.simulations import Model
 from basin3d.tests.test_synthesis_models import ModelDomain
 from django.utils.six import with_metaclass

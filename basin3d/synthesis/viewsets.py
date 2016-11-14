@@ -1,8 +1,27 @@
+"""
+`basin3d.synthesis.models.viewsets`
+***********************************
+
+.. currentmodule:: basin3d.synthesis.models.viewsets
+
+:synopsis: The BASIN-3D Synthesis Model Viewsets that support the REST api
+:module author: Val Hendrix <vhendrix@lbl.gov>
+
+Controllers for BASIN-3D REST api
+
+* :class:`DataSourcePluginViewSet` - Base ViewSet for all synthesized model views.
+* :class:`RegionViewSet` - supports REST `GET` methods that synthesize :class:`~basin3d.synthesis.models.field.Region`s
+* :class:`ModelViewSet` - supports REST `GET` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Model`s
+* :class:`ModelDomainViewSet` - supports REST `GET` methods that synthesize :class:`~basin3d.synthesis.simulations.ModelDomains`s
+
+----------------------------------
+
+"""
 import logging
 
 import djangoplugins
 from basin3d.models import DataSource
-from basin3d.synthesis.models import Region
+from basin3d.synthesis.models.field import Region
 from basin3d.synthesis.models.simulations import Model
 from basin3d.synthesis.serializers import RegionSerializer, ModelSerializer, ModelDomainSerializer
 from basin3d.tests.test_synthesis_models import ModelDomain

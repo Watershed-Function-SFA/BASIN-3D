@@ -1,12 +1,36 @@
+"""
+`basin3d.synthesis.models.serializers`
+**************************************
+
+.. currentmodule:: basin3d.synthesis.models.serializers
+
+:synopsis: The BASIN-3D Synthesis Model Serializers
+:module author: Val Hendrix <vhendrix@lbl.gov>
+
+Serializers that render :mod:`basin.synthesis.models` from Python objects to `JSON` and back again.
+
+* :class:`IdUrlSerializerMixin` - Serializer Mixin to support Hypermedia as the Engine of Application State (HATEOAS).
+* :class:`RegionSerializer`
+* :class:`ModelSerializer`
+* :class:`ModelParameterSerializer`
+* :class:`ModelParameterSerializer`
+* :class:`MeshSerializer`
+* :class:`ModelDomainSerializer`
+
+----------------------------------
+
+"""
 from basin3d.serializers import MeasurementVariableSerializer
+from basin3d.synthesis.models.field import Region
 from basin3d.tests.test_synthesis_models import ModelDomain
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from basin3d.synthesis.models import Region
-
 
 class IdUrlSerializerMixin(object):
+    """
+    Serializer Mixin to support Hypermedia as the Engine of Application State (HATEOAS).
+    """
 
     def __init__(self, *args, **kwargs):
         # Instantiate the serializer superclass

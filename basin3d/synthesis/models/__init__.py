@@ -7,10 +7,9 @@
 :synopsis: The BASIN-3D Synthesis Models
 :module author: Val Hendrix <vhendrix@lbl.gov>
 
-Classes to represent generic observation data concepts (package basin3d.synthesis.models)
+Classes to represent generic observation data concepts
 
 * :class:`Base` - The base model class that all synthesis extend from
-* :class:`Region` - An arbitrary area
 
 ----------------------------------
 
@@ -36,27 +35,4 @@ class Base(object):
         self.__dict__.update(kwargs)
 
 
-class Region(Base):
-    """
-        A Region is any arbitrary area - not necessarily associated with any
-        observations - e.g. a watershed, a city
-
-        Attributes:
-            - *id:* string
-            - *name:* string
-            - *description:* string
-            - *geom:* polygon
-    """
-
-    def __init__(self, **kwargs):
-
-        self.id = None
-        self.name = None
-        self.description = None
-        self.geom = None
-
-        # Initialize after the attributes have been set
-        super().__init__(**kwargs)
-
-
-__all__ = ['simulations','Base','Region']
+__all__ = ['simulations', 'Base']

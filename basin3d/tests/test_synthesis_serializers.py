@@ -1,3 +1,4 @@
+import basin3d.synthesis.models.field
 from basin3d.tests import configure
 
 # Load test settings
@@ -15,7 +16,7 @@ class RegionSerializerTests(TestCase):
     def test_serializer(self):
         """ Test Regions Serialization"""
 
-        a_region = models.Region(name="a site", id="SI123", description="US", geom={})
+        a_region = basin3d.synthesis.models.field.Region(name="a site", id="SI123", description="US", geom={})
 
         s = RegionSerializer(a_region)
 
