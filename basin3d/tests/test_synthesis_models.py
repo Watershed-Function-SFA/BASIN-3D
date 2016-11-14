@@ -4,7 +4,8 @@ from basin3d.tests import configure
 configure()
 
 from django.test import TestCase
-from basin3d.synthesis.models import simulations, Region
+from basin3d.synthesis.models import simulations
+from basin3d.synthesis.models.field import Region
 
 
 class RegionTests(TestCase):

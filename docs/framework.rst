@@ -1,9 +1,9 @@
 .. _apireference:
 
-Framework Reference
-*******************
+Synthesis Packages
+******************
 
-This is the main package, containing the BASIN-3D Django Framework for building custom a
+This is the main package, containing the BASIN-3D Django Framework's synthesis classes used for building custom a
 brokering service.
 
 .. contents::
@@ -11,14 +11,17 @@ brokering service.
     :local:
     :backlinks: top
 
-.. automodule:: basin3d
-    :members:
+.. inheritance-diagram:: basin3d.synthesis.models basin3d.synthesis.models.field basin3d.synthesis.models.simulations
+:parts: 3
 
 .. automodule:: basin3d.synthesis
     :members:
 
 .. automodule:: basin3d.synthesis.models
-    :members: Base, Region
+:members:
+
+.. automodule:: basin3d.synthesis.models.field
+    :members:
 
 .. automodule:: basin3d.synthesis.models.simulations
-    :members:
+:members:

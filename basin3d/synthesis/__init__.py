@@ -8,21 +8,11 @@
 :module author: Val Hendrix <vhendrix@lbl.gov>, Charuleka Varadharajan <cvaradharajan@lbl.gov>
 
 
-Models
-------
-
 * :py:mod:`~basin3d.synthesis.models` - defines the synthesis domain models that are brokered and synthesized by the custom :class:`~basin3d.plugins.DataSourcePluginPoint`.
-* :py:mod:`~basin3d.synthesis.models.simulations` - Classes to represent Simulation/Modeling Concepts
+* :py:mod:`~basin3d.synthesis.serializers` - Classes that render :mod:`basin.synthesis.models` from Python objects to `JSON` and back again.
+* :py:mod:`~basin3d.synthesis.viewsets` - Controllers for BASIN-3D REST api
 
 
-Serializers
------------
-
-
-ViewSets
---------
-
-TBD
 
 """
 from . import models
