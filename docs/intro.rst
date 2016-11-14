@@ -30,4 +30,3 @@ uniform time-series objects that a web portal can use to plot in a generic time-
 knowledge of the type of time-series being represented. Finally a web service layer serves data to clients,
 and provides a means for clients to request data and for data providers to be notified if they want to
 track their data usage.
-

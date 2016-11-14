@@ -1,8 +1,6 @@
 Welcome to BASIN-3D |release| documentation!
 ============================================
 
-Contents:
-
 .. toctree::
    intro
    quickstart
@@ -14,5 +12,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-

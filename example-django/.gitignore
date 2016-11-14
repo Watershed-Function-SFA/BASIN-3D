@@ -1,3 +1,4 @@
 .Python
 .keyset
 db.sqlite3
+static/

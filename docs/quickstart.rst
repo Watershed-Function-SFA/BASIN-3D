@@ -14,10 +14,11 @@ Add "basin3d" and its dependencies to your INSTALLED_APPS setting like this::
 
     INSTALLED_APPS = [
         ...
+        <yourapp>,
+        'djangoplugins',
+        'basin3d',
         'django_extensions',
         'rest_framework',
-        'djangoplugins',
-        'basin3d'
     ]
 
 
@@ -83,6 +84,22 @@ Create view classes for the desired synthesis models::
             """
             pass
 
+
+Create a  Keyset
+----------------
+Credentials for data source are stored in an encrypted database field.  The keyset used to encrypt the field
+must be created with python-keyczar. Python-keyczar is a dependency of BASIN-3D and should have been installed
+with the BASIN-3D framework::
+
+    $ pip install python-keyczar
+    $ mkdir .keyset
+    $ keyczart create --location=.keyset --purpose=crypt --name=basin3d
+    $ keyczart addkey --location=.keyset --status=primary
+
+The default settings look for .keyset in the BASE directory of your applications.  If you would like to change it,
+do the following in your settings.py::
+
+    ENCRYPTED_FIELD_KEYS_DIR = <path to the keyset directory>
 
 Migrate the App
 ---------------
