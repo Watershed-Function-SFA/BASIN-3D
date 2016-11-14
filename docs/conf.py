@@ -253,6 +253,10 @@ htmlhelp_basename = 'BASIN-3Ddoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
+  'classoptions': ',openany,oneside',
+  'babel': '\\usepackage[english]{babel}'
+}
+#latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
@@ -268,7 +272,7 @@ latex_elements = {
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
-}
+#}
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,

@@ -12,16 +12,16 @@ brokering service.
     :backlinks: top
 
 .. inheritance-diagram:: basin3d.synthesis.models basin3d.synthesis.models.field basin3d.synthesis.models.simulations
-:parts: 3
+    :parts: 3
 
 .. automodule:: basin3d.synthesis
     :members:
 
 .. automodule:: basin3d.synthesis.models
-:members:
+    :members:
 
 .. automodule:: basin3d.synthesis.models.field
     :members:
 
 .. automodule:: basin3d.synthesis.models.simulations
-:members:
+    :members:

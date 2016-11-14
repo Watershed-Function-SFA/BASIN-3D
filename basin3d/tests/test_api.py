@@ -22,6 +22,7 @@ class TestRegionAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          [{"id": "SI123", "geom": None, "description": "This is for my site description",
+                              'name': 'a site',
                            "url": "http://testserver/v1/regions/SI123/"}]
 
                          )
@@ -31,6 +32,7 @@ class TestRegionAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {"id": "SI123", "geom": None, "description": "This is for my site description",
+                          'name': 'a site',
                           "url": "http://testserver/v1/regions/SI123/"})
 
 

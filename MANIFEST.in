@@ -4,3 +4,5 @@ include docs/quickstart.rst
 include contributors.txt
 recursive-include docs/_build/latex *.pdf
 recursive-include docs/_build/html *
+recursive-include basin3d/templates *
+prune basin3d/tests

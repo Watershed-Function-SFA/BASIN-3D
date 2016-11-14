@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 with open("basin3d/version.py") as f:
-    code = compile(f.read(), "basin3d/version.py", 'exec')
+    code = compile(f.read(), "rest_framework/version.py", 'exec')
     exec(code)
 
 with open('docs/quickstart.rst') as readme:
@@ -15,17 +15,17 @@ setup(name='BASIN-3D',
       long_description=INSTALL,
       author='Val Hendrix',
       author_email='vchendrix@lbl.gov',
-      packages=find_packages(),
-      py_modules = ['manage'],
+      packages=find_packages(exclude=["basin3d.tests", "*.tests.*", "tests.*", "tests"]),
+      py_modules=['manage'],
       include_package_data=True,
       install_requires=[
-            "django >= 1.8, <= 1.9",
-            "djangorestframework == 3.4.3",
-            "django-filter ==  0.13.0",
-            "django-plugins >= 0.3.0",
-            "django-extensions >= 1.7.4",
+          "django >= 1.8, <= 1.9",
+          "djangorestframework == 3.4.3",
+          "django-filter ==  0.13.0",
+          "django-plugins >= 0.3.0",
+          "django-extensions >= 1.7.4",
           "python3-keyczar",
-            "pyyaml"
+          "pyyaml"
       ],
       classifiers=[
           'Development Status :: 1 - Planning',

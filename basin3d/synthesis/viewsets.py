@@ -22,9 +22,8 @@ import logging
 import djangoplugins
 from basin3d.models import DataSource
 from basin3d.synthesis.models.field import Region
-from basin3d.synthesis.models.simulations import Model
+from basin3d.synthesis.models.simulations import Model, ModelDomain
 from basin3d.synthesis.serializers import RegionSerializer, ModelSerializer, ModelDomainSerializer
-from basin3d.tests.test_synthesis_models import ModelDomain
 from rest_framework import versioning
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet

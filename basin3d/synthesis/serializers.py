@@ -22,7 +22,7 @@ Serializers that render :mod:`basin.synthesis.models` from Python objects to `JS
 """
 from basin3d.serializers import MeasurementVariableSerializer
 from basin3d.synthesis.models.field import Region
-from basin3d.tests.test_synthesis_models import ModelDomain
+from basin3d.synthesis.models.simulations import ModelDomain
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
@@ -56,6 +56,7 @@ class RegionSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
 
     id = serializers.CharField()
+    name = serializers.CharField()
     geom = serializers.JSONField()
     description = serializers.CharField()
 
