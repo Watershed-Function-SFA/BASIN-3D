@@ -28,7 +28,8 @@ class RegionSerializerTests(TestCase):
 
         json_obj = JSONRenderer().render(s.data)
         self.assertEqual(json.loads(json_obj.decode('utf-8')),
-                         {"id": "A-SI123", "description": "US", "geom": {}, 'name': 'a site', "url": None})
+                         {"id": "A-SI123", "description": "US", "geom": {}, 'name': 'a site', "url": None,
+                          'model_domains': None})
 
 
 class ModelSerializerTests(TestCase):
