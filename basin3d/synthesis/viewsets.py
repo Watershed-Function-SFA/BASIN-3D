@@ -12,6 +12,7 @@ Controllers for BASIN-3D REST api
 * :class:`DataSourcePluginViewSet` - Base ViewSet for all synthesized model views.
 * :class:`RegionViewSet` - supports REST `GET` methods that synthesize :class:`~basin3d.synthesis.models.field.Region`s
 * :class:`ModelViewSet` - supports REST `GET` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Model`s
+* :class:`MeshViewSet` - supports REST `GET` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Mesh`es
 * :class:`ModelDomainViewSet` - supports REST `GET` methods that synthesize :class:`~basin3d.synthesis.simulations.ModelDomains`s
 
 ----------------------------------
@@ -22,9 +23,10 @@ import logging
 import djangoplugins
 from basin3d.models import DataSource
 from basin3d.synthesis.models.field import Region
-from basin3d.synthesis.models.simulations import Model, ModelDomain
-from basin3d.synthesis.serializers import RegionSerializer, ModelSerializer, ModelDomainSerializer
+from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh
+from basin3d.synthesis.serializers import RegionSerializer, ModelSerializer, ModelDomainSerializer, MeshSerializer
 from rest_framework import versioning
+from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
@@ -38,8 +40,6 @@ class DataSourcePluginViewSet(ViewSet):
 
     """
     versioning_class = versioning.NamespaceVersioning
-    plugin_generator_method = str()
-    plugin_retrieve_method = str()
 
     def list(self, request, format=None):
         """
@@ -70,17 +70,17 @@ class DataSourcePluginViewSet(ViewSet):
         :param pk:
         :return:
         """
-        datasources = DataSource.objects.all()
+        pk_list = pk.split("-")
+        datasource = DataSource.objects.get(id_prefix=pk_list[0])
         obj = None
-        for datasource in datasources:
+        if datasource:
+            datasource_pk = pk.replace("{}-".format(pk_list[0]), "")  # The datasource id prefixe needs to be removed
             plugin_model = datasource.plugin  # Get the plugin model
             if plugin_model.status == djangoplugins.models.ENABLED:
 
                 plugin_views = plugin_model.get_plugin().get_plugin_views()
                 if self.synthesis_model in plugin_views:
-                    obj = plugin_views[self.synthesis_model].get(request, pk=pk)
-                    if obj:  # probably want to be smarter about this.  Do we used an id prefix?
-                        break
+                    obj = plugin_views[self.synthesis_model].get(request, pk=datasource_pk)
         if obj:
             try:
                 serializer = self.__class__.serializer_class(obj, context={'request': request})
@@ -109,9 +109,48 @@ class ModelViewSet(DataSourcePluginViewSet):
     synthesis_model = Model
 
 
+class MeshViewSet(DataSourcePluginViewSet):
+    """
+    Return a Model Domain
+    """
+    serializer_class = MeshSerializer
+    synthesis_model = Mesh
+
+
 class ModelDomainViewSet(DataSourcePluginViewSet):
     """
     Return a Model Domain
     """
     serializer_class = ModelDomainSerializer
     synthesis_model = ModelDomain
+
+    @detail_route()  # Custom Route for an association
+    def meshes(self, request, pk=None):
+        """
+        Retrieve the Meshes  for a Model Domain.
+
+        Maps to  /model_domains/{pk}/meshes/
+
+        :param request:
+        :param pk:
+        :return:
+        """
+        id_prefix = pk.split("-")[0]
+        datasource = DataSource.objects.get(id_prefix=id_prefix)
+        items = []
+
+        if datasource:
+            plugin_model = datasource.plugin  # Get the plugin model
+
+            if plugin_model.status == djangoplugins.models.ENABLED:
+
+                plugin_views = plugin_model.get_plugin().get_plugin_views()
+                if self.synthesis_model in plugin_views:
+                    request.GET = request.GET.copy()  # Make the request mutable
+                    request.GET["model_domain_id"] = pk.replace("{}-".format(id_prefix),
+                                                                "")  # The datasource id prefixe needs to be removed
+                    for obj in plugin_views[Mesh].list(request):
+                        items.append(obj)
+
+        serializer = MeshViewSet.serializer_class(items, many=True, context={'request': request})
+        return Response(serializer.data)

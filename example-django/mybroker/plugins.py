@@ -4,7 +4,7 @@ from collections import OrderedDict
 from basin3d.plugins import DataSourcePluginPoint, DataSourcePluginViewMeta
 from basin3d.synthesis.models import simulations
 from basin3d.synthesis.models.field import Region
-from basin3d.synthesis.models.simulations import Model, ModelDomain
+from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh
 from django.utils.six import with_metaclass
 
 logger = logging.getLogger(__name__)
@@ -17,6 +17,29 @@ MEASUREMENT_VARIABLES = [["ACT", "Acetate (CH3COO)", ["Geochemistry", "Anions"]]
                          ]
 
 
+class AlphaMeshView(with_metaclass(DataSourcePluginViewMeta)):
+    synthesis_model_class = Mesh
+
+    def list(self, request):
+        """
+        Get the Mesh information
+        """
+        mesh = self.synthesis_model_class(id="SI123",
+                                          geom={})
+
+        yield mesh
+
+    def get(self, request, pk=None):
+        """
+        Get a Region
+        :param pk: primary key
+        """
+        for s in self.list(request):
+            if s.id.endswith(pk):
+                return s
+        return None
+
+
 class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = Region
 
@@ -24,7 +47,7 @@ class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
         """
         Get the Region information
         """
-        region = self.synthesis_model_class(name="a site",
+        region = self.synthesis_model_class(self.datasource, name="a site",
                                             id="SI123",
                                             description="This is for my site description", )
 
@@ -36,7 +59,7 @@ class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
         :param pk: primary key
         """
         for s in self.list(request):
-            if s.id == pk:
+            if s.id.endswith(pk):
                 return s
         return None
 
@@ -49,7 +72,7 @@ class AlphaModelView(with_metaclass(DataSourcePluginViewMeta)):
         Generate the simulations.Models for this datasource
         """
         for num in range(3):
-            yield simulations.Model(id="M{}".format(num),
+            yield simulations.Model(self.datasource, id="M{}".format(num),
                                     version="1.0",
                                     dimensionality=("1D", "2D", "3D")[num],
                                     url="/testserver/url/{}".format(num))
@@ -60,7 +83,7 @@ class AlphaModelView(with_metaclass(DataSourcePluginViewMeta)):
         :param pk: primary key
         """
         for s in self.list(request):
-            if s.id == pk:
+            if s.id.endswith(pk):
                 return s
         return None
 
@@ -71,13 +94,10 @@ class AlphaModelDomainView(with_metaclass(DataSourcePluginViewMeta)):
     def list(self, request):
         """ Generate the Model Domains"""
         for num in range(1, 10):
-            yield simulations.ModelDomain(model_domain_id="MD{}".format(num),
-                                          model_domain_name="model domain {}".format(num),
+            yield simulations.ModelDomain(self.datasource, id="MD{}".format(num),
+                                          name="model domain {}".format(num),
                                           url="/testserver/url/{}".format(num),
-                                          geom={},
-                                          meshes=[simulations.Mesh(mesh_id="1",
-                                                                   parameters=[],
-                                                                   initial_conditions=[])])
+                                          geom={})
 
     def get(self, request, pk=None):
         """
@@ -85,7 +105,7 @@ class AlphaModelDomainView(with_metaclass(DataSourcePluginViewMeta)):
             :param pk: primary key
         """
         for s in self.list(request):
-            if s.model_domain_id == pk:
+            if s.id.endswith(pk):
                 return s
         return None
 
@@ -94,12 +114,13 @@ class AlphaSourcePlugin(DataSourcePluginPoint):
 
     name = 'alpha-source-plugin'
     title = 'Alpha Source Plugin'
-    plugin_view_classes = (AlphaRegionView, AlphaModelView, AlphaModelDomainView)
+    plugin_view_classes = (AlphaRegionView, AlphaModelView, AlphaModelDomainView, AlphaMeshView)
 
     class DataSourceMeta:
         # Data Source attributes
         location = 'https://asource.foo'
         id = 'Alpha'  # unique id for the datasource
+        id_prefix = 'A'
         name = id  # Human Friendly Data Source Name
         credentials_format = 'username:\npassword:\n'
 

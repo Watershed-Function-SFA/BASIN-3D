@@ -21,19 +21,19 @@ class TestRegionAPI(TestCase):
         response = self.client.get('/v1/regions/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         [{"id": "SI123", "geom": None, "description": "This is for my site description",
+                         [{"id": "A-SI123", "geom": None, "description": "This is for my site description",
                               'name': 'a site',
-                           "url": "http://testserver/v1/regions/SI123/"}]
+                           "url": "http://testserver/v1/regions/A-SI123/"}]
 
                          )
 
     def test_get_detail(self):
-        response = self.client.get('/v1/regions/SI123/', format='json')
+        response = self.client.get('/v1/regions/A-SI123/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {"id": "SI123", "geom": None, "description": "This is for my site description",
+                         {"id": "A-SI123", "geom": None, "description": "This is for my site description",
                           'name': 'a site',
-                          "url": "http://testserver/v1/regions/SI123/"})
+                          "url": "http://testserver/v1/regions/A-SI123/"})
 
 
 class TestModelAPI(TestCase):
@@ -49,36 +49,44 @@ class TestModelAPI(TestCase):
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          [
                              {
-                                 "id": "M0",
+                                 "id": "A-M0",
+                                 "name": None,
                                  "version": "1.0",
                                  "dimensionality": "1D",
-                                 "url": "http://testserver/v1/models/M0/"
+                                 'web_location': None,
+                                 "url": "http://testserver/v1/models/A-M0/"
                              },
                              {
-                                 "id": "M1",
+                                 "id": "A-M1",
+                                 "name": None,
                                  "version": "1.0",
                                  "dimensionality": "2D",
-                                 "url": "http://testserver/v1/models/M1/"
+                                 'web_location': None,
+                                 "url": "http://testserver/v1/models/A-M1/"
                              },
                              {
-                                 "id": "M2",
+                                 "id": "A-M2",
+                                 "name": None,
                                  "version": "1.0",
                                  "dimensionality": "3D",
-                                 "url": "http://testserver/v1/models/M2/"
+                                 'web_location': None,
+                                 "url": "http://testserver/v1/models/A-M2/"
                              }
                          ]
 
                          )
 
     def test_get_detail(self):
-        response = self.client.get('/v1/models/M2/', format='json')
+        response = self.client.get('/v1/models/A-M2/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {
-                             "id": "M2",
+                             "id": "A-M2",
+                             "name": None,
                              "version": "1.0",
                              "dimensionality": "3D",
-                             "url": "http://testserver/v1/models/M2/"
+                             'web_location': None,
+                             "url": "http://testserver/v1/models/A-M2/"
                          })
 
 
@@ -95,140 +103,80 @@ class TestModelDomainAPI(TestCase):
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          [
                              {
-                                 "model_domain_id": "MD1",
-                                 "model_domain_name": "model domain 1",
-                                 "meshes": [
-                                     {
-                                         "mesh_id": "1",
-                                         "parameters": [],
-                                         "initial_conditions": []
-                                     }
-                                 ],
+                                 "id": "A-MD1",
+                                 "name": "model domain 1",
+                                 "meshes": 'http://testserver/v1/model_domains/A-MD1/meshes',
                                  "geom": {},
-                                 "url": "http://testserver/v1/model_domains/MD1/"
+                                 "url": "http://testserver/v1/model_domains/A-MD1/"
                              },
                              {
-                                 "model_domain_id": "MD2",
-                                 "model_domain_name": "model domain 2",
-                                 "meshes": [
-                                     {
-                                         "mesh_id": "1",
-                                         "parameters": [],
-                                         "initial_conditions": []
-                                     }
-                                 ],
+                                 "id": "A-MD2",
+                                 "name": "model domain 2",
+                                 "meshes": 'http://testserver/v1/model_domains/A-MD2/meshes',
                                  "geom": {},
-                                 "url": "http://testserver/v1/model_domains/MD2/"
+                                 "url": "http://testserver/v1/model_domains/A-MD2/"
                              },
                              {
-                                 "model_domain_id": "MD3",
-                                 "model_domain_name": "model domain 3",
-                                 "meshes": [
-                                     {
-                                         "mesh_id": "1",
-                                         "parameters": [],
-                                         "initial_conditions": []
-                                     }
-                                 ],
+                                 "id": "A-MD3",
+                                 "name": "model domain 3",
+                                 "meshes": 'http://testserver/v1/model_domains/A-MD3/meshes',
                                  "geom": {},
-                                 "url": "http://testserver/v1/model_domains/MD3/"
+                                 "url": "http://testserver/v1/model_domains/A-MD3/"
                              },
                              {
-                                 "model_domain_id": "MD4",
-                                 "model_domain_name": "model domain 4",
-                                 "meshes": [
-                                     {
-                                         "mesh_id": "1",
-                                         "parameters": [],
-                                         "initial_conditions": []
-                                     }
-                                 ],
+                                 "id": "A-MD4",
+                                 "name": "model domain 4",
+                                 "meshes": 'http://testserver/v1/model_domains/A-MD4/meshes',
                                  "geom": {},
-                                 "url": "http://testserver/v1/model_domains/MD4/"
+                                 "url": "http://testserver/v1/model_domains/A-MD4/"
                              },
                              {
-                                 "model_domain_id": "MD5",
-                                 "model_domain_name": "model domain 5",
-                                 "meshes": [
-                                     {
-                                         "mesh_id": "1",
-                                         "parameters": [],
-                                         "initial_conditions": []
-                                     }
-                                 ],
+                                 "id": "A-MD5",
+                                 "name": "model domain 5",
+                                 "meshes": 'http://testserver/v1/model_domains/A-MD5/meshes',
                                  "geom": {},
-                                 "url": "http://testserver/v1/model_domains/MD5/"
+                                 "url": "http://testserver/v1/model_domains/A-MD5/"
                              },
                              {
-                                 "model_domain_id": "MD6",
-                                 "model_domain_name": "model domain 6",
-                                 "meshes": [
-                                     {
-                                         "mesh_id": "1",
-                                         "parameters": [],
-                                         "initial_conditions": []
-                                     }
-                                 ],
+                                 "id": "A-MD6",
+                                 "name": "model domain 6",
+                                 "meshes": 'http://testserver/v1/model_domains/A-MD6/meshes',
                                  "geom": {},
-                                 "url": "http://testserver/v1/model_domains/MD6/"
+                                 "url": "http://testserver/v1/model_domains/A-MD6/"
                              },
                              {
-                                 "model_domain_id": "MD7",
-                                 "model_domain_name": "model domain 7",
-                                 "meshes": [
-                                     {
-                                         "mesh_id": "1",
-                                         "parameters": [],
-                                         "initial_conditions": []
-                                     }
-                                 ],
+                                 "id": "A-MD7",
+                                 "name": "model domain 7",
+                                 "meshes": 'http://testserver/v1/model_domains/A-MD7/meshes',
                                  "geom": {},
-                                 "url": "http://testserver/v1/model_domains/MD7/"
+                                 "url": "http://testserver/v1/model_domains/A-MD7/"
                              },
                              {
-                                 "model_domain_id": "MD8",
-                                 "model_domain_name": "model domain 8",
-                                 "meshes": [
-                                     {
-                                         "mesh_id": "1",
-                                         "parameters": [],
-                                         "initial_conditions": []
-                                     }
-                                 ],
+                                 "id": "A-MD8",
+                                 "name": "model domain 8",
+                                 "meshes": 'http://testserver/v1/model_domains/A-MD8/meshes',
                                  "geom": {},
-                                 "url": "http://testserver/v1/model_domains/MD8/"
+                                 "url": "http://testserver/v1/model_domains/A-MD8/"
                              },
                              {
-                                 "model_domain_id": "MD9",
-                                 "model_domain_name": "model domain 9",
-                                 "meshes": [
-                                     {
-                                         "mesh_id": "1",
-                                         "parameters": [],
-                                         "initial_conditions": []
-                                     }
-                                 ],
+                                 "id": "A-MD9",
+                                 "name": "model domain 9",
+                                 "meshes": 'http://testserver/v1/model_domains/A-MD9/meshes',
                                  "geom": {},
-                                 "url": "http://testserver/v1/model_domains/MD9/"
+                                 "url": "http://testserver/v1/model_domains/A-MD9/"
                              }
                          ]
 
         )
 
     def test_get_detail(self):
-        response = self.client.get('/v1/model_domains/MD7/', format='json')
+        response = self.client.get('/v1/model_domains/A-MD7/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {
-                             "model_domain_id": "MD7",
-                             "model_domain_name": "model domain 7",
-                             "meshes": [
-                                 {
-                                     "mesh_id": "1",
-                                     "parameters": [],
-                                     "initial_conditions": []
-                                 }
-                             ],
+                             "id": "A-MD7",
+                             "name": "model domain 7",
+                             "meshes": 'http://testserver/v1/model_domains/A-MD7/meshes',
                              "geom": {},
-                             "url": "http://testserver/v1/model_domains/MD7/"
+                             "url": "http://testserver/v1/model_domains/A-MD7/"
                          })

@@ -4,10 +4,7 @@
 
 .. currentmodule:: basin3d.synthesis.models.field
 
-:synopsis: The BASIN-3D Synthesis Models
-:module author: Val Hendrix <vhendrix@lbl.gov>
-
-Classes to represent Multi-scale Spatial Hierarchy for Field Observations
+:synopsis: Classes to represent Multi-scale Spatial Hierarchy for Field Observations
 
 * :class:`Region` - An arbitrary area
 
@@ -30,11 +27,11 @@ class Region(Base):
             - *geom:* polygon
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, datasource, **kwargs):
         self.id = None
         self.name = None
         self.description = None
         self.geom = None
 
         # Initialize after the attributes have been set
-        super().__init__(**kwargs)
+        super().__init__(datasource, **kwargs)

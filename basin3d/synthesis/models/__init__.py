@@ -4,10 +4,7 @@
 
 .. currentmodule:: basin3d.synthesis.models
 
-:synopsis: The BASIN-3D Synthesis Models
-:module author: Val Hendrix <vhendrix@lbl.gov>
-
-Classes to represent generic observation data concepts
+:synopsis: Classes to represent generic observation data concepts
 
 * :class:`Base` - The base model class that all synthesis extend from
 
@@ -15,22 +12,26 @@ Classes to represent generic observation data concepts
 
 """
 
+
 class Base(object):
     """
     Base synthesis model class
     """
     __attributes = {}
 
-    def __init__(self, **kwargs):
+    def __init__(self, datasource, **kwargs):
 
         self.__attributes = self.__dict__.keys()
-
+        self.datasource = datasource
         if not isinstance(kwargs, dict):
             raise TypeError("Expected a dict")
 
         if len(kwargs.keys()) > 0 and self.__attributes.isdisjoint(set(kwargs.keys())):
             bad_attributes = set(kwargs.keys()).difference(self.__attributes)
             raise ValueError("Invalid argument(s) for Sites: {}".format(bad_attributes))
+
+        if 'id' in kwargs:
+            kwargs["id"] = "{}-{}".format(self.datasource.id_prefix, kwargs['id'])
 
         self.__dict__.update(kwargs)
 

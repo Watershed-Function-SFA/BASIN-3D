@@ -10,8 +10,8 @@ from basin3d.models import DataSource, MeasurementVariable
 
 class DataSourceTestCase(TestCase):
     def setUp(self):
-        DataSource.objects.create(name="Foo",plugin_id=1)
-        DataSource.objects.create(name="Bar",plugin_id=1)
+        DataSource.objects.create(name="Foo", plugin_id=1, id_prefix="F")
+        DataSource.objects.create(name="Bar", plugin_id=1, id_prefix="B")
 
     def test_get(self):
         """Assert that the Data Sources were created"""

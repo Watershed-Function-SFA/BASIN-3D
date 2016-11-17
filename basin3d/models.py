@@ -66,6 +66,7 @@ class DataSource(models.Model):
     Data Source  definition
     """
     name = models.CharField(max_length=20, unique=True, blank=False)
+    id_prefix = models.CharField(max_length=5, unique=True, blank=False)
     location = models.TextField(blank=True)
     plugin = PluginField(DataSourcePluginPoint, blank=True)
     credentials = EncryptedTextField(blank=True)

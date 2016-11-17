@@ -77,27 +77,32 @@ class ModelSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
 
     id = serializers.CharField()
+    name = serializers.CharField()
     version = serializers.CharField()
     dimensionality = serializers.CharField()
+    web_location = serializers.URLField()
 
     def create(self, validated_data):
         return ModelSerializer(**validated_data)
 
     def update(self, instance, validated_data):
         instance.id = validated_data.get('id', instance.id)
+        instance.name = validated_data.get('name', instance.name)
         instance.version = validated_data.get('version', instance.version)
         instance.dimensionality = validated_data.get('dimensionality', instance.dimensionality)
+        instance.web_location = validated_data.get('web_location', instance.web_location)
         return instance
 
 
-class ModelParameterSerializer(IdUrlSerializerMixin, serializers.Serializer):
+class ModelParameterSerializer(serializers.Serializer):
     """
     Serializes a synthesis.model.simulations.ModelParameter
 
     """
 
     id = serializers.CharField()
-    name = serializers.CharField()
+    model_name = serializers.CharField()
+    data_source_name = serializers.CharField()
     value = serializers.FloatField()
 
     def create(self, validated_data):
@@ -105,60 +110,61 @@ class ModelParameterSerializer(IdUrlSerializerMixin, serializers.Serializer):
 
     def update(self, instance, validated_data):
         instance.id = validated_data.get('id', instance.id)
-        instance.name = validated_data.get('name', instance.name)
+        instance.model_name = validated_data.get('model_name', instance.model_name)
+        instance.data_source_name = validated_data.get('data_source_name', instance.data_source_name)
         instance.value = validated_data.get('value', instance.value)
         return instance
 
 
-class MeshSerializer(serializers.Serializer):
+class MeshSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
     Serializes a synthesis.model.simulations.Mesh
 
     """
 
-    mesh_id = serializers.CharField()
+    id = serializers.CharField()
     parameters = serializers.ListSerializer(child=ModelParameterSerializer())
     initial_conditions = serializers.ListSerializer(child=MeasurementVariableSerializer())
+    geom = serializers.JSONField()
 
     def create(self, validated_data):
         return MeshSerializer(**validated_data)
 
     def update(self, instance, validated_data):
-        instance.mesh_id = validated_data.get('mesh_id', instance.mesh_id)
+        instance.id = validated_data.get('id', instance.id)
         instance.parameters = validated_data.get('parameters', instance.parameters)
         instance.initial_conditions = validated_data.get('initial_conditions', instance.initial_conditions)
+        instance.geom = validated_data.get('geom', instance.geom)
         return instance
 
 
-class ModelDomainSerializer(serializers.Serializer):
+class ModelDomainSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
     Serializes a synthesis.models.simulations.ModelDomain
 
     """
 
-    model_domain_id = serializers.CharField()
-    model_domain_name = serializers.CharField()
-    meshes = serializers.ListSerializer(child=MeshSerializer())
+    id = serializers.CharField()
+    name = serializers.CharField()
     geom = serializers.JSONField()
     url = serializers.SerializerMethodField()
+    meshes = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         return ModelDomain(**validated_data)
 
     def update(self, instance, validated_data):
-        instance.model_domain_id = validated_data.get('model_domain_id', instance.model_domain_id)
-        instance.model_domain_name = validated_data.get('model_domain_name', instance.model_domain_name)
+        instance.model_domain_id = validated_data.get('id', instance.model_domain_id)
+        instance.model_domain_name = validated_data.get('name', instance.model_domain_name)
         instance.geom = validated_data.get('geom', instance.geom)
-        instance.meshes = validated_data.get('meshes', instance.meshes)
         return instance
 
-    def get_url(self, obj):
+    def get_meshes(self, obj):
         """
-        Get the url based on the current context
+        Get the Site url based on the current context
         :param obj:
         :return:
         """
         if "request" in self.context and self.context["request"]:
-            return reverse(viewname='modeldomain-detail', kwargs={'pk': obj.model_domain_id}, request=self.context["request"], )
-
-
+            url = "{}meshes".format(self.get_url(obj))
+            return url
