@@ -15,7 +15,7 @@ Including another URLconf
 """
 import djangoplugins
 from basin3d.models import DataSource
-from basin3d.synthesis.viewsets import RegionsViewSet, ModelViewSet, ModelDomainViewSet
+from basin3d.synthesis.viewsets import RegionsViewSet, ModelViewSet, ModelDomainViewSet, MeshViewSet
 from django.conf.urls import url, include
 from django.db import OperationalError
 from rest_framework import routers
@@ -45,6 +45,8 @@ try:
                 router.register(r'models', ModelViewSet, base_name='model')
             if 'ModelDomain' in viewset_models:
                 router.register(r'model_domains', ModelDomainViewSet, base_name='modeldomain')
+            if 'Mesh' in viewset_models:
+                router.register(r'meshes', MeshViewSet, base_name='mesh')
 except OperationalError as e:
     # This will only be raised during a migration because the database has not been
     # created yet.

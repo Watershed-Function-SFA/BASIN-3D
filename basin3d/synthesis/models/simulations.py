@@ -6,11 +6,7 @@
 
 .. currentmodule:: basin3d.synthesis.models.simulations
 
-:platform: Unix, Mac
-:synopsis: The h BASIN-3D Synthesis Models
-:module author: Val Hendrix <vhendrix@lbl.gov>
-
-Classes to represent Simulation/Modeling Concepts (package basin3d.synthesis.models.simulations)
+:synopsis: Classes to represent Simulation/Modeling Concepts
 
 
 ---------------------
@@ -26,22 +22,23 @@ class Model(Base):
             - *id:* string
             - *name:* string
             - *version:* string
-            - *URL:* string
+            - *web_location:* string
             - *dimensionality:* enum (1D, 2D, 3D)
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, datasource, **kwargs):
         self.id = None
+        self.name = None
         self.version = None
-        self.url = None  # this should be something else
+        self.web_location = None
         self.dimensionality = None
 
         # Initialize after the attributes have been set
-        super().__init__(**kwargs)
+        super().__init__(datasource, **kwargs)
 
     def __eq__(self, other):
         return self.id == other.id and self.version == other.version \
-               and self.url == other.url and self.dimensionality == other.dimensionality
+               and self.web_location == other.web_location and self.dimensionality == other.dimensionality
 
 
 class ModelDomain(Base):
@@ -49,25 +46,23 @@ class ModelDomain(Base):
         Specifies the area being modeled
 
         Attributes:
-            - *model_domain_id:* string
-            - *model_domain_name:* string
+            - *id:* string
+            - *name:* string
             - *geom:* Polygon
-            - *meshes:* Array of :class:`~basin3d.synthesis.models.simulations.Mesh` objects
+            - has one ore more :class:`~basin3d.synthesis.models.simulations.Mesh` objects as **meshes**
     """
 
-    def __init__(self, **kwargs):
-        self.model_domain_id = None
-        self.model_domain_name = None
-        self.url = None
+    def __init__(self, datasource, **kwargs):
+        self.id = None
+        self.name = None
         self.geom = None
-        self.meshes = None
 
         # Initialize after the attributes have been set
-        super().__init__(**kwargs)
+        super().__init__(datasource, **kwargs)
 
     def __eq__(self, other):
-        return self.model_domain_id == other.model_domain_id and self.model_domain_name == other.model_domain_name \
-               and self.url == other.url and self.geom == other.geom
+        return self.id == other.model_domain_id and self.name == other.model_domain_name \
+               and self.geom == other.geom
 
 
 class Mesh(Base):
@@ -78,18 +73,20 @@ class Mesh(Base):
             - *mesh_id:* string
             - *parameters:* Array of :class:`~basin3d.synthesis.models.simulations.ModelParameter` objects
             - *initial_conditions:* Array of :class:`basin3d.models.MeasurementVariable` objects
+            - *geom:* Polygon
     """
 
-    def __init__(self, **kwargs):
-        self.mesh_id = None
+    def __init__(self, datasource, **kwargs):
+        self.id = None
         self.parameters = []
         self.initial_conditions = []
+        self.geom = {}
 
         # Initialize after the attributes have been set
-        super().__init__(**kwargs)
+        super().__init__(datasource, **kwargs)
 
     def __eq__(self, other):
-        return self.mesh_id == other.mesh_id
+        return self.id == other.mesh_id
 
 
 class ModelParameter(Base):
@@ -98,20 +95,22 @@ class ModelParameter(Base):
 
         Attributes:
             - *id:* string
-            - *name:* string
+            - *model_name:* string (the parameter name in the :class:`~basin3d.synthesis.models.simulations.Model`)
+            - *data_source_name:* string (the parameter name in the :class:`basin3d.models.DataSource`)
             - *value:* float
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, datasource, **kwargs):
         self.id = None
-        self.name = None
+        self.model_name = None
+        self.data_source_name = None
         self.value = None
 
         # Initialize after the attributes have been set
-        super().__init__(**kwargs)
+        super().__init__(datasource, **kwargs)
 
     def __eq__(self, other):
-        return self.id == other.id and self.name == other.name and self.value == other.value
+        return self.id == other.id and self.model_name == other.model_name and self.value == other.value
 
 
 class ModelRun(Base):
@@ -119,30 +118,36 @@ class ModelRun(Base):
         Model settings that are used for a particular run
 
         Attributes:
-            - *id:* string
+            - *id:* string -- the model run number
             - *name:* string
-            - *description (of how model is being parametrized and run):* string,
-            - *model_domain_id:* string
+            - *start_time*: datetime -- system time when simulation started
+            - *end_time:* datetime -- system time when results obtained
             - *simulation_length:* integer
             - *simulation_length_units:* enum (hours, days, years)
-            - *boundary conditions:* Array of :class:`~basin3d.synthesis.models.simulations.MeasurementResults`
+            - *status*: enum -- (started, finished, delayed,canceled)
+            - has one or more :class:`~basin3d.synthesis.models.simulations.MeasurementResults` as **boundary_conditions**
+            - has a :class:`~basin3d.synthesis.models.simulations.ModelDomain` as **model_domain**
+
+
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, datasource, **kwargs):
         self.id = None
         self.name = None
-        self.description = None
-        self.model_domain_id = None
+        self.start_time = None
+        self.end_time = None
+        self.simulation_length = None
         self.simulation_length_units = None  # enum (hours, days, years)
-        self.boundary_conditions = []
+        self.status = None
 
         # Initialize after the attributes have been set
-        super().__init__(**kwargs)
+        super().__init__(datasource, **kwargs)
 
     def __eq__(self, other):
-        return self.id == other.id and self.name == other.name and self.description == other.description \
-                and self.model_domain_id == other.model_domain_id and \
-                self.simulation_length_units == other.simulation_length_units
+        return self.id == other.id and self.name == other.name \
+               and self.id == other.id and \
+               self.simulation_length_units == other.simulation_length_units
 
 
 class ModelResults(Base):
@@ -151,23 +156,22 @@ class ModelResults(Base):
 
         Attributes:
             - *id:* string
-            - *model_run_id:* string
             - *units:* Unit
             - *annotation:* string
-            - *result:* Array of :class:`~basin3d.synthesis.models.simulations.ModelDataPoint` objects
+            - has one or more  :class:`~basin3d.synthesis.models.simulations.ModelDataPoint` objects as **result**
+            - has a :class:`~basin3d.synthesis.models.simulations.ModelRun` as **model_run**
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, datasource, **kwargs):
         self.id = None
-        self.model_run_id = None
         self.units = None
-        self.results = []
+        self.annotation = None
 
         # Initialize after the attributes have been set
-        super().__init__(**kwargs)
+        super().__init__(datasource, **kwargs)
 
     def __eq__(self, other):
-        return self.id == other.id and self.model_run_id == other.model_run_id and self.units == other.units
+        return self.id == other.id and self.units == other.units
 
 
 class ModelDataPoint(Base):  # extends DataPoint
@@ -182,7 +186,7 @@ class ModelDataPoint(Base):  # extends DataPoint
             - *variable:* :class:`basin3d.models.MeasurementVariable`
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, datasource, **kwargs):
         self.id = None
         self.mesh_id = None
         self.timestamp = None
@@ -190,7 +194,7 @@ class ModelDataPoint(Base):  # extends DataPoint
         self.variable = None
 
         # Initialize after the attributes have been set
-        super().__init__(**kwargs)
+        super().__init__(datasource, **kwargs)
 
     def __eq__(self, other):
         return self.id == other.id and self.mesh_id == other.mesh_id and self.timestamp == other.timestamp \

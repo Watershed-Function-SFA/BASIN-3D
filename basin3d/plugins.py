@@ -22,6 +22,7 @@ class DataSourcePluginViewMeta(type):
         if "__init__" in dct:
             old_init = dct["__init__"]
 
+
         def new_init(self, *args, **kwargs):
 
             DataSource = apps.get_app_config(Basin3DConfig.name).get_model('DataSource')
@@ -110,3 +111,13 @@ class DataSourcePluginPoint(PluginPoint):
             raise ValueError("{} does not define any plugin_view_classes.")
 
         return view_classes
+
+    @classmethod
+    def get_id_prefix(cls):
+        """
+        Get the defined id prefix
+        """
+        meta = cls.get_meta()
+        id_prefix = getattr(meta, 'id_prefix', None)
+        if not id_prefix:
+            raise ValueError("{}.DataSourceMeta does not define an 'id_prefix'.")

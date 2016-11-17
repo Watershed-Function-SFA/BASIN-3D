@@ -2,7 +2,7 @@
 BASIN-3D Quickstart
 ===================
 
-BASIN-3d is a  Django app that acts as a  Broker for Assimilation, Synthesis and Integration of eNvironmental
+BASIN-3D is a  Django app that acts as a  Broker for Assimilation, Synthesis and Integration of eNvironmental
 Diverse, Distributed Datasets.
 
 Detailed documentation is in the "docs" directory.
@@ -49,12 +49,13 @@ Extend the broker source plugin with the described attributes::
 
         name = 'alpha-source-plugin'
         title = 'Alpha Source Plugin'
-        plugin_view_classes = (AlphaRegionView, AlphaModelView, AlphaModelDomainView)
+        plugin_view_classes = (AlphaRegionView, AlphaModelView, AlphaModelDomainView,AlphaMeshView)
 
         class DataSourceMeta:
             # Data Source attributes
             location = 'https://asource.foo'
             id = 'Alpha'  # unique id for the datasource
+            id_prefix = 'A' # id prefix to make model object ids unique across datasources
             name = id  # Human Friendly Data Source Name
             credentials_format = 'username:\npassword:\n'
 
@@ -65,25 +66,32 @@ Extend the broker source plugin with the described attributes::
 
 Create view classes for the desired synthesis models::
 
-    class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
-
-        synthesis_model_class=Region
+    class AlphaModelView(with_metaclass(DataSourcePluginViewMeta)):
+        synthesis_model_class = Model
 
         def list(self, request):
             """
-            Generate the Regsion for the Alpha DataSource Plugin
-            :param request: the current http request
+            Generate the simulations.Models for this datasource
             """
-            pass
 
-        def get(self,request, pk=None):
+            # NOTE: Replace this with a call to the data source
+            for num in range(3):
+                yield simulations.Model(self.datasource, id="M{}".format(num),
+                                        version="1.0",
+                                        dimensionality=("1D", "2D", "3D")[num],
+                                        url="/testserver/url/{}".format(num))
+
+        def get(self, request, pk=None):
             """
-            Get an Alpha DataSource Plugin Region
-            :param request: the current http request
+            Get a simulations.Model
             :param pk: primary key
             """
-            pass
 
+            # NOTE: Replace this with a call to the data source
+            for s in self.list(request):
+                if s.id.endswith(pk):
+                    return s
+            return None
 
 Create a  Keyset
 ----------------
