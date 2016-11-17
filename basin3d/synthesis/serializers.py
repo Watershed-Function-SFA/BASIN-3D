@@ -59,6 +59,7 @@ class RegionSerializer(IdUrlSerializerMixin, serializers.Serializer):
     name = serializers.CharField()
     geom = serializers.JSONField()
     description = serializers.CharField()
+    model_domains = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         return Region(**validated_data)
@@ -69,6 +70,17 @@ class RegionSerializer(IdUrlSerializerMixin, serializers.Serializer):
         instance.description = validated_data.get('description', instance.description)
         instance.geom = validated_data.get('geom', instance.geom)
         return instance
+
+    def get_model_domains(self, obj):
+        """
+        Get the Site url based on the current context
+        :param obj:
+        :return:
+        """
+        if "request" in self.context and self.context["request"]:
+            # FIXME: this will break if there are any query parameters
+            url = "{}model_domains".format(self.get_url(obj))
+            return url
 
 
 class ModelSerializer(IdUrlSerializerMixin, serializers.Serializer):
@@ -166,5 +178,6 @@ class ModelDomainSerializer(IdUrlSerializerMixin, serializers.Serializer):
         :return:
         """
         if "request" in self.context and self.context["request"]:
+            # FIXME: this will break if there are any query parameters
             url = "{}meshes".format(self.get_url(obj))
             return url

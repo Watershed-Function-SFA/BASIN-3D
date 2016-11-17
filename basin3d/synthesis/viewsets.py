@@ -100,6 +100,37 @@ class RegionsViewSet(DataSourcePluginViewSet):
     serializer_class = RegionSerializer
     synthesis_model = Region
 
+    @detail_route()  # Custom Route for an association
+    def model_domains(self, request, pk=None):
+        """
+        Retrieve the Model Domains  for a Region.
+
+        Maps to  /regions/{pk}/model_domains/
+
+        :param request:
+        :param pk:
+        :return:
+        """
+        id_prefix = pk.split("-")[0]
+        datasource = DataSource.objects.get(id_prefix=id_prefix)
+        items = []
+
+        if datasource:
+            plugin_model = datasource.plugin  # Get the plugin model
+
+            if plugin_model.status == djangoplugins.models.ENABLED:
+
+                plugin_views = plugin_model.get_plugin().get_plugin_views()
+                if self.synthesis_model in plugin_views:
+                    request.GET = request.GET.copy()  # Make the request mutable
+                    request.GET["region_id"] = pk.replace("{}-".format(id_prefix),
+                                                          "")  # The datasource id prefix needs to be removed
+                    for obj in plugin_views[ModelDomain].list(request):
+                        items.append(obj)
+
+        serializer = ModelDomainViewSet.serializer_class(items, many=True, context={'request': request})
+        return Response(serializer.data)
+
 
 class ModelViewSet(DataSourcePluginViewSet):
     """
