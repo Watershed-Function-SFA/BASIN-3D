@@ -25,6 +25,7 @@ from basin3d.models import DataSource
 from basin3d.synthesis.models.field import Region
 from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh
 from basin3d.synthesis.serializers import RegionSerializer, ModelSerializer, ModelDomainSerializer, MeshSerializer
+from rest_framework import status
 from rest_framework import versioning
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
@@ -71,26 +72,33 @@ class DataSourcePluginViewSet(ViewSet):
         :return:
         """
         pk_list = pk.split("-")
-        datasource = DataSource.objects.get(id_prefix=pk_list[0])
-        obj = None
-        if datasource:
-            datasource_pk = pk.replace("{}-".format(pk_list[0]), "")  # The datasource id prefixe needs to be removed
-            plugin_model = datasource.plugin  # Get the plugin model
-            if plugin_model.status == djangoplugins.models.ENABLED:
+        try:
+            datasource = DataSource.objects.get(id_prefix=pk_list[0])
+            obj = None
+            if datasource:
+                datasource_pk = pk.replace("{}-".format(pk_list[0]),
+                                           "")  # The datasource id prefixe needs to be removed
+                plugin_model = datasource.plugin  # Get the plugin model
+                if plugin_model.status == djangoplugins.models.ENABLED:
 
-                plugin_views = plugin_model.get_plugin().get_plugin_views()
-                if self.synthesis_model in plugin_views:
-                    obj = plugin_views[self.synthesis_model].get(request, pk=datasource_pk)
-        if obj:
-            try:
-                serializer = self.__class__.serializer_class(obj, context={'request': request})
-                return Response(serializer.data)
-            except Exception as e:
-                logger.error("Plugin error: ({},{}) -- {}".format(plugin_model.name,
-                                                                  self.__class__.plugin_retrieve_method,
-                                                                  e))
+                    plugin_views = plugin_model.get_plugin().get_plugin_views()
+                    if self.synthesis_model in plugin_views:
+                        obj = plugin_views[self.synthesis_model].get(request, pk=datasource_pk)
+            if obj:
+                try:
+                    serializer = self.__class__.serializer_class(obj, context={'request': request})
+                    return Response(serializer.data)
+                except Exception as e:
+                    logger.error("Plugin error: ({},{}) -- {}".format(plugin_model.name,
+                                                                      self.__class__.plugin_retrieve_method,
+                                                                      e))
 
-        return Response({"success": False, "content": "There is no detail for {}".format(pk)})
+            return Response({"success": False, "content": "There is no detail for {}".format(pk)},
+                            status=status.HTTP_404_NOT_FOUND)
+        except DataSource.DoesNotExist:
+            return Response({'success': False, 'detail': "There is no detail for datasource object {}. "
+                                                         "The datasource id '{}' is invalid.".format(pk, pk_list[0])},
+                            status=status.HTTP_404_NOT_FOUND, )
 
 
 class RegionsViewSet(DataSourcePluginViewSet):
@@ -112,24 +120,30 @@ class RegionsViewSet(DataSourcePluginViewSet):
         :return:
         """
         id_prefix = pk.split("-")[0]
-        datasource = DataSource.objects.get(id_prefix=id_prefix)
-        items = []
+        try:
+            datasource = DataSource.objects.get(id_prefix=id_prefix)
+            items = []
 
-        if datasource:
-            plugin_model = datasource.plugin  # Get the plugin model
+            if datasource:
+                plugin_model = datasource.plugin  # Get the plugin model
 
-            if plugin_model.status == djangoplugins.models.ENABLED:
+                if plugin_model.status == djangoplugins.models.ENABLED:
 
-                plugin_views = plugin_model.get_plugin().get_plugin_views()
-                if self.synthesis_model in plugin_views:
-                    request.GET = request.GET.copy()  # Make the request mutable
-                    request.GET["region_id"] = pk.replace("{}-".format(id_prefix),
-                                                          "")  # The datasource id prefix needs to be removed
-                    for obj in plugin_views[ModelDomain].list(request):
-                        items.append(obj)
+                    plugin_views = plugin_model.get_plugin().get_plugin_views()
+                    if self.synthesis_model in plugin_views:
+                        request.GET = request.GET.copy()  # Make the request mutable
+                        request.GET["region_id"] = pk.replace("{}-".format(id_prefix),
+                                                              "")  # The datasource id prefix needs to be removed
+                        for obj in plugin_views[ModelDomain].list(request):
+                            items.append(obj)
 
-        serializer = ModelDomainViewSet.serializer_class(items, many=True, context={'request': request})
-        return Response(serializer.data)
+            serializer = ModelDomainViewSet.serializer_class(items, many=True, context={'request': request})
+            return Response(serializer.data)
+
+        except DataSource.DoesNotExist:
+            return Response({'success': False, 'detail': "There is no detail for datasource object {}. "
+                                                         "The datasource id '{}' is invalid.".format(pk, id_prefix)},
+                            status=status.HTTP_404_NOT_FOUND, )
 
 
 class ModelViewSet(DataSourcePluginViewSet):
@@ -167,21 +181,27 @@ class ModelDomainViewSet(DataSourcePluginViewSet):
         :return:
         """
         id_prefix = pk.split("-")[0]
-        datasource = DataSource.objects.get(id_prefix=id_prefix)
-        items = []
+        try:
+            datasource = DataSource.objects.get(id_prefix=id_prefix)
 
-        if datasource:
-            plugin_model = datasource.plugin  # Get the plugin model
+            items = []
 
-            if plugin_model.status == djangoplugins.models.ENABLED:
+            if datasource:
+                plugin_model = datasource.plugin  # Get the plugin model
 
-                plugin_views = plugin_model.get_plugin().get_plugin_views()
-                if self.synthesis_model in plugin_views:
-                    request.GET = request.GET.copy()  # Make the request mutable
-                    request.GET["model_domain_id"] = pk.replace("{}-".format(id_prefix),
-                                                                "")  # The datasource id prefixe needs to be removed
-                    for obj in plugin_views[Mesh].list(request):
-                        items.append(obj)
+                if plugin_model.status == djangoplugins.models.ENABLED:
 
-        serializer = MeshViewSet.serializer_class(items, many=True, context={'request': request})
-        return Response(serializer.data)
+                    plugin_views = plugin_model.get_plugin().get_plugin_views()
+                    if self.synthesis_model in plugin_views:
+                        request.GET = request.GET.copy()  # Make the request mutable
+                        request.GET["model_domain_id"] = pk.replace("{}-".format(id_prefix),
+                                                                    "")  # The datasource id prefixe needs to be removed
+                        for obj in plugin_views[Mesh].list(request):
+                            items.append(obj)
+
+            serializer = MeshViewSet.serializer_class(items, many=True, context={'request': request})
+            return Response(serializer.data)
+        except DataSource.DoesNotExist:
+            return Response({'success': False, 'detail': "There is no detail for datasource object {}. "
+                                                         "The datasource id '{}' is invalid.".format(pk, id_prefix)},
+                            status=status.HTTP_404_NOT_FOUND, )

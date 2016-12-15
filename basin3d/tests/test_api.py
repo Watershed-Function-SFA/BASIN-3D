@@ -28,6 +28,7 @@ class TestRegionAPI(TestCase):
 
                          )
 
+
     def test_get_detail(self):
         response = self.client.get('/v1/regions/A-SI123/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -36,6 +37,20 @@ class TestRegionAPI(TestCase):
                           'name': 'a site',
                           'model_domains': 'http://testserver/v1/regions/A-SI123/model_domains',
                           "url": "http://testserver/v1/regions/A-SI123/"})
+
+    def test_get_detail_missing(self):
+        response = self.client.get('/v1/regions/A-FOO/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'content': 'There is no detail for A-FOO', 'success': False})
+
+    def test_get_bad_id_prefix(self):
+        response = self.client.get('/v1/regions/B-FOO/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'detail': 'There is no detail for datasource object B-FOO. The datasource id '
+                                    "'B' is invalid.",
+                          'success': False})
 
 
 class TestModelAPI(TestCase):
@@ -90,6 +105,20 @@ class TestModelAPI(TestCase):
                              'web_location': None,
                              "url": "http://testserver/v1/models/A-M2/"
                          })
+
+    def test_get_detail_missing(self):
+        response = self.client.get('/v1/models/A-FOO/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'content': 'There is no detail for A-FOO', 'success': False})
+
+    def test_get_bad_id_prefix(self):
+        response = self.client.get('/v1/models/B-FOO/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'detail': 'There is no detail for datasource object B-FOO. The datasource id '
+                                    "'B' is invalid.",
+                          'success': False})
 
 
 class TestModelDomainAPI(TestCase):
@@ -182,3 +211,17 @@ class TestModelDomainAPI(TestCase):
                              "geom": {},
                              "url": "http://testserver/v1/model_domains/A-MD7/"
                          })
+
+    def test_get_detail_missing(self):
+        response = self.client.get('/v1/model_domains/A-FOO/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'content': 'There is no detail for A-FOO', 'success': False})
+
+    def test_get_bad_id_prefix(self):
+        response = self.client.get('/v1/model_domains/B-FOO/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'detail': 'There is no detail for datasource object B-FOO. The datasource id '
+                                    "'B' is invalid.",
+                          'success': False})
