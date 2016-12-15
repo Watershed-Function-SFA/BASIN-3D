@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 with open("basin3d/version.py") as f:
-    code = compile(f.read(), "rest_framework/version.py", 'exec')
+    code = compile(f.read(), "basin3d/version.py", 'exec')
     exec(code)
 
 with open('docs/quickstart.rst') as readme:
