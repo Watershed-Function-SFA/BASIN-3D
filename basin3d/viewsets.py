@@ -1,16 +1,15 @@
+import djangoplugins
 import json
 import logging
-
-import djangoplugins
 from basin3d.models import MeasurementVariable, DataSource, DataSourceMeasurementVariable
 from basin3d.serializers import DataSourceSerializer, MeasurementVariableSerializer, \
     DataSourceMeasurementVariableSerializer
 from rest_framework import filters
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.decorators import detail_route, api_view
+from rest_framework.decorators import detail_route
 from rest_framework.response import Response
-from rest_framework.reverse import reverse, reverse_lazy
+from rest_framework.reverse import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +18,30 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
     queryset = DataSource.objects.all()
     serializer_class = DataSourceSerializer
     lookup_field = 'id_prefix'
+
+    def list(self, request, *args, **kwargs):
+        """
+        Build the list of Direct APIs that can be accessed
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        direct_apis = []
+        for datasource in self.queryset:
+
+            plugin_model = datasource.plugin  # Get the plugin model
+            plugin = plugin_model.get_plugin()
+
+            if hasattr(plugin, "direct"):
+                direct_apis.append(
+                    {datasource.name: request.build_absolute_uri(reverse('direct-path-detail',
+                                                                         kwargs={
+                                                                             "id_prefix": datasource.id_prefix,
+                                                                             "direct_path": ""}))})
+
+        return Response(direct_apis)
 
     def retrieve(self, request, *args, **kwargs):
         """ direct call to API"""

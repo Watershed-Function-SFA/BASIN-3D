@@ -115,7 +115,7 @@ class AlphaSourcePlugin(DataSourcePluginPoint):
 
     name = 'alpha-source-plugin'
     title = 'Alpha Source Plugin'
-    plugin_view_classes = (AlphaRegionView, AlphaModelView, AlphaModelDomainView, AlphaMeshView)
+    plugin_view_classes =  (AlphaRegionView, AlphaModelView, AlphaModelDomainView, AlphaMeshView)
 
     def direct(self, request, direct_path):
         """

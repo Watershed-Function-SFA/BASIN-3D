@@ -106,8 +106,6 @@ class DataSourcePluginPoint(PluginPoint):
             for view_class in plugin_view_classes:
                 view = view_class(cls.get_datasource())
                 view_classes[view.synthesis_model_class] = view
-        else:
-            raise ValueError("{} does not define any plugin_view_classes.")
 
         return view_classes
 

@@ -16,6 +16,7 @@ Including another URLconf
 import djangoplugins
 from basin3d.models import DataSource
 from basin3d.synthesis.viewsets import RegionsViewSet, ModelViewSet, ModelDomainViewSet, MeshViewSet
+from basin3d.views import broker_api_root
 from basin3d.viewsets import DataSourceViewSet, DirectAPIViewSet
 from django.conf.urls import url, include
 from django.db import OperationalError
@@ -57,8 +58,10 @@ except OperationalError as e:
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
+    url(r'^direct/$',DirectAPIViewSet.as_view({'get':'list'}),name='direct-api-list'),
     url(r'^direct/(?P<id_prefix>[a-zA-Z]+)/(?P<direct_path>[a-zA-Z/?&0-9]*)$',
         DirectAPIViewSet.as_view({'get': 'retrieve'}),
         name='direct-path-detail'),
-    url(r'^', include(router.urls))
+    url(r'^synthesis/', include(router.urls)),
+    url(r'^$', broker_api_root, name='broker-api-root' )
 ]
