@@ -6,6 +6,7 @@ from basin3d.synthesis.models import simulations
 from basin3d.synthesis.models.field import Region
 from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh
 from django.utils.six import with_metaclass
+from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class AlphaMeshView(with_metaclass(DataSourcePluginViewMeta)):
         """
         Get the Mesh information
         """
-        mesh = self.synthesis_model_class(id="SI123",
+        mesh = self.synthesis_model_class(self.datasource, id="SI123",
                                           geom={})
 
         yield mesh
@@ -116,9 +117,26 @@ class AlphaSourcePlugin(DataSourcePluginPoint):
     title = 'Alpha Source Plugin'
     plugin_view_classes = (AlphaRegionView, AlphaModelView, AlphaModelDomainView, AlphaMeshView)
 
+    def direct(self, request, direct_path):
+        """
+        Handle direct calls the the JAEA Geo API
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        # Return content and status
+        return type('Dummy', (object,), {
+                    "content": '{"message":"This is a direct call to the datasource", "url":"https://asource.foo/'
+                               +direct_path+
+                               '"}',
+                    "status":status.HTTP_200_OK })
+
     class DataSourceMeta:
         # Data Source attributes
-        location = 'https://asource.foo'
+        location = 'https://asource.foo/'
         id = 'Alpha'  # unique id for the datasource
         id_prefix = 'A'
         name = id  # Human Friendly Data Source Name

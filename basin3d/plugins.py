@@ -22,7 +22,6 @@ class DataSourcePluginViewMeta(type):
         if "__init__" in dct:
             old_init = dct["__init__"]
 
-
         def new_init(self, *args, **kwargs):
 
             DataSource = apps.get_app_config(Basin3DConfig.name).get_model('DataSource')
