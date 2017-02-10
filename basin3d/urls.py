@@ -23,47 +23,50 @@ from basin3d.viewsets import DataSourceViewSet, DirectAPIViewSet, MeasurementVar
 from django.conf.urls import url, include
 from django.db import OperationalError
 from rest_framework import routers
+from django.conf import settings
 
 
 router = routers.DefaultRouter()
 
-router.register(r'datasources', DataSourceViewSet, base_name='datasource')
-router.register(r'variables', MeasurementVariableViewSet, base_name='measurementvariable')
-router.register(r'measurements', MeasurementViewSet, base_name='measurement')
-try:
-    viewset_models = []
-    # iterate over the Datasources and register ViewSets to the router
-    # for those models that are defined.
-    for datasource in DataSource.objects.all():
-        plugin_model = datasource.plugin  # Get the plugin model
+if settings.BASIN3D["SYNTHESIS"]:
 
-        if plugin_model.status == djangoplugins.models.ENABLED:
+    router.register(r'datasources', DataSourceViewSet, base_name='datasource')
+    router.register(r'variables', MeasurementVariableViewSet, base_name='measurementvariable')
+    router.register(r'measurements', MeasurementViewSet, base_name='measurement')
+    try:
+        viewset_models = []
+        # iterate over the Datasources and register ViewSets to the router
+        # for those models that are defined.
+        for datasource in DataSource.objects.all():
+            plugin_model = datasource.plugin  # Get the plugin model
 
-            plugin_views = plugin_model.get_plugin().get_plugin_views()
-            for model_name in plugin_views.keys():
-                viewset_models.append(model_name.__name__)
+            if plugin_model.status == djangoplugins.models.ENABLED:
 
-            # This is OK for now in the future we want this to be more automated
-            # This will only add the viewsets that are define
-            viewset_models = set(viewset_models)
-            if 'Region' in viewset_models:
-                router.register(r'regions', RegionsViewSet, base_name='region')
-            if 'Model' in viewset_models:
-                router.register(r'models', ModelViewSet, base_name='model')
-            if 'ModelDomain' in viewset_models:
-                router.register(r'model_domains', ModelDomainViewSet, base_name='modeldomain')
-            if 'ModelRun' in viewset_models:
-                router.register(r'model_runs', ModelRunViewSet, base_name='modelrun')
-            if 'Mesh' in viewset_models:
-                router.register(r'meshes', MeshViewSet, base_name='mesh')
-            if 'DataPointGroup' in viewset_models:
-                router.register(r'data_point_groups', DataPointGroupViewSet, base_name='datapointgroup')
-            if 'DataPoint' in viewset_models:
-                router.register(r'data_points', DataPointViewSet, base_name='datapoint')
-except OperationalError as e:
-    # This will only be raised during a migration because the database has not been
-    # created yet.
-    pass
+                plugin_views = plugin_model.get_plugin().get_plugin_views()
+                for model_name in plugin_views.keys():
+                    viewset_models.append(model_name.__name__)
+
+                # This is OK for now in the future we want this to be more automated
+                # This will only add the viewsets that are define
+                viewset_models = set(viewset_models)
+                if 'Region' in viewset_models:
+                    router.register(r'regions', RegionsViewSet, base_name='region')
+                if 'Model' in viewset_models:
+                    router.register(r'models', ModelViewSet, base_name='model')
+                if 'ModelDomain' in viewset_models:
+                    router.register(r'model_domains', ModelDomainViewSet, base_name='modeldomain')
+                if 'ModelRun' in viewset_models:
+                    router.register(r'model_runs', ModelRunViewSet, base_name='modelrun')
+                if 'Mesh' in viewset_models:
+                    router.register(r'meshes', MeshViewSet, base_name='mesh')
+                if 'DataPointGroup' in viewset_models:
+                    router.register(r'data_point_groups', DataPointGroupViewSet, base_name='datapointgroup')
+                if 'DataPoint' in viewset_models:
+                    router.register(r'data_points', DataPointViewSet, base_name='datapoint')
+    except OperationalError as e:
+        # This will only be raised during a migration because the database has not been
+        # created yet.
+        pass
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

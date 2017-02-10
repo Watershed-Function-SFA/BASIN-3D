@@ -145,3 +145,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ),
 }
+
+BASIN3D = {
+    'SYNTHESIS':True
+}

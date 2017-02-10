@@ -5,7 +5,7 @@ from basin3d.tests import configure
 # Load test settings
 configure()
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -35,6 +35,30 @@ class TestAPIRoot(TestCase):
                           "synthesis-mesh": "http://testserver/synthesis/meshes/"}
 
                          )
+
+    @override_settings(BASIN3D={'SYNTHESIS':False,'DIRECT_API':True})
+    def test_get_direct_api_only(self):
+        response = self.client.get('/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {"direct-apis": "http://testserver/direct/"})
+
+    @override_settings(BASIN3D={'SYNTHESIS':True,'DIRECT_API':False})
+    def test_get_synthesis_only(self):
+        response = self.client.get('/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {
+                          "synthesis-datasources": "http://testserver/synthesis/datasources/",
+                          "synthesis-variables": "http://testserver/synthesis/variables/",
+                          "synthesis-measurements": "http://testserver/synthesis/measurements/",
+                          "synthesis-regions": "http://testserver/synthesis/regions/",
+                          "synthesis-models": "http://testserver/synthesis/models/",
+                          "synthesis-modeldomains": "http://testserver/synthesis/model_domains/",
+                          "synthesis-modelruns": "http://testserver/synthesis/model_runs/",
+                          "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",
+                          "synthesis-datapoints": "http://testserver/synthesis/data_points/",
+                          "synthesis-mesh": "http://testserver/synthesis/meshes/"})
 
 
 class TestDirectAPIRoot(TestCase):
@@ -84,7 +108,6 @@ class TestRegionAPI(TestCase):
                            "url": "http://testserver/synthesis/regions/A-SI123/"}]
 
                          )
-
 
     def test_get_detail(self):
         response = self.client.get('/synthesis/regions/A-SI123/', format='json')
