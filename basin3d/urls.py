@@ -15,9 +15,11 @@ Including another URLconf
 """
 import djangoplugins
 from basin3d.models import DataSource
-from basin3d.synthesis.viewsets import RegionsViewSet, ModelViewSet, ModelDomainViewSet, MeshViewSet
+from basin3d.synthesis.viewsets import RegionsViewSet, ModelViewSet, ModelDomainViewSet, MeshViewSet, \
+    ModelRunViewSet, DataPointGroupViewSet, DataPointViewSet
 from basin3d.views import broker_api_root
-from basin3d.viewsets import DataSourceViewSet, DirectAPIViewSet
+from basin3d.viewsets import DataSourceViewSet, DirectAPIViewSet, MeasurementVariableViewSet, \
+    MeasurementViewSet
 from django.conf.urls import url, include
 from django.db import OperationalError
 from rest_framework import routers
@@ -26,6 +28,8 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 
 router.register(r'datasources', DataSourceViewSet, base_name='datasource')
+router.register(r'variables', MeasurementVariableViewSet, base_name='measurementvariable')
+router.register(r'measurements', MeasurementViewSet, base_name='measurement')
 try:
     viewset_models = []
     # iterate over the Datasources and register ViewSets to the router
@@ -48,8 +52,14 @@ try:
                 router.register(r'models', ModelViewSet, base_name='model')
             if 'ModelDomain' in viewset_models:
                 router.register(r'model_domains', ModelDomainViewSet, base_name='modeldomain')
+            if 'ModelRun' in viewset_models:
+                router.register(r'model_runs', ModelRunViewSet, base_name='modelrun')
             if 'Mesh' in viewset_models:
                 router.register(r'meshes', MeshViewSet, base_name='mesh')
+            if 'DataPointGroup' in viewset_models:
+                router.register(r'data_point_groups', DataPointGroupViewSet, base_name='datapointgroup')
+            if 'DataPoint' in viewset_models:
+                router.register(r'data_points', DataPointViewSet, base_name='datapoint')
 except OperationalError as e:
     # This will only be raised during a migration because the database has not been
     # created yet.
@@ -59,9 +69,10 @@ except OperationalError as e:
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^direct/$',DirectAPIViewSet.as_view({'get':'list'}),name='direct-api-list'),
-    url(r'^direct/(?P<id_prefix>[a-zA-Z]+)/(?P<direct_path>[a-zA-Z/?&0-9]*)$',
+    url(r'^direct/(?P<id_prefix>[a-zA-Z]+)/(?P<direct_path>[a-zA-Z/_\-?&0-9]*)$',
         DirectAPIViewSet.as_view({'get': 'retrieve'}),
         name='direct-path-detail'),
     url(r'^synthesis/', include(router.urls)),
     url(r'^$', broker_api_root, name='broker-api-root' )
 ]
+

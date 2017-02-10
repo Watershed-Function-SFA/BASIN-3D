@@ -30,10 +30,15 @@ class Base(object):
             bad_attributes = set(kwargs.keys()).difference(self.__attributes)
             raise ValueError("Invalid argument(s) for Sites: {}".format(bad_attributes))
 
+        if 'datasource_ids' in kwargs.keys():
+            for id in kwargs['datasource_ids']:
+                if kwargs[id]:
+                    kwargs[id] = "{}-{}".format(self.datasource.id_prefix, kwargs[id])
+
         if 'id' in kwargs:
             kwargs["id"] = "{}-{}".format(self.datasource.id_prefix, kwargs['id'])
 
         self.__dict__.update(kwargs)
 
 
-__all__ = ['simulations', 'Base']
+__all__ = ['measurement','simulations', 'Base']

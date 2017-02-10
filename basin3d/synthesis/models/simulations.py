@@ -132,6 +132,10 @@ class ModelRun(Base):
 
     """
 
+    STATUS_QUEUED="Queued"
+    STATUS_STARTED="Running"
+    STATUS_DONE="Done"
+
     def __init__(self, datasource, **kwargs):
         self.id = None
         self.name = None
@@ -139,10 +143,16 @@ class ModelRun(Base):
         self.end_time = None
         self.simulation_length = None
         self.simulation_length_units = None  # enum (hours, days, years)
-        self.status = None
+        self.status = self.STATUS_QUEUED
 
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
+
+        if self.start_time:
+            if self.end_time:
+                self.status = self.STATUS_DONE
+            else:
+                self.status = self.STATUS_STARTED
 
     def __eq__(self, other):
         return self.id == other.id and self.name == other.name \

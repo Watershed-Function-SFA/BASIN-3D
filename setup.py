@@ -24,7 +24,7 @@ except Exception as e:
     # We will used the existing version.py file
     pass
 
-__release__="NoVersion"
+__release__="0"
 if os.path.exists(version_py):
       with open(version_py) as f:
           code = compile(f.read(), version_py, 'exec')

@@ -8,16 +8,21 @@ from rest_framework.reverse import reverse
 
 @api_view(['GET'])
 def broker_api_root(request, format=None):
-
     root_dict = OrderedDict()
     # Iterate over the possible views. If they are enabled add them to the
     # root api.
-    for k,v in [('direct-apis','direct-api-list'),('synthesis-regions','region-list'),
-                ('synthesis-models','model-list'), ('synthesis-modeldomains','modeldomain-list'),
-                ('synthesis-mesh','mesh-list')]:
+    for k, v in [('direct-apis', 'direct-api-list'), ('synthesis-datasources', 'datasource-list'),
+                 ('synthesis-variables', 'measurementvariable-list'),
+                 ('synthesis-measurements', 'measurement-list'),
+                 ('synthesis-regions', 'region-list'),
+                 ('synthesis-models', 'model-list'), ('synthesis-modeldomains', 'modeldomain-list'),
+                 ('synthesis-modelruns', 'modelrun-list'),
+                 ('synthesis-datapointgroups', 'datapointgroup-list'),
+                 ('synthesis-datapoints', 'datapoint-list'),
+                 ('synthesis-mesh', 'mesh-list'), ]:
 
         try:
-            root_dict[k]=reverse(v, request=request, format=format)
+            root_dict[k] = reverse(v, request=request, format=format)
         except NoReverseMatch:
             # If there is no match just don't show it
             pass

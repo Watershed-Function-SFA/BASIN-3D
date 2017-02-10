@@ -22,13 +22,17 @@ class TestAPIRoot(TestCase):
         response = self.client.get('/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {
-                             "direct-apis": "http://testserver/direct/",
-                             "synthesis-regions": "http://testserver/synthesis/regions/",
-                             "synthesis-models": "http://testserver/synthesis/models/",
-                             "synthesis-modeldomains": "http://testserver/synthesis/model_domains/",
-                             "synthesis-mesh": "http://testserver/synthesis/meshes/"
-                         }
+                         {"direct-apis": "http://testserver/direct/",
+                          "synthesis-datasources": "http://testserver/synthesis/datasources/",
+                          "synthesis-variables": "http://testserver/synthesis/variables/",
+                          "synthesis-measurements": "http://testserver/synthesis/measurements/",
+                          "synthesis-regions": "http://testserver/synthesis/regions/",
+                          "synthesis-models": "http://testserver/synthesis/models/",
+                          "synthesis-modeldomains": "http://testserver/synthesis/model_domains/",
+                          "synthesis-modelruns": "http://testserver/synthesis/model_runs/",
+                          "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",
+                          "synthesis-datapoints": "http://testserver/synthesis/data_points/",
+                          "synthesis-mesh": "http://testserver/synthesis/meshes/"}
 
                          )
 
@@ -76,7 +80,7 @@ class TestRegionAPI(TestCase):
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          [{"id": "A-SI123", "geom": None, "description": "This is for my site description",
                               'name': 'a site',
-                           'model_domains': 'http://testserver/synthesis/regions/A-SI123/model_domains',
+                           'model_domains': 'http://testserver/synthesis/regions/A-SI123/model_domains/',
                            "url": "http://testserver/synthesis/regions/A-SI123/"}]
 
                          )
@@ -88,7 +92,7 @@ class TestRegionAPI(TestCase):
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {"id": "A-SI123", "geom": None, "description": "This is for my site description",
                           'name': 'a site',
-                          'model_domains': 'http://testserver/synthesis/regions/A-SI123/model_domains',
+                          'model_domains': 'http://testserver/synthesis/regions/A-SI123/model_domains/',
                           "url": "http://testserver/synthesis/regions/A-SI123/"})
 
     def test_get_detail_missing(self):
@@ -189,63 +193,63 @@ class TestModelDomainAPI(TestCase):
                              {
                                  "id": "A-MD1",
                                  "name": "model domain 1",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD1/meshes',
+                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD1/meshes/',
                                  "geom": {},
                                  "url": "http://testserver/synthesis/model_domains/A-MD1/"
                              },
                              {
                                  "id": "A-MD2",
                                  "name": "model domain 2",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD2/meshes',
+                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD2/meshes/',
                                  "geom": {},
                                  "url": "http://testserver/synthesis/model_domains/A-MD2/"
                              },
                              {
                                  "id": "A-MD3",
                                  "name": "model domain 3",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD3/meshes',
+                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD3/meshes/',
                                  "geom": {},
                                  "url": "http://testserver/synthesis/model_domains/A-MD3/"
                              },
                              {
                                  "id": "A-MD4",
                                  "name": "model domain 4",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD4/meshes',
+                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD4/meshes/',
                                  "geom": {},
                                  "url": "http://testserver/synthesis/model_domains/A-MD4/"
                              },
                              {
                                  "id": "A-MD5",
                                  "name": "model domain 5",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD5/meshes',
+                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD5/meshes/',
                                  "geom": {},
                                  "url": "http://testserver/synthesis/model_domains/A-MD5/"
                              },
                              {
                                  "id": "A-MD6",
                                  "name": "model domain 6",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD6/meshes',
+                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD6/meshes/',
                                  "geom": {},
                                  "url": "http://testserver/synthesis/model_domains/A-MD6/"
                              },
                              {
                                  "id": "A-MD7",
                                  "name": "model domain 7",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD7/meshes',
+                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD7/meshes/',
                                  "geom": {},
                                  "url": "http://testserver/synthesis/model_domains/A-MD7/"
                              },
                              {
                                  "id": "A-MD8",
                                  "name": "model domain 8",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD8/meshes',
+                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD8/meshes/',
                                  "geom": {},
                                  "url": "http://testserver/synthesis/model_domains/A-MD8/"
                              },
                              {
                                  "id": "A-MD9",
                                  "name": "model domain 9",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD9/meshes',
+                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD9/meshes/',
                                  "geom": {},
                                  "url": "http://testserver/synthesis/model_domains/A-MD9/"
                              }
@@ -260,7 +264,7 @@ class TestModelDomainAPI(TestCase):
                          {
                              "id": "A-MD7",
                              "name": "model domain 7",
-                             "meshes": 'http://testserver/synthesis/model_domains/A-MD7/meshes',
+                             "meshes": 'http://testserver/synthesis/model_domains/A-MD7/meshes/',
                              "geom": {},
                              "url": "http://testserver/synthesis/model_domains/A-MD7/"
                          })

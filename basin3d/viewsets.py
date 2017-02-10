@@ -1,9 +1,10 @@
 import djangoplugins
 import json
 import logging
-from basin3d.models import MeasurementVariable, DataSource, DataSourceMeasurementVariable
+from basin3d.models import MeasurementVariable, DataSource, DataSourceMeasurementVariable, \
+    Measurement
 from basin3d.serializers import DataSourceSerializer, MeasurementVariableSerializer, \
-    DataSourceMeasurementVariableSerializer
+    DataSourceMeasurementVariableSerializer, MeasurementSerializer
 from rest_framework import filters
 from rest_framework import status
 from rest_framework import viewsets
@@ -15,6 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 class DirectAPIViewSet(viewsets.GenericViewSet):
+    """
+    Direct Access to data source APIs
+    """
     queryset = DataSource.objects.all()
     serializer_class = DataSourceSerializer
     lookup_field = 'id_prefix'
@@ -34,7 +38,7 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
             plugin_model = datasource.plugin  # Get the plugin model
             plugin = plugin_model.get_plugin()
 
-            if hasattr(plugin, "direct"):
+            if hasattr(plugin, "direct_api"):
                 direct_apis.append(
                     {datasource.name: request.build_absolute_uri(reverse('direct-path-detail',
                                                                          kwargs={
@@ -56,16 +60,17 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
                 direct_path = kwargs["direct_path"]
 
             plugin = plugin_model.get_plugin()
-            if hasattr(plugin, "direct"):
+            if hasattr(plugin, "direct_api"):
                 response = plugin.direct(request, direct_path)
-                return Response(
-                    data=json.loads(response.content.replace(datasource.location,
-                                                             request.build_absolute_uri(
-                                                                 reverse('direct-path-detail',
-                                                                         kwargs={
-                                                                             "id_prefix": datasource.id_prefix,
-                                                                             "direct_path": ""})))),
-                    status=response.status)
+                if response:
+                    return Response(
+                        data=json.loads(response.content.decode('utf-8').replace(datasource.location,
+                                                                 request.build_absolute_uri(
+                                                                     reverse('direct-path-detail',
+                                                                             kwargs={
+                                                                                 "id_prefix": datasource.id_prefix,
+                                                                                 "direct_path": ""})))),
+                        status=response.status_code)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -81,11 +86,11 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DataSourceSerializer
 
     @detail_route()  # Custom Route for an association
-    def src_parameters(self, request, pk=None):
+    def variables(self, request, pk=None):
         """
         Retrieve the DataSource Parameters for a broker parameter.
 
-        Maps to  /datasources/{pk}/map/
+        Maps to  /datasources/{pk}/variables/
 
         :param request:
         :param pk:
@@ -133,3 +138,15 @@ class MeasurementVariableViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = DataSourceMeasurementVariableSerializer(params, many=True,
                                                              context={'request': request})
         return Response(serializer.data)
+
+
+class MeasurementViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+        Returns a list of available BASIN-3D Measurements
+
+    """
+    queryset = Measurement.objects.all()
+    serializer_class = MeasurementSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+
+

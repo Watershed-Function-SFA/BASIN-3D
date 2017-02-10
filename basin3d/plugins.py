@@ -6,6 +6,11 @@ from basin3d import synthesis
 from basin3d.apps import Basin3DConfig
 from django.apps import apps
 from djangoplugins.point import PluginPoint
+import logging
+
+__all__ = ['get_url']
+
+logger = logging.getLogger(__name__)
 
 
 class DataSourcePluginViewMeta(type):
@@ -64,6 +69,28 @@ class DataSourcePluginPoint(PluginPoint):
     """
     Base class for DataSourcePlugins.
     """
+
+    def direct(self, request, direct_path, **kwargs):
+        """
+        Direct call to api
+        :param request:
+        :param direct_path:
+        :param kwargs:
+        :return:
+        """
+
+        datasource = self.get_datasource()
+        direct_api = hasattr(self, 'direct_api')
+
+        from rest_framework import status
+        from rest_framework.response import Response
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+
+        if direct_api:
+            response = self.direct_api(datasource, request, direct_path, **kwargs)
+            if response:
+                return response
+        return response
 
     @classmethod
     def get_meta(cls):

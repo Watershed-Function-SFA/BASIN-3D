@@ -12,7 +12,8 @@ converted back into complex types, after first validating the incoming data.
 """
 from rest_framework import serializers
 
-from basin3d.models import MeasurementVariable, DataSourceMeasurementVariable, DataSource
+from basin3d.models import MeasurementVariable, DataSourceMeasurementVariable, DataSource, \
+    Measurement
 from rest_framework import reverse
 
 
@@ -68,6 +69,27 @@ class MeasurementVariableSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = MeasurementVariable
+        depth = 2
+
+
+class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
+    """
+
+    Broker parameter Serializer
+
+    """
+
+    sampling_medium = serializers.SerializerMethodField()
+    measurement_approach = serializers.SerializerMethodField()
+
+    def get_sampling_medium(self, obj):
+        return obj.sampling_medium.name
+
+    def get_measurement_approach(self, obj):
+        return obj.measurement_approach.name
+
+    class Meta:
+        model = Measurement
         depth = 2
 
 

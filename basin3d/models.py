@@ -23,6 +23,25 @@ from django_extensions.db.fields.encrypted import EncryptedTextField
 from djangoplugins.fields import PluginField
 
 
+class GeographicalGroup(object):
+    """
+    Geographical groups where a datapoint can come from
+    """
+    SAMPLING_FEATURE = 0 # Not implemented
+    SITE = 1 # Not implemented
+    PLOT = 2 # Not implemented
+    MODEL_DOMAIN = 3
+    REGION = 4
+    MESH = 5
+
+    TYPES = {
+            MODEL_DOMAIN: "modeldomain",
+            REGION: "region",
+            MESH: "mesh"
+
+             }
+
+
 class StringListField(models.TextField):
     """
     StringListField stored delimited strings in the database.
@@ -32,31 +51,31 @@ class StringListField(models.TextField):
     """
     __metaclass__ = models.SubfieldBase
 
-    def __init__(self,*args, **kwargs):
-        self.delimiter=","
+    def __init__(self, *args, **kwargs):
+        self.delimiter = ","
         if "delimiter" in kwargs.keys():
             self.delimiter = kwargs["delimiter"]
 
-        super(StringListField, self).__init__(*args,**kwargs)
+        super(StringListField, self).__init__(*args, **kwargs)
 
-    def to_python(self,value):
+    def to_python(self, value):
         if not value:
-            value =  []
+            value = []
 
-        if isinstance(value,list) or isinstance(value,tuple):
+        if isinstance(value, list) or isinstance(value, tuple):
             return value
-        elif isinstance(value,str):
+        elif isinstance(value, str):
             return value.split(self.delimiter)
 
         raise ValueError("ListField must be delimited string")
 
-    def get_prep_value(self,value):
+    def get_prep_value(self, value):
         if value is None:
             return value
         else:
             return value
 
-    def value_to_string(self,obj):
+    def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
         return self.get_db_prep_value(value, None)
 
@@ -103,7 +122,7 @@ class MeasurementVariable(models.Model):
     full_name = models.CharField(max_length=255)
 
     # Ordered list of categories
-    categories = StringListField(blank=True,null=True)
+    categories = StringListField(blank=True, null=True)
 
     class Meta:
         ordering = ('id',)
@@ -123,7 +142,8 @@ class DataSourceMeasurementVariable(models.Model):
     Synthesis of Data Source Parameters with Broker parameters
     """
     datasource = models.ForeignKey(DataSource, related_name='basin3d_datasource')
-    measure_variable = models.ForeignKey(MeasurementVariable, related_name='basin3d_measurementvariable')
+    measure_variable = models.ForeignKey(MeasurementVariable,
+                                         related_name='basin3d_measurementvariable')
     name = models.CharField(max_length=255, blank=False)
 
     class Meta:
@@ -137,3 +157,102 @@ class DataSourceMeasurementVariable(models.Model):
 
     def __repr__(self):
         return '<DataSourceMeasurementVariable %r>' % (self.name)
+
+
+class SamplingMedium(models.Model):
+    """
+    Types of sampling mediums for Measurements
+    """
+
+    ATOMOSPHERE = "atmosphere"
+    SOIL_SEDIMENT = "soil/sediment"
+    SURFACE_WATER = "surface water"
+    SOIL_GAS = "soil gas"
+    GROUNDWATER = "groundwater"
+    SAMPLING_MEDIUMS = [ATOMOSPHERE, SURFACE_WATER, SOIL_SEDIMENT, SOIL_GAS, GROUNDWATER]
+
+    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def __unicode__(self):
+        return self.name
+
+    def __repr__(self):
+        return '<SamplingMedium %r>' % (self.name)
+
+
+class MeasurementApproach(models.Model):
+    """
+    Types of measurement approaches for Measurements
+    """
+    SENSOR = "sensor"
+    MANUAL = "manual"
+    APPROACHES = [MANUAL, SENSOR]
+
+    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def __unicode__(self):
+        return self.name
+
+    def __repr__(self):
+        return '<MeasurementApproach %r>' % (self.name)
+
+
+class Measurement(models.Model):
+    """
+    Defining the attributes for a single/multiple measurements
+
+    Attributes:
+        - *id:* string, (Cs137 MID)
+        - *description:* id, Cs 137 air dose rate car survey campaigns
+        - *measurement_variable_id:* string, Cs137MVID
+        - *sampling_medium:* enum (atmosphere, surface water, soil/sediment, soil gas, groundwater), atmosphere
+        - *owner: Person (optional), NotImplemented
+        - *contact: Person (optional), NotImplemented
+        - *measurement_approach:* enum (sensor, manual), sensor
+        - *measurement_approach_description:* string (optional), Values measured using car surveys
+    """
+
+    description = models.TextField(null=True, blank=True)
+    variable = models.ForeignKey('MeasurementVariable', null=False)
+    sampling_medium = models.ForeignKey('SamplingMedium', null=False)
+    measurement_approach = models.ForeignKey('MeasurementApproach', null=False)
+
+    class Meta:
+        unique_together = ('sampling_medium', 'variable', 'measurement_approach')
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def __unicode__(self):
+        return self.description
+
+    def __repr__(self):
+        return '<Measurement %r>' % (self.description)
+
+
+class Unit(models.Model):
+    """
+    Class to define a unit and specify conversion methods to other units
+    Attributes: id: string, (Cs137 UID)
+    full_name: string, ???
+    abbreviation: string, type: enum???
+    """
+    abbreviation = models.CharField(max_length=20, null=False, blank=False, primary_key=True)
+    full_name = models.CharField(max_length=50, null=False, blank=False)
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def __unicode__(self):
+        return self.abbreviation
+
+    def __repr__(self):
+        return '<Measurement %r>' % (self.abbreviation)

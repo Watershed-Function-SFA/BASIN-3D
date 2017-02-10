@@ -23,8 +23,10 @@ import logging
 import djangoplugins
 from basin3d.models import DataSource
 from basin3d.synthesis.models.field import Region
-from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh
-from basin3d.synthesis.serializers import RegionSerializer, ModelSerializer, ModelDomainSerializer, MeshSerializer
+from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint
+from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh, ModelRun
+from basin3d.synthesis.serializers import RegionSerializer, ModelSerializer, ModelDomainSerializer, MeshSerializer, \
+    DataPointGroupSerializer, ModelRunSerializer, DataPointSerializer
 from rest_framework import status
 from rest_framework import versioning
 from rest_framework.decorators import detail_route
@@ -205,3 +207,67 @@ class ModelDomainViewSet(DataSourcePluginViewSet):
             return Response({'success': False, 'detail': "There is no detail for datasource object {}. "
                                                          "The datasource id '{}' is invalid.".format(pk, id_prefix)},
                             status=status.HTTP_404_NOT_FOUND, )
+
+
+class ModelRunViewSet(DataSourcePluginViewSet):
+    """
+    Return a Model Runs
+    """
+    serializer_class = ModelRunSerializer
+    synthesis_model = ModelRun
+
+
+class DataPointGroupViewSet(DataSourcePluginViewSet):
+    """
+    Return a DataPointGroup
+    """
+    serializer_class = DataPointGroupSerializer
+    synthesis_model = DataPointGroup
+
+    @detail_route()  # Custom Route for an association
+    def datapoints(self, request, pk=None):
+        """
+        Retrieve the Meshes  for a Model Domain.
+
+        Maps to  /model_domains/{pk}/meshes/
+
+        :param request:
+        :param pk:
+        :return:
+        """
+        id_prefix = pk.split("-")[0]
+        try:
+            datasource = DataSource.objects.get(id_prefix=id_prefix)
+
+            items = []
+
+            if datasource:
+                plugin_model = datasource.plugin  # Get the plugin model
+
+                if plugin_model.status == djangoplugins.models.ENABLED:
+
+                    plugin_views = plugin_model.get_plugin().get_plugin_views()
+                    if self.synthesis_model in plugin_views:
+                        request.GET = request.GET.copy()  # Make the request mutable
+                        request.GET["datapoint_group_id"] = pk.replace("{}-".format(id_prefix),
+                                                                    "")  # The datasource id prefixe needs to be removed
+                        for obj in plugin_views[DataPoint].list(request):
+                            items.append(obj)
+
+            serializer = DataPointViewSet.serializer_class(items, many=True,
+                                                      context={'request': request})
+            return Response(serializer.data)
+        except DataSource.DoesNotExist:
+            return Response(
+                {'success': False, 'detail': "There is no detail for datasource object {}. "
+                                             "The datasource id '{}' is invalid.".format(pk,
+                                                                                         id_prefix)},
+                status=status.HTTP_404_NOT_FOUND, )
+
+
+class DataPointViewSet(DataSourcePluginViewSet):
+    """
+    Return a DataPoint
+    """
+    serializer_class = DataPointSerializer
+    synthesis_model = DataPoint
