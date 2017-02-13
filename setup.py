@@ -11,10 +11,11 @@ with open('docs/quickstart.rst') as readme:
 
 # Update version from latest git tags.
 # Create a version file in the root directory
-version_py = os.path.join(os.path.dirname(__file__), 'jaea_geo/version.py')
+version_py = os.path.join(os.path.dirname(__file__), 'basin3d/version.py')
+version_msg = "# Managed by setup.py via git tags.  **** DO NOT EDIT ****"
 try:
     git_describe = subprocess.check_output(["git", "describe", "--tags"]).rstrip().decode('utf-8')
-    version_msg = "# Managed by setup.py via git tags.  **** DO NOT EDIT ****"
+
     with open(version_py, 'w') as f:
         f.write(version_msg + os.linesep + "__version__='" + git_describe.split("-")[0] + "'")
         f.write(os.linesep + "__release__='" + git_describe + "'" + os.linesep)
@@ -22,7 +23,9 @@ try:
 except Exception as e:
     # If there is an exception, this means that git is not available
     # We will used the existing version.py file
-    pass
+    with open(version_py, 'w') as f:
+        f.write(version_msg + os.linesep + "__version__='0'")
+        f.write(os.linesep + "__release__='0'" + os.linesep)
 
 __release__="0"
 if os.path.exists(version_py):

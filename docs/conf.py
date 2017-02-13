@@ -32,6 +32,17 @@
 # built documents.
 #
 # The short X.Y version.
+import os
+
+import django
+import sys
+
+
+sys.path.append('{}/../example-django'.format(os.path.dirname(__file__)))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mybroker.settings")
+django.setup()
+
+
 import basin3d  # part of setuptools
 version = basin3d.__version__
 

@@ -214,8 +214,6 @@ Bypass synthesis by accessing the data source APIs directly
 """
 import logging
 
-from basin3d.version import __version__, __release__
-
 logger = logging.getLogger(__name__)
 
 # application loads this AppConfig subclass by default
