@@ -6,8 +6,13 @@
 
 .. currentmodule:: basin3d.synthesis.models.simulations
 
-:synopsis: Classes to represent Simulation/Modeling Concepts
+:synopsis: Classes to represent Measurements & Results
 
+
+* :class:`DataPointGroup` - Series of data points grouped by time, space, model, sample  etc.
+* :class:`DataPoint` - Base class
+* :class:`ImageDataPoint` - Represents any imaging result
+* :class:`TimeSeriesDataPoint` - Represents a time series result
 
 ---------------------
 """
@@ -70,21 +75,50 @@ class DataPoint(Base):
         return self.id == other.id
 
 
-class MeasurementTimeSeriesDataPoint(DataPoint):
+class ImageDataPoint(DataPoint):
     """
-    Time_series data point
+    Representing any imaging result
+
+    Inherited attributes (:class:`DataPoint`):
+        - *id:* string
+        - *measurement_id:* string
+        - *sampling_feature_id:* string (sampling feature can be site/plot/measurement location)
+        - *units:* Unit
 
     Attributes:
-        - *id:* string,
-        - *measurement_id:* string,
-        - *sampling_feature_id:* string (sampling feature can be site/plot/measurement location),
-        - *unit:* Unit
-        - *timestamp: datetime,
-        - *value: float,
-        - *units: Unit  Cs137UID
-        - *temporal_resolution: enum(year, month, day, hour, minute, second, millisecond),
-        - *reference: string (start, middle, end),
-        - *utc_offset: float (offset in hours) - optional
+        - *size:* float,
+        - *resolution:* float,
+        - *image:* an URL (for now)
+
+    """
+    def __init__(self, datasource, **kwargs):
+        self.size = None
+        self.resolution = None
+        self.image = None
+
+        # Initialize after the attributes have been set
+        super().__init__(datasource, **kwargs)
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+
+class TimeSeriesDataPoint(DataPoint):
+    """
+    Time series data point
+
+    Inherited attributes (:class:`DataPoint`):
+        - *id:* string
+        - *measurement_id:* string
+        - *sampling_feature_id:* string (sampling feature can be site/plot/measurement location)
+        - *units:* Unit
+
+    Attributes:
+        - *timestamp:* datetime
+        - *value:* float
+        - *temporal_resolution:* enum(year, month, day, hour, minute, second, millisecond)
+        - *reference:* string (start, middle, end)
+        - *utc_offset:* float (offset in hours) - optional
     """
 
     REFERENCE_START = "start"

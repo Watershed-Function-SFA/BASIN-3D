@@ -16,14 +16,14 @@ from basin3d.synthesis.models import Base
 
 class Model(Base):
     """
-        Defines the model being used
+    Defines the model being used
 
-        Attributes:
-            - *id:* string
-            - *name:* string
-            - *version:* string
-            - *web_location:* string
-            - *dimensionality:* enum (1D, 2D, 3D)
+    Attributes:
+        - *id:* string
+        - *name:* string
+        - *version:* string
+        - *web_location:* string
+        - *dimensionality:* enum (1D, 2D, 3D)
     """
 
     def __init__(self, datasource, **kwargs):
@@ -43,13 +43,13 @@ class Model(Base):
 
 class ModelDomain(Base):
     """
-        Specifies the area being modeled
+    Specifies the area being modeled
 
-        Attributes:
-            - *id:* string
-            - *name:* string
-            - *geom:* Polygon
-            - has one ore more :class:`~basin3d.synthesis.models.simulations.Mesh` objects as **meshes**
+    Attributes:
+        - *id:* string
+        - *name:* string
+        - *geom:* Polygon
+        - has one ore more :class:`~basin3d.synthesis.models.simulations.Mesh` objects as **meshes**
     """
 
     def __init__(self, datasource, **kwargs):
@@ -67,13 +67,13 @@ class ModelDomain(Base):
 
 class Mesh(Base):
     """
-        A sub-area within the model domain
+    A sub-area within the model domain
 
-        Attributes:
-            - *mesh_id:* string
-            - *parameters:* Array of :class:`~basin3d.synthesis.models.simulations.ModelParameter` objects
-            - *initial_conditions:* Array of :class:`basin3d.models.MeasurementVariable` objects
-            - *geom:* Polygon
+    Attributes:
+        - *mesh_id:* string
+        - *parameters:* Array of :class:`~basin3d.synthesis.models.simulations.ModelParameter` objects
+        - *initial_conditions:* Array of :class:`basin3d.models.MeasurementVariable` objects
+        - *geom:* Polygon
     """
 
     def __init__(self, datasource, **kwargs):
@@ -91,13 +91,13 @@ class Mesh(Base):
 
 class ModelParameter(Base):
     """
-        Parameters set in the equation the model is solving.
+    Parameters set in the equation the model is solving.
 
-        Attributes:
-            - *id:* string
-            - *model_name:* string (the parameter name in the :class:`~basin3d.synthesis.models.simulations.Model`)
-            - *data_source_name:* string (the parameter name in the :class:`basin3d.models.DataSource`)
-            - *value:* float
+    Attributes:
+        - *id:* string
+        - *model_name:* string (the parameter name in the :class:`~basin3d.synthesis.models.simulations.Model`)
+        - *data_source_name:* string (the parameter name in the :class:`basin3d.models.DataSource`)
+        - *value:* float
     """
 
     def __init__(self, datasource, **kwargs):
@@ -115,18 +115,18 @@ class ModelParameter(Base):
 
 class ModelRun(Base):
     """
-        Model settings that are used for a particular run
+    Model settings that are used for a particular run
 
-        Attributes:
-            - *id:* string -- the model run number
-            - *name:* string
-            - *start_time*: datetime -- system time when simulation started
-            - *end_time:* datetime -- system time when results obtained
-            - *simulation_length:* integer
-            - *simulation_length_units:* enum (hours, days, years)
-            - *status*: enum -- (started, finished, delayed,canceled)
-            - has one or more :class:`~basin3d.synthesis.models.simulations.MeasurementResults` as **boundary_conditions**
-            - has a :class:`~basin3d.synthesis.models.simulations.ModelDomain` as **model_domain**
+    Attributes:
+        - *id:* string -- the model run number
+        - *name:* string
+        - *start_time*: datetime -- system time when simulation started
+        - *end_time:* datetime -- system time when results obtained
+        - *simulation_length:* integer
+        - *simulation_length_units:* enum (hours, days, years)
+        - *status*: enum -- (started, finished, delayed,canceled)
+        - has one or more :class:`~basin3d.synthesis.models.simulations.MeasurementResults` as **boundary_conditions**
+        - has a :class:`~basin3d.synthesis.models.simulations.ModelDomain` as **model_domain**
 
 
 
@@ -162,14 +162,14 @@ class ModelRun(Base):
 
 class ModelResults(Base):
     """
-        Series of model results
+    Series of model results
 
-        Attributes:
-            - *id:* string
-            - *units:* Unit
-            - *annotation:* string
-            - has one or more  :class:`~basin3d.synthesis.models.simulations.ModelDataPoint` objects as **result**
-            - has a :class:`~basin3d.synthesis.models.simulations.ModelRun` as **model_run**
+    Attributes:
+        - *id:* string
+        - *units:* Unit
+        - *annotation:* string
+        - has one or more  :class:`~basin3d.synthesis.models.simulations.ModelDataPoint` objects as **result**
+        - has a :class:`~basin3d.synthesis.models.simulations.ModelRun` as **model_run**
     """
 
     def __init__(self, datasource, **kwargs):
@@ -186,14 +186,14 @@ class ModelResults(Base):
 
 class ModelDataPoint(Base):  # extends DataPoint
     """
-        Class for Model data points get a array of data for each mesh (with different time resolutions)
+    Class for Model data points get a array of data for each mesh (with different time resolutions)
 
-        Attributes:
-            - *id:* string
-            - *mesh_id:* string
-            - *timestamp:* datetime
-            - *value:* float
-            - *variable:* :class:`basin3d.models.MeasurementVariable`
+    Attributes:
+        - *id:* string
+        - *mesh_id:* string
+        - *timestamp:* datetime
+        - *value:* float
+        - *variable:* :class:`basin3d.models.MeasurementVariable`
     """
 
     def __init__(self, datasource, **kwargs):

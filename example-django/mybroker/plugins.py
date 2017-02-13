@@ -220,15 +220,15 @@ class AlphaDataPointView(with_metaclass(DataSourcePluginViewMeta)):
         """
         for num in range(1, 10):
             from datetime import date
-            yield measurement.MeasurementTimeSeriesDataPoint(self.datasource, id=num,
-                                                             measurement_id=1,
-                                                             geographical_group_id=1,
-                                                             geographical_group_type=GeographicalGroup.MESH,
-                                                             timestamp=date(2016, num, 1),
-                                                             value=num * .3453453,
-                                                             units="nm", temporal_resolution="month",
-                                                             reference=None,
-                                                             utc_offset=-8, )
+            yield measurement.TimeSeriesDataPoint(self.datasource, id=num,
+                                                  measurement_id=1,
+                                                  geographical_group_id=1,
+                                                  geographical_group_type=GeographicalGroup.MESH,
+                                                  timestamp=date(2016, num, 1),
+                                                  value=num * .3453453,
+                                                  units="nm", temporal_resolution="month",
+                                                  reference=None,
+                                                  utc_offset=-8, )
 
     def get(self, request, pk=None):
         """

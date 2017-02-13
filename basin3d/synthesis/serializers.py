@@ -42,8 +42,8 @@ class IdUrlSerializerMixin(object):
     def get_url(self, obj):
         """
         Get the Site url based on the current context
-        :param obj:
-        :return:
+        :param obj: an object instance
+        :return: An URL to the current object instance
         """
         if "request" in self.context and self.context["request"]:
             return reverse(viewname='{}-detail'.format(obj.__class__.__name__.lower()),
@@ -53,7 +53,7 @@ class IdUrlSerializerMixin(object):
 
 class RegionSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
-    Serializes a synthesis.models.Region
+    Serializes a :class:`basin3d.synthesis.models.field.Region`
     """
 
     id = serializers.CharField()
@@ -75,8 +75,8 @@ class RegionSerializer(IdUrlSerializerMixin, serializers.Serializer):
     def get_model_domains(self, obj):
         """
         Get the Site url based on the current context
-        :param obj:
-        :return:
+        :param obj: ``ModelDomain`` object instance
+        :return: An URL to the current object instance
         """
         if "request" in self.context and self.context["request"]:
             return reverse(viewname='{}-model-domains'.format(obj.__class__.__name__.lower()),
@@ -86,7 +86,7 @@ class RegionSerializer(IdUrlSerializerMixin, serializers.Serializer):
 
 class ModelSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
-    Serializes a synthesis.models.simulations.Model
+    Serializes a :class:`basin3d.synthesis.models.simulations.Model`
     """
 
     id = serializers.CharField()
@@ -109,7 +109,7 @@ class ModelSerializer(IdUrlSerializerMixin, serializers.Serializer):
 
 class ModelParameterSerializer(serializers.Serializer):
     """
-    Serializes a synthesis.model.simulations.ModelParameter
+    Serializes a :class:`basin3d.synthesis.models.simulations.ModelParameter`
 
     """
 
@@ -131,7 +131,7 @@ class ModelParameterSerializer(serializers.Serializer):
 
 class MeshSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
-    Serializes a synthesis.model.simulations.Mesh
+    Serializes a :class:`basin3d.synthesis.models.simulations.Mesh`
 
     """
 
@@ -165,7 +165,7 @@ class MeshSerializer(IdUrlSerializerMixin, serializers.Serializer):
 
 class ModelRunSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
-    Serializes a synthesis.model.simulations.ModelRun
+    Serializes a :class:`basin3d.synthesis.models.simulations.ModelRun`
 
     """
 
@@ -193,7 +193,7 @@ class ModelRunSerializer(IdUrlSerializerMixin, serializers.Serializer):
 
 class ModelDomainSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
-    Serializes a synthesis.models.simulations.ModelDomain
+    Serializes a :class:`basin3d.synthesis.models.simulations.ModelDomain`
 
     """
 
@@ -226,7 +226,7 @@ class ModelDomainSerializer(IdUrlSerializerMixin, serializers.Serializer):
 
 class DataPointGroupSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
-        Serializes a synthesis.models.measurement.DataPointGroup
+        Serializes a :class:`basin3d.synthesis.models.measurement.DataPointGroup`
 
     """
 
@@ -270,13 +270,15 @@ class DataPointGroupSerializer(IdUrlSerializerMixin, serializers.Serializer):
 
 class DataPointSerializer(serializers.Serializer):
     """
-        Serializes a synthesis.models.measurement.DataPoint
+        Serializes  :class:`basin3d.synthesis.models.measurement.DataPoint` objects and its
+        subclasses.
 
     """
 
     # Base attributes
     url = serializers.SerializerMethodField()
     id = serializers.CharField()
+    type = serializers.SerializerMethodField()
     measurement = serializers.SerializerMethodField()
     geographical_group = serializers.SerializerMethodField()
     units = serializers.CharField()
@@ -288,14 +290,77 @@ class DataPointSerializer(serializers.Serializer):
     reference = serializers.CharField()
     utc_offset = serializers.IntegerField()
 
+    # Image
+    size = serializers.FloatField()
+    resolution = serializers.FloatField()
+    image = serializers.URLField()
+
+    FIELDS_IMAGE = {'size', 'resolution', 'image'}
+    FIELDS_TIME_SERIES = {'timestamp','temporal_resolution','reference','utc_offset'}
+
+    def __init__(self, *args, **kwargs):
+        """
+        Override ``BaseSerializer.__init__`` to modify the fields outputted. This depends on the
+        type of :class:`basin3d.synthesis.models.measurement.DataPoint`
+
+        See the synthesis classes for a list of attributes:
+            * :class:`basin3d.synthesis.models.measurement.DataPoint`
+            * :class:`basin3d.synthesis.models.measurement.ImageDataPoint`
+            * :class:`basin3d.synthesis.models.measurement.TimeSeriesDataPoint`
+
+
+        :param args:
+        :param kwargs:
+        """
+        super(DataPointSerializer,self).__init__(*args, **kwargs)
+
+        field_to_remove = set()
+        field_to_remove.update(self.FIELDS_IMAGE)
+        field_to_remove.update(self.FIELDS_TIME_SERIES)
+        if "instance" in kwargs:
+            from basin3d.synthesis.models.measurement import TimeSeriesDataPoint, ImageDataPoint
+            if isinstance(kwargs["instance"],TimeSeriesDataPoint):
+                field_to_remove -= self.FIELDS_TIME_SERIES
+            elif isinstance(kwargs["instance"],ImageDataPoint):
+                field_to_remove -= self.FIELDS_IMAGE
+
+        for field in field_to_remove:
+            self.fields.pop(field)
+
+    def get_type(self,obj):
+        """
+        Determine the datapoint Type
+
+        :param obj: ``DataPoint`` object instance
+        :return: a string representation of the type
+        """
+        from basin3d.synthesis.models.measurement import TimeSeriesDataPoint, ImageDataPoint
+        if isinstance(obj, TimeSeriesDataPoint):
+            return "time_series"
+        elif isinstance(obj, ImageDataPoint):
+            return "image"
+        else:
+            return "?"
+
     def get_measurement(self, obj):
+        """
+        Resolve the URL to the :class:`basin3d.models.Measurement` object
+
+        :param obj: ``DataPoint`` object instance
+        :return: an URL to the :class:`basin3d.models.Measurement` object
+        """
         if "request" in self.context and self.context["request"]:
             return reverse(viewname='measurement-detail',
                            kwargs={'pk': obj.measurement_id},
                            request=self.context["request"], )
 
     def get_geographical_group(self, obj):
+        """
+       Resolve the URL to the Geographical group
 
+       :param obj: ``DataPoint`` object instance
+       :return: an URL to the Geographical group
+       """
         if obj.geographical_group_type in GeographicalGroup.TYPES.keys():
             if "request" in self.context and self.context["request"]:
                 return reverse(viewname='{}-detail'.format(GeographicalGroup.TYPES[obj.geographical_group_type].lower()),
@@ -305,8 +370,8 @@ class DataPointSerializer(serializers.Serializer):
     def get_url(self, obj):
         """
         Get the Site url based on the current context
-        :param obj:
-        :return:
+        :param obj: ``DataPoint`` object instance
+        :return: An URL to the current object instance
         """
         if "request" in self.context and self.context["request"]:
             return reverse(viewname='datapoint-detail',
