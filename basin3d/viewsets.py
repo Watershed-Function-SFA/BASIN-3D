@@ -1,3 +1,17 @@
+"""
+`basin3d.viewsets`
+******************
+
+.. currentmodule:: basin3d.viewsets
+
+:platform: Unix, Mac
+:synopsis: BASIN-3D ViewSets
+:module author: Val Hendrix <vhendrix@lbl.gov>
+
+.. contents:: Contents
+    :local:
+    :backlinks: top
+"""
 import djangoplugins
 import json
 import logging

@@ -1,8 +1,8 @@
 """
-`basin3d.synthesis.models.serializers`
-**************************************
+`basin3d.synthesis.serializers`
+*******************************
 
-.. currentmodule:: basin3d.synthesis.models.serializers
+.. currentmodule:: basin3d.synthesis.serializers
 
 :synopsis: The BASIN-3D Synthesis Model Serializers
 :module author: Val Hendrix <vhendrix@lbl.gov>

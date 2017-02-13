@@ -1,12 +1,24 @@
 """
-Broker Model Serializers
+`basin3d.serializers`
+*********************
 
+.. currentmodule:: basin3d.serializers
 
-Serializers allow complex data such as querysets and model instances to be converted
-to native Python datatypes that can then be easily rendered into JSON, XML or other
-content types. Serializers also provide deserialization, allowing parsed data to be
-converted back into complex types, after first validating the incoming data.
--- http://www.django-rest-framework.org/api-guide/serializers/
+:platform: Unix, Mac
+:synopsis: BASIN-3D Serializers
+:module author: Val Hendrix <vhendrix@lbl.gov>
+
+.. contents:: Contents
+    :local:
+    :backlinks: top
+
+About Django Serializers:
+
+    Serializers allow complex data such as querysets and model instances to be converted
+    to native Python datatypes that can then be easily rendered into JSON, XML or other
+    content types. Serializers also provide deserialization, allowing parsed data to be
+    converted back into complex types, after first validating the incoming data.
+    *-- http://www.django-rest-framework.org/api-guide/serializers/*
 
 
 """

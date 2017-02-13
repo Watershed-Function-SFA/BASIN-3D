@@ -1,11 +1,24 @@
 """
+`basin3d.plugins`
+*****************
 
+.. currentmodule:: basin3d.plugins
+
+:platform: Unix, Mac
+:synopsis: BASIN-3D ``DataSource`` plugin classes
+:module author: Val Hendrix <vhendrix@lbl.gov>
+
+.. contents:: Contents
+    :local:
+    :backlinks: top
 
 """
 from basin3d import synthesis
 from basin3d.apps import Basin3DConfig
 from django.apps import apps
 from djangoplugins.point import PluginPoint
+import requests
+import yaml
 import logging
 
 __all__ = ['get_url']
@@ -145,3 +158,140 @@ class DataSourcePluginPoint(PluginPoint):
         id_prefix = getattr(meta, 'id_prefix', None)
         if not id_prefix:
             raise ValueError("{}.DataSourceMeta does not define an 'id_prefix'.")
+
+
+
+class HTTPOAuth2DataSource(object):
+    """
+    Class for handling Authentication and authorization of
+    :class:`basin3d.models.DataSource` over HTTP with OAuth2
+
+
+    :param datasource: the datasource to authenticate and authorize via HTTP
+    :type datasource: :class:`basin3d.models.DataSource` instance
+    :param verify_ssl: Verify SSL
+    :type verify_ssl: boolean
+
+    """
+
+    FORMAT_YAML = 'client_id:\nclient_secret:\n'
+
+    def __init__(self,datasource, verify_ssl=True, auth_token_path="o/token/",
+                 revoke_token_path="o/revoke_token/", auth_scope="read",
+                 grant_type="client_credential",
+                 *args, **kwargs):
+
+        self.datasource = datasource
+        self.credentials = None
+        self.verify_ssl = verify_ssl
+        self.auth_token_path = auth_token_path
+        self.revoke_token_path = revoke_token_path
+        self.auth_scope = auth_scope
+        self.grant_type = grant_type
+        self.client_id, self.client_secret = self._load_credentials(datasource)
+
+    def _validate_credentials(self):
+        """
+        Validate the Data Source credentials
+
+        :return: TRUE if the credentials are valid
+        :rtype: boolean
+        """
+
+        # There should be a client_id and client secret
+        return "client_id" in self.credentials.keys() and "client_secret" in self.credentials.keys() \
+               and self.credentials["client_id"] and self.credentials["client_secret"]
+
+    def _load_credentials(self, datasource):
+        """
+        Get the credentials from JAEA Geo Data Source. If the
+        credentials are invalid `None` is returned.
+
+        :param datasource: The datasource object
+        :type datasource: :class:`basin3d.models.DataSource`
+        :return: tuple of client_id and client_secret
+        :rtype: tuple
+        """
+
+        self.credentials = datasource.credentials  # Access the credentials
+
+        # If there are credentials then get the locations
+        if self.credentials:
+            c = yaml.load(self.credentials)
+            if self._validate_credentials(c):
+                return c["client_id"], c["client_secret"]
+
+        return None
+
+    def get_token(self):
+        """
+        Get a token
+
+        OAuth Client credentials (client_id, client_secret) stored in the
+        DataSource.
+
+            - *Url:* https://:class:`basin3d.models.DataSource.location`<auth_token_path>
+            - *Scope:* <token_scope>
+            - *Grant Type:* <grant_type>
+            - *Client Id:* stored in encrypted :class:`basin3d.models.DataSource` field
+            - *Client Secret:* stored in encrypted :class:`basin3d.models.DataSource` field
+
+
+        Example JSON Response::
+
+            {
+                "access_token": "<your_access_token>",
+                "token_type": "Bearer",
+                "expires_in": 36000,
+                "refresh_token": "<your_refresh_token>",
+                "scope": "read"
+            }
+
+
+        :return: JSON response
+        :rtype: dict
+        """
+
+        # Build the authentication url
+        url = '{}{}'.format(self.datasource.location,self.auth_token_path)
+        try:
+
+            # Login to the JAEA Geo Data Source
+            res = requests.post(url, params={"scope": self.auth_scope, "grant_type": self.grant_type},
+                                auth=(self.client_id, self.client_secret),
+                                verify=self.verify_ssl)
+
+            # Validate the response
+            if res.status_code != requests.codes.ok:
+                logger.error("Authentication  error {}: {}".format(url, res.content))
+                return None
+
+            # Get the JSON content (This has the token)
+            result_json = res.json()
+            return result_json
+        except Exception as e:
+            logger.error("Authentication  error {}: {}".format(url, e))
+            return None
+
+    def revoke_token(self, token):
+        """
+        Revokes atoken
+
+        :param token: The current Token
+        :return: None
+        """
+
+        # Build the authentication url for revoking the token
+        url = '{}{}'.format(self.datasource.location,self.revoke_token_path)
+
+        # Request the token to be revoked
+        res = requests.post(url, params={"token": token},
+                            auth=(self.client_id, self.client_secret),
+                            verify=self.verify_ssl)
+
+        # Validate the success of the token revocation
+        from rest_framework import status
+        if res.status_code != status.HTTP_200_OK:
+            logger.warn("Problem encountered revoking token for '{}' HTTP status {}",
+                        self.datasource.name,
+                        res.status_code)

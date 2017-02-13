@@ -209,8 +209,6 @@ Bypass synthesis by accessing the data source APIs directly
 | `/direct/ --` Returns a list of direct apis
 | `/direct/:id_prefix --` Access a direct api for a datasource with the `:idprefix`
 
-
----------------------
 """
 import logging
 

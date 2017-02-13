@@ -1,8 +1,8 @@
 """
-`basin3d.synthesis.models.viewsets`
-***********************************
+`basin3d.synthesis.viewsets`
+****************************
 
-.. currentmodule:: basin3d.synthesis.models.viewsets
+.. currentmodule:: basin3d.synthesis.viewsets
 
 :synopsis: The BASIN-3D Synthesis Model Viewsets that support the REST api
 :module author: Val Hendrix <vhendrix@lbl.gov>
@@ -10,10 +10,10 @@
 Controllers for BASIN-3D REST api
 
 * :class:`DataSourcePluginViewSet` - Base ViewSet for all synthesized model views.
-* :class:`RegionViewSet` - supports REST `GET` methods that synthesize :class:`~basin3d.synthesis.models.field.Region`s
-* :class:`ModelViewSet` - supports REST `GET` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Model`s
-* :class:`MeshViewSet` - supports REST `GET` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Mesh`es
-* :class:`ModelDomainViewSet` - supports REST `GET` methods that synthesize :class:`~basin3d.synthesis.simulations.ModelDomains`s
+* :class:`RegionViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Region` objects
+* :class:`ModelViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Model` objects
+* :class:`MeshViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Mesh` objects
+* :class:`ModelDomainViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.simulations.ModelDomain` objects
 
 ----------------------------------
 
@@ -103,7 +103,7 @@ class DataSourcePluginViewSet(ViewSet):
                             status=status.HTTP_404_NOT_FOUND, )
 
 
-class RegionsViewSet(DataSourcePluginViewSet):
+class RegionViewSet(DataSourcePluginViewSet):
     """
     Return a Region
     """

@@ -1,3 +1,17 @@
+"""
+`basin3d.views`
+***************
+
+.. currentmodule:: basin3d.views
+
+:platform: Unix, Mac
+:synopsis: BASIN-3D Views
+:module author: Val Hendrix <vhendrix@lbl.gov>
+
+.. contents:: Contents
+    :local:
+    :backlinks: top
+"""
 from collections import OrderedDict
 
 from django.core.urlresolvers import NoReverseMatch
@@ -22,6 +36,13 @@ BASIN3D_SYNTHESIS_VIEWS = [ ('synthesis-datasources', 'datasource-list'),
 
 @api_view(['GET'])
 def broker_api_root(request, format=None):
+    """
+    The BASIN-3D ROOT API
+
+    :param request:
+    :param format:
+    :return:
+    """
     root_dict = OrderedDict()
     # Iterate over the possible views. If they are enabled add them to the
     # root api.

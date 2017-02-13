@@ -1,18 +1,16 @@
 """
 `basin3d.models`
-**************************
+****************
 
 .. currentmodule:: basin3d.models
 
 :synopsis: The BASIN-3D  Models
 :module author: Val Hendrix <vhendrix@lbl.gov>
 
-Database models
+.. contents:: Contents
+    :local:
+    :backlinks: top
 
-* :class:`Base` - The base model class that all synthesis extend from
-* :class:`Region` - An arbitrary area
-
-----------------------------------
 
 """
 from __future__ import unicode_literals
@@ -214,8 +212,8 @@ class Measurement(models.Model):
         - *description:* id, Cs 137 air dose rate car survey campaigns
         - *measurement_variable_id:* string, Cs137MVID
         - *sampling_medium:* enum (atmosphere, surface water, soil/sediment, soil gas, groundwater), atmosphere
-        - *owner: Person (optional), NotImplemented
-        - *contact: Person (optional), NotImplemented
+        - *owner:* Person (optional), NotImplemented
+        - *contact:* Person (optional), NotImplemented
         - *measurement_approach:* enum (sensor, manual), sensor
         - *measurement_approach_description:* string (optional), Values measured using car surveys
     """

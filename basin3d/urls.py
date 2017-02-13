@@ -15,7 +15,7 @@ Including another URLconf
 """
 import djangoplugins
 from basin3d.models import DataSource
-from basin3d.synthesis.viewsets import RegionsViewSet, ModelViewSet, ModelDomainViewSet, MeshViewSet, \
+from basin3d.synthesis.viewsets import RegionViewSet, ModelViewSet, ModelDomainViewSet, MeshViewSet, \
     ModelRunViewSet, DataPointGroupViewSet, DataPointViewSet
 from basin3d.views import broker_api_root
 from basin3d.viewsets import DataSourceViewSet, DirectAPIViewSet, MeasurementVariableViewSet, \
@@ -50,7 +50,7 @@ if settings.BASIN3D["SYNTHESIS"]:
                 # This will only add the viewsets that are define
                 viewset_models = set(viewset_models)
                 if 'Region' in viewset_models:
-                    router.register(r'regions', RegionsViewSet, base_name='region')
+                    router.register(r'regions', RegionViewSet, base_name='region')
                 if 'Model' in viewset_models:
                     router.register(r'models', ModelViewSet, base_name='model')
                 if 'ModelDomain' in viewset_models:
