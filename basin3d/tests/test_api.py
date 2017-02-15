@@ -13,39 +13,40 @@ import rest_framework
 from rest_framework import status
 from rest_framework.test import APIClient
 
-def get_direct_api():
-    def get_url(url, params=None, headers=None, verify=False):
-        """
-        Mock direct calls
-        """
 
-        # Return content and status
-        return type('Dummy', (object,), {
-            "content": b'{"message":"This is a direct call to the datasource", "url":"https://asource.foo/'
-                       + str.encode(url) +
-                       b'"}',
-            "status_code": status.HTTP_200_OK})
-    return get_url
-
-
-class DirectAPITest(rest_framework.test.APITestCase):
-
-    def setUp(self):
-        self.view_retrieve = DirectAPIViewSet.as_view({'get':'retrieve'})
-
-    @mock.patch('basin3d.get_url', side_effect=get_direct_api())
-    def test_get_detail(self, mock_get_url):
-        factory = rest_framework.test.APIRequestFactory()
-        request = factory.get('direct/A/')
-        response = self.view_retrieve(request, id_prefix="A")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {
-                             "message": "This is a direct call to the datasource",
-                             "url": "http://testserver/direct/A/"
-                         })
-
-        mock_get_url.method.assert_called_once()
+# def get_direct_api():
+#     def get_url(url, params=None, headers=None, verify=False):
+#         """
+#         Mock direct calls
+#         """
+#
+#         # Return content and status
+#         return type('Dummy', (object,), {
+#             "content": b'{"message":"This is a direct call to the datasource", "url":"https://asource.foo/'
+#                        + str.encode(url) +
+#                        b'"}',
+#             "status_code": status.HTTP_200_OK})
+#     return get_url
+#
+#
+# class DirectAPITest(rest_framework.test.APITestCase):
+#
+#     def setUp(self):
+#         self.view_retrieve = DirectAPIViewSet.as_view({'get':'retrieve'})
+#
+#     @mock.patch('basin3d.get_url', return_value=get_direct_api())
+#     def test_get_detail(self, mock_get_url):
+#         factory = rest_framework.test.APIRequestFactory()
+#         request = factory.get('direct/A/')
+#         response = self.view_retrieve(request, id_prefix="A")
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+#         self.assertEqual(json.loads(response.content.decode('utf-8')),
+#                          {
+#                              "message": "This is a direct call to the datasource",
+#                              "url": "http://testserver/direct/A/"
+#                          })
+#
+#         mock_get_url.method.assert_called_once()
 
 
 class TestAPIRoot(TestCase):
@@ -360,6 +361,7 @@ class TestDataPointGroupAPI(TestCase):
                              "id": "A-2",
                              "measurement": "http://testserver/synthesis/measurements/1/",
                              "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
+                             'geographical_group_type': 'modeldomain',
                              "start_time": "2016-02-01T00:00:00",
                              "end_time": "2016-02-29T00:00:00",
                              "utc_offset": -8,
@@ -375,6 +377,7 @@ class TestDataPointGroupAPI(TestCase):
                 "id": "A-1",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
+                'geographical_group_type': 'modeldomain',
                 "start_time": "2016-01-01T00:00:00",
                 "end_time": "2016-01-31T00:00:00",
                 "utc_offset": -8,
@@ -385,6 +388,7 @@ class TestDataPointGroupAPI(TestCase):
                 "id": "A-2",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
+                'geographical_group_type': 'modeldomain',
                 "start_time": "2016-02-01T00:00:00",
                 "end_time": "2016-02-29T00:00:00",
                 "utc_offset": -8,
@@ -395,6 +399,7 @@ class TestDataPointGroupAPI(TestCase):
                 "id": "A-3",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
+                'geographical_group_type': 'modeldomain',
                 "start_time": "2016-03-01T00:00:00",
                 "end_time": "2016-03-31T00:00:00",
                 "utc_offset": -8,
@@ -405,6 +410,7 @@ class TestDataPointGroupAPI(TestCase):
                 "id": "A-4",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
+                'geographical_group_type': 'modeldomain',
                 "start_time": "2016-04-01T00:00:00",
                 "end_time": "2016-04-30T00:00:00",
                 "utc_offset": -8,
@@ -415,6 +421,7 @@ class TestDataPointGroupAPI(TestCase):
                 "id": "A-5",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
+                'geographical_group_type': 'modeldomain',
                 "start_time": "2016-05-01T00:00:00",
                 "end_time": "2016-05-31T00:00:00",
                 "utc_offset": -8,
@@ -425,6 +432,7 @@ class TestDataPointGroupAPI(TestCase):
                 "id": "A-6",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
+                'geographical_group_type': 'modeldomain',
                 "start_time": "2016-06-01T00:00:00",
                 "end_time": "2016-06-30T00:00:00",
                 "utc_offset": -8,
@@ -435,6 +443,7 @@ class TestDataPointGroupAPI(TestCase):
                 "id": "A-7",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
+                'geographical_group_type': 'modeldomain',
                 "start_time": "2016-07-01T00:00:00",
                 "end_time": "2016-07-31T00:00:00",
                 "utc_offset": -8,
@@ -445,6 +454,7 @@ class TestDataPointGroupAPI(TestCase):
                 "id": "A-8",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
+                'geographical_group_type': 'modeldomain',
                 "start_time": "2016-08-01T00:00:00",
                 "end_time": "2016-08-31T00:00:00",
                 "utc_offset": -8,
@@ -455,6 +465,7 @@ class TestDataPointGroupAPI(TestCase):
                 "id": "A-9",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
+                'geographical_group_type': 'modeldomain',
                 "start_time": "2016-09-01T00:00:00",
                 "end_time": "2016-09-30T00:00:00",
                 "utc_offset": -8,
@@ -482,6 +493,7 @@ class TestDataPointAPI(TestCase):
                              "type": "time_series",
                              "measurement": "http://testserver/synthesis/measurements/1/",
                              "geographical_group": "http://testserver/synthesis/meshes/A-1/",
+                             'geographical_group_type': 'mesh',
                              "units": "nm",
                              "value": 0.6906906
                          })
@@ -496,6 +508,7 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
+                'geographical_group_type': 'mesh',
                 "units": "nm",
                 "value": 0.3453453
             },
@@ -505,6 +518,7 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
+                'geographical_group_type': 'mesh',
                 "units": "nm",
                 "value": 0.6906906
             },
@@ -514,6 +528,7 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
+                'geographical_group_type': 'mesh',
                 "units": "nm",
                 "value": 1.0360359000000001
             },
@@ -523,6 +538,7 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
+                'geographical_group_type': 'mesh',
                 "units": "nm",
                 "value": 1.3813812
             },
@@ -532,6 +548,7 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
+                'geographical_group_type': 'mesh',
                 "units": "nm",
                 "value": 1.7267265
             },
@@ -541,6 +558,7 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
+                'geographical_group_type': 'mesh',
                 "units": "nm",
                 "value": 2.0720718000000002
             },
@@ -550,6 +568,7 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
+                'geographical_group_type': 'mesh',
                 "units": "nm",
                 "value": 2.4174171
             },
@@ -559,6 +578,7 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
+                'geographical_group_type': 'mesh',
                 "units": "nm",
                 "value": 2.7627624
             },
@@ -568,6 +588,7 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
+                'geographical_group_type': 'mesh',
                 "units": "nm",
                 "value": 3.1081077
             }
