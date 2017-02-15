@@ -95,6 +95,13 @@ TBD
 We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 see the [tags on this repository](https://github.com/Watershed-Function-SFA/wfsfa-broker/tags). 
 
+Workflow for tagging and building release:
+
+1. checkout the version to tag from `master`
+1. `git -a v[version]-[release] -m "Tagging release v[version]-[release]"`
+1. build distribution with `setup.py`
+1. `git push origin v[version]-[release]`
+
 ## Authors
 
 * **Charuleka Varadharajan** - [LBL](http://eesa.lbl.gov/profiles/charuleka-varadharajan/)
@@ -105,7 +112,7 @@ participated in this project.
 
 ## License
 
-TBD
+See [LICENSE.md](LICENSE.md) file for licensing details
 
 ## Acknowledgments
 

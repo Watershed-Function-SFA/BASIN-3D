@@ -36,13 +36,29 @@ Create one or more plugins in a plugins module in `your-app/plugins.py`.
 
 Add the apps broker measurement variables in a multi-dimensional array::
 
-    # Format: id, full_name, categories (ordered by priority)
+    # Format: (id, full_name, (categories ordered by priority) )
     MEASUREMENT_VARIABLES = [["ACT", "Acetate (CH3COO)", ["Geochemistry", "Anions"]],
                             ["Ag", "Silver (Ag)", ["Geochemistry", "Trace elements"]],
                             ["Al", "Aluminum (Al)", ["Geochemistry", "Trace elements"]],
                             ["As", "Arsenic (As)", ["Geochemistry", "Trace elements"]],
                             ]
-
+    MEASUREMENTS = [{'description': """The method is based on the sample filtration and dilution ...""",
+                 'variable_id': "ACT",
+                 'sampling_medium': SamplingMedium.GROUNDWATER,
+                 'measurement_approach': MeasurementApproach.MANUAL},
+                {'description': """Aqua regia digestion method.""",
+                 'variable_id': "Ag",
+                 'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
+                 'measurement_approach': MeasurementApproach.SENSOR},
+                {'description': """Aqua regia digestion method.""",
+                 'variable_id': "Al",
+                 'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
+                 'measurement_approach': MeasurementApproach.SENSOR},
+                {'description': """Aqua regia digestion method.""",
+                 'variable_id': "As",
+                 'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
+                 'measurement_approach': MeasurementApproach.SENSOR}
+                ]
 Extend the broker source plugin with the described attributes::
 
     class AlphaSourcePlugin(DataSourcePluginPoint):

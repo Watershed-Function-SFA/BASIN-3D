@@ -1,13 +1,40 @@
 #!/usr/bin/env python
+import os
+import sys
 
+import subprocess
 from setuptools import setup, find_packages
 
-with open("basin3d/version.py") as f:
-    code = compile(f.read(), "rest_framework/version.py", 'exec')
-    exec(code)
-
+# Get the Quickstart documentation
 with open('docs/quickstart.rst') as readme:
     INSTALL = readme.read()
+
+# Update version from latest git tags.
+# Create a version file in the root directory
+version_py = os.path.join(os.path.dirname(__file__), 'basin3d/version.py')
+version_msg = "# Managed by setup.py via git tags.  **** DO NOT EDIT ****"
+try:
+    git_describe = subprocess.check_output(["git", "describe", "--tags"]).rstrip().decode('utf-8')
+
+    with open(version_py, 'w') as f:
+        f.write(version_msg + os.linesep + "__version__='" + git_describe.split("-")[0] + "'")
+        f.write(os.linesep + "__release__='" + git_describe + "'" + os.linesep)
+
+except Exception as e:
+    # If there is an exception, this means that git is not available
+    # We will used the existing version.py file
+    with open(version_py, 'w') as f:
+        f.write(version_msg + os.linesep + "__version__='0'")
+        f.write(os.linesep + "__release__='0'" + os.linesep)
+
+__release__="0"
+if os.path.exists(version_py):
+      with open(version_py) as f:
+          code = compile(f.read(), version_py, 'exec')
+      exec(code)
+
+if sys.version_info.major == 2 and sys.version_info.minor < 7:
+    sys.exit('Sorry, Python < 2.7 is not supported')
 
 setup(name='BASIN-3D',
       version=__release__,
@@ -15,7 +42,7 @@ setup(name='BASIN-3D',
       long_description=INSTALL,
       author='Val Hendrix',
       author_email='vchendrix@lbl.gov',
-      packages=find_packages(exclude=["basin3d.tests", "*.tests.*", "tests.*", "tests"]),
+      packages=find_packages(exclude=["*.tests",]),
       py_modules=['manage'],
       include_package_data=True,
       install_requires=[
@@ -25,7 +52,8 @@ setup(name='BASIN-3D',
           "django-plugins >= 0.3.0",
           "django-extensions >= 1.7.4",
           "python3-keyczar",
-          "pyyaml"
+          "pyyaml",
+          "requests"
       ],
       classifiers=[
           'Development Status :: 1 - Planning',

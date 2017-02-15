@@ -17,14 +17,14 @@ from basin3d.synthesis.models import Base
 
 class Region(Base):
     """
-        A Region is any arbitrary area - not necessarily associated with any
-        observations - e.g. a watershed, a city
+    A Region is any arbitrary area - not necessarily associated with any
+    observations - e.g. a watershed, a city
 
-        Attributes:
-            - *id:* string
-            - *name:* string
-            - *description:* string
-            - *geom:* polygon
+    Attributes:
+        - *id:* string
+        - *name:* string
+        - *description:* string
+        - *geom:* polygon
     """
 
     def __init__(self, datasource, **kwargs):

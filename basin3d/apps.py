@@ -25,13 +25,14 @@ def load_data_sources(sender, **kwargs):
             d = DataSource()
             d.name = plugin.get_meta().id
             d.location = plugin.get_meta().location
-            d.credentials = plugin.get_meta().credentials_format
+            if hasattr(plugin.get_meta(), "auth_class"):
+                d.credentials = plugin.get_meta().auth_class.CREDENTIALS_FORMAT
             d.id_prefix = plugin.get_meta().id_prefix
             d.plugin = plugin_model
             d.save()
 
 
-def load_parameters(sender, **kwargs):
+def load_measurment_objects(sender, **kwargs):
     """
         Load the Broker paramters from the registered plugins.
 
@@ -40,7 +41,25 @@ def load_parameters(sender, **kwargs):
         :return:
     """
     from djangoplugins.models import Plugin
-    from basin3d.models import MeasurementVariable
+    from basin3d.models import MeasurementVariable, Measurement, SamplingMedium, MeasurementApproach
+
+    # Load the Sampling Mediums
+    for sm in SamplingMedium.SAMPLING_MEDIUMS:
+        try:
+            obj = SamplingMedium(name=sm)
+            obj.save()
+            print("Registered SamplingMedium '{}'".format(obj.name))
+        except IntegrityError:
+            pass
+
+    # Load the Measurement Approaches
+    for ma in MeasurementApproach.APPROACHES:
+        try:
+            obj = MeasurementApproach(name=ma)
+            obj.save()
+            print("Registered MeasurementApprach '{}'".format(obj.name))
+        except IntegrityError:
+            pass
 
     plugins = Plugin.objects.all()
     for plugin in plugins:
@@ -55,7 +74,34 @@ def load_parameters(sender, **kwargs):
                 p.full_name = param[1]
                 p.categories = ",".join(param[2])
                 p.save()
-                print("Registered Measurement'{}'".format(p.id))
+                print("Registered MeasurementVariable '{}'".format(p.id))
+            except IntegrityError as e:
+
+                # We don't care about the Integrity Errors
+                pass
+
+        for m in app_plugins.MEASUREMENTS:
+            try:
+                sm=None
+                try:
+                    sm = SamplingMedium.objects.get(name=m["sampling_medium"])
+                except SamplingMedium.DoesNotExist:
+                    sm = SamplingMedium(m["sampling_medium"])
+                    sm.save()
+
+                ma = None
+                try:
+                    ma = MeasurementApproach.objects.get(name=m["measurement_approach"])
+                except SamplingMedium.DoesNotExist:
+                    ma = MeasurementApproach(m["measurement_approach"])
+                    ma.save()
+
+                m["sampling_medium"]=sm
+                m["measurement_approach"]=ma
+
+                obj = Measurement(**m)
+                obj.save()
+                print("Registered Measurement '{} {}'".format(obj.variable_id, obj.description))
             except IntegrityError as e:
 
                 # We don't care about the Integrity Errors
@@ -95,7 +141,7 @@ class Basin3DConfig(AppConfig):
 
         ## Execute the post migration scripts
         post_migrate.connect(load_data_sources, sender=self)
-        post_migrate.connect(load_parameters, sender=self)
+        post_migrate.connect(load_measurment_objects, sender=self)
         post_migrate.connect(load_datasource_parameters, sender=self)
 
 

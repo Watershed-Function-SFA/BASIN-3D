@@ -1,18 +1,19 @@
 .PHONY: all
 all: bin/python keyset db.sqlite3
 
+
+
 bin/python:
-	virtualenv --no-site-packages -p `which python3` .
-	cd ../ && example-django/bin/python setup.py sdist && cd $(CURDIR)
-	bin/pip install ../dist/BASIN-3D-1.0.0a0.tar.gz
+	virtualenv --no-site-packages -p `which python3` $(CURDIR)
+	cd $(CURDIR)/.. && $(CURDIR)/bin/python setup.py develop && cd $(CURDIR)
 
 db.sqlite3:
 	bin/python manage.py migrate
 
 keyset:
-	mkdir -p .keyset
-	bin/keyczart create --location=.keyset --purpose=crypt --name=basin3d
-	bin/keyczart addkey --location=.keyset --status=primary
+	mkdir -p $(CURDIR)/.keyset
+	$(CURDIR)/bin/keyczart create --location=$(CURDIR)/.keyset --purpose=crypt --name=basin3d
+	$(CURDIR)/bin/keyczart addkey --location=$(CURDIR)/.keyset --status=primary
 
 
 .PHONY: run
