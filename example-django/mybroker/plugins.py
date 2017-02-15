@@ -248,22 +248,6 @@ class AlphaSourcePlugin(DataSourcePluginPoint):
                            AlphaMeshView, AlphaModelRunView, AlphaDataPointGroupView,
                            AlphaDataPointView)
 
-    def direct_api(self, datasource, request, direct_path, **kwargs):
-        """
-        Handle direct calls the the JAEA Geo API
-
-        :param request:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-
-        # Return content and status
-        return type('Dummy', (object,), {
-            "content": b'{"message":"This is a direct call to the datasource", "url":"https://asource.foo/'
-                       + str.encode(direct_path) +
-                       b'"}',
-            "status_code": status.HTTP_200_OK})
 
     class DataSourceMeta:
         # Data Source attributes
@@ -271,7 +255,6 @@ class AlphaSourcePlugin(DataSourcePluginPoint):
         id = 'Alpha'  # unique id for the datasource
         id_prefix = 'A'
         name = id  # Human Friendly Data Source Name
-        credentials_format = 'username:\npassword:\n'
 
         # format basin id:measurement variable id
         measure_variable_map = OrderedDict(

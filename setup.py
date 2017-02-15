@@ -52,7 +52,8 @@ setup(name='BASIN-3D',
           "django-plugins >= 0.3.0",
           "django-extensions >= 1.7.4",
           "python3-keyczar",
-          "pyyaml"
+          "pyyaml",
+          "requests"
       ],
       classifiers=[
           'Development Status :: 1 - Planning',

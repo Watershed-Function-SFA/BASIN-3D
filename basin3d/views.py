@@ -37,11 +37,6 @@ BASIN3D_SYNTHESIS_VIEWS = [ ('synthesis-datasources', 'datasource-list'),
 @api_view(['GET'])
 def broker_api_root(request, format=None):
     """
-    The BASIN-3D ROOT API
-
-    :param request:
-    :param format:
-    :return:
     """
     root_dict = OrderedDict()
     # Iterate over the possible views. If they are enabled add them to the

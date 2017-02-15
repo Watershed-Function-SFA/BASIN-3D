@@ -214,6 +214,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+__all__ = ['get_url']
+
 # application loads this AppConfig subclass by default
 # when basin3d is added to INSTALLED_APPS
 default_app_config = 'basin3d.apps.Basin3DConfig'

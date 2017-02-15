@@ -25,7 +25,8 @@ def load_data_sources(sender, **kwargs):
             d = DataSource()
             d.name = plugin.get_meta().id
             d.location = plugin.get_meta().location
-            d.credentials = plugin.get_meta().credentials_format
+            if hasattr(plugin.get_meta(), "auth_class"):
+                d.credentials = plugin.get_meta().auth_class.CREDENTIALS_FORMAT
             d.id_prefix = plugin.get_meta().id_prefix
             d.plugin = plugin_model
             d.save()

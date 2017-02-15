@@ -16,7 +16,7 @@ class ShowcredentialsTest(TestCase):
         """Test showcredentials command"""
         out = StringIO()
         call_command('showcredentials', 'Alpha', stdout=out)
-        self.assertIn('username:\npassword:\n', out.getvalue())
+        self.assertIn('\n', out.getvalue())
 
     def test_command_invalid_datasrouce(self):
         """Test showcredentials invalid datasource"""
@@ -30,7 +30,7 @@ class CredentialsFormatTest(TestCase):
         """Test credentialsformat command"""
         out = StringIO()
         call_command('credentialsformat', 'Alpha', stdout=out)
-        self.assertIn('username:\npassword:\n', out.getvalue())
+        self.assertIn('There is no credentials format set.', out.getvalue())
 
     def test_command_invalid_datasrouce(self):
         """Test credentialsformat invalid datasource"""

@@ -12,6 +12,9 @@ class Command(BaseCommand):
         datasource_id = options['datasource_id']
         try:
             datasource = DataSource.objects.get(name=datasource_id)
-            self.stdout.write(datasource.plugin.get_plugin().get_meta().credentials_format)
+            if hasattr(datasource.plugin.get_plugin().get_meta(),"auth_class"):
+                self.stdout.write(datasource.plugin.get_plugin().get_meta().auth_class.CREDENTIALS_FORMAT)
+            else:
+                self.stdout.write("There is no credentials format set.")
         except DataSource.DoesNotExist:
             raise CommandError('DataSource "%s" does not exist' % datasource_id)

@@ -233,11 +233,11 @@ class DataPointGroupSerializer(IdUrlSerializerMixin, serializers.Serializer):
     id = serializers.CharField()
     measurement = serializers.SerializerMethodField()
     geographical_group = serializers.SerializerMethodField()
+    geographical_group_type = serializers.SerializerMethodField()
     start_time = serializers.DateTimeField()
     end_time = serializers.DateTimeField()
     utc_offset = serializers.IntegerField()
     data_points = serializers.SerializerMethodField()
-
 
     def get_measurement(self, obj):
         if "request" in self.context and self.context["request"]:
@@ -245,7 +245,21 @@ class DataPointGroupSerializer(IdUrlSerializerMixin, serializers.Serializer):
                            kwargs={'pk': obj.measurement_id},
                            request=self.context["request"], )
 
+    def get_geographical_group_type(self, obj):
+        """
+        Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
+        :param obj: ``DataPoint`` object instance
+        :return: Display value for the :class:`basin3d.models.GeographicalGroup` type
+        """
+        return GeographicalGroup.TYPES[obj.geographical_group_type]
+
     def get_geographical_group(self, obj):
+        """
+        Resolve the URL to the Geographical group
+
+        :param obj: ``DataPoint`` object instance
+        :return: an URL to the Geographical group
+        """
 
         if obj.geographical_group_type in GeographicalGroup.TYPES.keys():
             if "request" in self.context and self.context["request"]:
@@ -281,6 +295,7 @@ class DataPointSerializer(serializers.Serializer):
     type = serializers.SerializerMethodField()
     measurement = serializers.SerializerMethodField()
     geographical_group = serializers.SerializerMethodField()
+    geographical_group_type = serializers.SerializerMethodField()
     units = serializers.CharField()
 
     # Time Series
@@ -354,13 +369,21 @@ class DataPointSerializer(serializers.Serializer):
                            kwargs={'pk': obj.measurement_id},
                            request=self.context["request"], )
 
+    def get_geographical_group_type(self, obj):
+        """
+        Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
+        :param obj: ``DataPoint`` object instance
+        :return: Display value for the :class:`basin3d.models.GeographicalGroup` type
+        """
+        return GeographicalGroup.TYPES[obj.geographical_group_type]
+
     def get_geographical_group(self, obj):
         """
-       Resolve the URL to the Geographical group
+        Resolve the URL to the Geographical group
 
-       :param obj: ``DataPoint`` object instance
-       :return: an URL to the Geographical group
-       """
+        :param obj: ``DataPoint`` object instance
+        :return: an URL to the Geographical group
+        """
         if obj.geographical_group_type in GeographicalGroup.TYPES.keys():
             if "request" in self.context and self.context["request"]:
                 return reverse(viewname='{}-detail'.format(GeographicalGroup.TYPES[obj.geographical_group_type].lower()),

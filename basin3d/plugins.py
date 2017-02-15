@@ -13,9 +13,10 @@
     :backlinks: top
 
 """
-from basin3d import synthesis
+from basin3d import synthesis, get_url
 from basin3d.apps import Basin3DConfig
 from django.apps import apps
+from django.conf import settings
 from djangoplugins.point import PluginPoint
 import requests
 import yaml
@@ -93,16 +94,26 @@ class DataSourcePluginPoint(PluginPoint):
         """
 
         datasource = self.get_datasource()
-        direct_api = hasattr(self, 'direct_api')
 
         from rest_framework import status
         from rest_framework.response import Response
         response = Response(status=status.HTTP_404_NOT_FOUND)
 
-        if direct_api:
-            response = self.direct_api(datasource, request, direct_path, **kwargs)
-            if response:
-                return response
+        if hasattr(self.get_meta(),"auth_class"):
+            http_oauth = self.get_meta().auth_class(datasource)
+
+            headers, token = http_oauth.get_auth_header_token()
+            response = None
+            if headers:
+                from django.conf import settings
+                response = get_url("{}{}".format(datasource.location, direct_path),
+                                   params=request.query_params,
+                                   verify=http_oauth.verify_ssl, headers=headers)
+
+            if token:
+                http_oauth.revoke_token(token)
+        else:
+            response = get_url("{}{}".format(datasource.location, direct_path))
         return response
 
     @classmethod
@@ -160,7 +171,6 @@ class DataSourcePluginPoint(PluginPoint):
             raise ValueError("{}.DataSourceMeta does not define an 'id_prefix'.")
 
 
-
 class HTTPOAuth2DataSource(object):
     """
     Class for handling Authentication and authorization of
@@ -174,16 +184,18 @@ class HTTPOAuth2DataSource(object):
 
     """
 
-    FORMAT_YAML = 'client_id:\nclient_secret:\n'
+    CREDENTIALS_FORMAT = 'client_id:\nclient_secret:\n'
 
     def __init__(self,datasource, verify_ssl=True, auth_token_path="o/token/",
                  revoke_token_path="o/revoke_token/", auth_scope="read",
-                 grant_type="client_credential",
+                 grant_type="client_credentials",
                  *args, **kwargs):
 
         self.datasource = datasource
         self.credentials = None
-        self.verify_ssl = verify_ssl
+        if datasource.plugin.get_plugin().DataSourceMeta.id in settings.BASIN3D and \
+                'VERIFY_SSL' in  settings.BASIN3D[datasource.plugin.get_plugin().DataSourceMeta.id]:
+            self.verify_ssl = settings.BASIN3D[datasource.plugin.get_plugin().DataSourceMeta.id]['VERIFY_SSL']
         self.auth_token_path = auth_token_path
         self.revoke_token_path = revoke_token_path
         self.auth_scope = auth_scope
@@ -217,11 +229,11 @@ class HTTPOAuth2DataSource(object):
 
         # If there are credentials then get the locations
         if self.credentials:
-            c = yaml.load(self.credentials)
-            if self._validate_credentials(c):
-                return c["client_id"], c["client_secret"]
+            self.credentials = yaml.load(self.credentials)
+            if self._validate_credentials():
+                return self.credentials["client_id"], self.credentials["client_secret"]
 
-        return None
+        return None,None
 
     def get_token(self):
         """
@@ -272,6 +284,32 @@ class HTTPOAuth2DataSource(object):
         except Exception as e:
             logger.error("Authentication  error {}: {}".format(url, e))
             return None
+
+    def get_auth_header_token(self):
+        """
+        Login to the Data Source. Return the Authorization header and the access token
+
+        Authorization Header:
+            - Authorization": "{token_type} {access_token}
+
+        :param datasource: The datasource object
+        :type datasource: :class:`basin3d.models.DataSource`
+        :return: tuple of dict of headers and token
+        :rtype: tuple
+        """
+
+        # Login and get the token
+        token_json = self.get_token()
+        if not token_json:
+            # Access is denied!!
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied()
+
+        # Prepare the Authorization header
+        headers = {"Authorization": "{token_type} {access_token}".format(**token_json)}
+
+        # Return the Authorization header and token
+        return headers, token_json["access_token"]
 
     def revoke_token(self, token):
         """

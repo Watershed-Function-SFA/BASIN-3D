@@ -52,12 +52,11 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
             plugin_model = datasource.plugin  # Get the plugin model
             plugin = plugin_model.get_plugin()
 
-            if hasattr(plugin, "direct_api"):
-                direct_apis.append(
-                    {datasource.name: request.build_absolute_uri(reverse('direct-path-detail',
-                                                                         kwargs={
-                                                                             "id_prefix": datasource.id_prefix,
-                                                                             "direct_path": ""}))})
+            direct_apis.append(
+                {datasource.name: request.build_absolute_uri(reverse('direct-path-detail',
+                                                                     kwargs={
+                                                                         "id_prefix": datasource.id_prefix,
+                                                                         "direct_path": ""}))})
 
         return Response(direct_apis)
 
@@ -74,17 +73,16 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
                 direct_path = kwargs["direct_path"]
 
             plugin = plugin_model.get_plugin()
-            if hasattr(plugin, "direct_api"):
-                response = plugin.direct(request, direct_path)
-                if response:
-                    return Response(
-                        data=json.loads(response.content.decode('utf-8').replace(datasource.location,
-                                                                 request.build_absolute_uri(
-                                                                     reverse('direct-path-detail',
-                                                                             kwargs={
-                                                                                 "id_prefix": datasource.id_prefix,
-                                                                                 "direct_path": ""})))),
-                        status=response.status_code)
+            response = plugin.direct(request, direct_path)
+            if response:
+                return Response(
+                    data=json.loads(response.content.decode('utf-8').replace(datasource.location,
+                                                             request.build_absolute_uri(
+                                                                 reverse('direct-path-detail',
+                                                                         kwargs={
+                                                                             "id_prefix": datasource.id_prefix,
+                                                                             "direct_path": ""})))),
+                    status=response.status_code)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 

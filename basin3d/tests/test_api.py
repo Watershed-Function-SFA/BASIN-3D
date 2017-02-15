@@ -1,13 +1,51 @@
 import json
+from unittest import mock
 
 from basin3d.tests import configure
 
 # Load test settings
+from basin3d.viewsets import DirectAPIViewSet
+
 configure()
 
 from django.test import TestCase, override_settings
+import rest_framework
 from rest_framework import status
 from rest_framework.test import APIClient
+
+def get_direct_api():
+    def get_url(url, params=None, headers=None, verify=False):
+        """
+        Mock direct calls
+        """
+
+        # Return content and status
+        return type('Dummy', (object,), {
+            "content": b'{"message":"This is a direct call to the datasource", "url":"https://asource.foo/'
+                       + str.encode(url) +
+                       b'"}',
+            "status_code": status.HTTP_200_OK})
+    return get_url
+
+
+class DirectAPITest(rest_framework.test.APITestCase):
+
+    def setUp(self):
+        self.view_retrieve = DirectAPIViewSet.as_view({'get':'retrieve'})
+
+    @mock.patch('basin3d.get_url', side_effect=get_direct_api())
+    def test_get_detail(self, mock_get_url):
+        factory = rest_framework.test.APIRequestFactory()
+        request = factory.get('direct/A/')
+        response = self.view_retrieve(request, id_prefix="A")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {
+                             "message": "This is a direct call to the datasource",
+                             "url": "http://testserver/direct/A/"
+                         })
+
+        mock_get_url.method.assert_called_once()
 
 
 class TestAPIRoot(TestCase):
@@ -80,15 +118,6 @@ class TestDirectAPIRoot(TestCase):
                          ]
 
                          )
-
-    def test_get_detail(self):
-        response = self.client.get('/direct/A/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {
-                             "message": "This is a direct call to the datasource",
-                             "url": "http://testserver/direct/A/"
-                         })
 
 
 class TestRegionAPI(TestCase):
