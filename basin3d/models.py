@@ -25,19 +25,22 @@ class GeographicalGroup(object):
     """
     Geographical groups where a datapoint can come from
     """
-    SAMPLING_FEATURE = 0 # Not implemented
-    SITE = 1 # Not implemented
-    PLOT = 2 # Not implemented
+    SAMPLING_FEATURE = 0  # Not sure how this is used
+    SITE = 1
+    PLOT = 2
     MODEL_DOMAIN = 3
     REGION = 4
     MESH = 5
+    POINT_LOCATION = 6
 
     TYPES = {
             MODEL_DOMAIN: "modeldomain",
             REGION: "region",
-            MESH: "mesh"
-
-             }
+        MESH: "mesh",
+        SITE: "site",
+        PLOT: "plot",
+        POINT_LOCATION: "pointlocation"
+    }
 
 
 class StringListField(models.TextField):
@@ -65,7 +68,7 @@ class StringListField(models.TextField):
         elif isinstance(value, str):
             return value.split(self.delimiter)
 
-        raise ValueError("ListField must be delimited string")
+        raise ValueError("ListField must be  delimited string")
 
     def get_prep_value(self, value):
         if value is None:

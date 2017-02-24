@@ -41,4 +41,26 @@ class Base(object):
         self.__dict__.update(kwargs)
 
 
-__all__ = ['simulations', 'measurement','Base']
+class Person(Base):
+    """A person
+
+    Attributes:
+        *id:* string
+        *first_name:* string
+        *last_name:* string
+        *email:* string
+        *institution:* string
+    """
+
+    def __init__(self, **kwargs):
+        self.id = None
+        self.first_name = None
+        self.last_name = None
+        self.email = None
+        self.institution = None
+
+        # Initialize after the attributes have been set
+        super().__init__(None, **kwargs)
+
+
+__all__ = ['field', 'simulations', 'measurement', 'Base']

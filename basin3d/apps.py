@@ -19,22 +19,37 @@ def load_data_sources(sender, **kwargs):
 
     for plugin_model in Plugin.objects.all():
         plugin = plugin_model.get_plugin()
-        datasource = DataSource.objects.filter(name=plugin.get_meta().id)
-        if len(datasource) ==0:
-            print("Registering Data Source '{}'".format(plugin.get_meta().id))
-            d = DataSource()
-            d.name = plugin.get_meta().id
-            d.location = plugin.get_meta().location
-            if hasattr(plugin.get_meta(), "auth_class"):
-                d.credentials = plugin.get_meta().auth_class.CREDENTIALS_FORMAT
-            d.id_prefix = plugin.get_meta().id_prefix
-            d.plugin = plugin_model
-            d.save()
+
+        try:
+            datasource = DataSource.objects.get(name=plugin.get_meta().id)
+        except DataSource.DoesNotExist:
+            print("Registering NEW Data Source '{}'".format(plugin.get_meta().id))
+            datasource = DataSource()
+            if hasattr(plugin.get_meta(), "connection_class"):
+                datasource.credentials = plugin.get_meta().connection_class.get_credentials_format()
+
+        # Update the datasource
+        print("Updated Data Source '{}'".format(plugin.get_meta().id))
+        datasource.name = plugin.get_meta().id
+        datasource.location = plugin.get_meta().location
+        datasource.id_prefix = plugin.get_meta().id_prefix
+        datasource.plugin = plugin_model
+        datasource.save()
 
 
 def load_measurment_objects(sender, **kwargs):
     """
-        Load the Broker paramters from the registered plugins.
+        Load all measurement objects into the database
+
+        Global:
+
+            + Sampling Medium
+            + Measurement Approaches
+
+        Plugin Specified
+
+            + MEASURMENT_VARIABLES
+             + MEASUREMENTS
 
         :param sender:
         :param kwargs:
@@ -67,45 +82,52 @@ def load_measurment_objects(sender, **kwargs):
         idx = plugin_path.index('plugins')
         module_name = plugin_path[0:idx+len('plugins')]
         app_plugins = importlib.import_module(module_name)
-        for param in app_plugins.MEASUREMENT_VARIABLES:
-            try:
-                p = MeasurementVariable()
-                p.id=param[0]
-                p.full_name = param[1]
-                p.categories = ",".join(param[2])
-                p.save()
-                print("Registered MeasurementVariable '{}'".format(p.id))
-            except IntegrityError as e:
 
-                # We don't care about the Integrity Errors
-                pass
-
-        for m in app_plugins.MEASUREMENTS:
-            try:
-                sm=None
+        if hasattr(app_plugins, "MEASUREMENT_VARIABLES"):
+            for param in app_plugins.MEASUREMENT_VARIABLES:
                 try:
-                    sm = SamplingMedium.objects.get(name=m["sampling_medium"])
-                except SamplingMedium.DoesNotExist:
-                    sm = SamplingMedium(m["sampling_medium"])
-                    sm.save()
+                    p = MeasurementVariable()
+                    p.id = param[0]
+                    p.full_name = param[1]
+                    p.categories = ",".join(param[2])
+                    p.save()
+                    print("Registered MeasurementVariable '{}'".format(p.id))
+                except IntegrityError as e:
 
-                ma = None
+                    # We don't care about the Integrity Errors
+                    pass
+        else:
+            print("There are no MEASUREMENT_VARIABLES to load")
+
+        if hasattr(app_plugins, "MEASUREMENTS"):
+            for m in app_plugins.MEASUREMENTS:
                 try:
-                    ma = MeasurementApproach.objects.get(name=m["measurement_approach"])
-                except SamplingMedium.DoesNotExist:
-                    ma = MeasurementApproach(m["measurement_approach"])
-                    ma.save()
+                    sm = None
+                    try:
+                        sm = SamplingMedium.objects.get(name=m["sampling_medium"])
+                    except SamplingMedium.DoesNotExist:
+                        sm = SamplingMedium(m["sampling_medium"])
+                        sm.save()
 
-                m["sampling_medium"]=sm
-                m["measurement_approach"]=ma
+                    ma = None
+                    try:
+                        ma = MeasurementApproach.objects.get(name=m["measurement_approach"])
+                    except SamplingMedium.DoesNotExist:
+                        ma = MeasurementApproach(m["measurement_approach"])
+                        ma.save()
 
-                obj = Measurement(**m)
-                obj.save()
-                print("Registered Measurement '{} {}'".format(obj.variable_id, obj.description))
-            except IntegrityError as e:
+                    m["sampling_medium"] = sm
+                    m["measurement_approach"] = ma
 
-                # We don't care about the Integrity Errors
-                pass
+                    obj = Measurement(**m)
+                    obj.save()
+                    print("Registered Measurement '{} {}'".format(obj.variable_id, obj.description))
+                except IntegrityError as e:
+
+                    # We don't care about the Integrity Errors
+                    pass
+        else:
+            print("There are no MEASUREMENTS to load")
 
 
 def load_datasource_parameters(sender,**kwargs):
@@ -128,7 +150,8 @@ def load_datasource_parameters(sender,**kwargs):
                 datasource_parameter.datasource = datasource
                 datasource_parameter.name = param
                 datasource_parameter.save()
-                print("Registered  Measurement Variable '{}' for Data Source '{}'".format(id,datasource.name))
+                print("Registered Measurement Variable '{}' for Data Source '{}'".format(id,
+                                                                                         datasource.name))
             except IntegrityError as e:
                 # We don't care about the Integrity Errors
                 pass

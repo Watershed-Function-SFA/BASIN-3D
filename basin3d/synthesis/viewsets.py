@@ -7,13 +7,19 @@
 :synopsis: The BASIN-3D Synthesis Model Viewsets that support the REST api
 :module author: Val Hendrix <vhendrix@lbl.gov>
 
-Controllers for BASIN-3D REST api
+View Controllers for BASIN-3D REST api
 
 * :class:`DataSourcePluginViewSet` - Base ViewSet for all synthesized model views.
-* :class:`RegionViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Region` objects
-* :class:`ModelViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Model` objects
+* :class:`DataPointGroupViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.DataPointGroup` objects
+* :class:`DataPointViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.DataPoint` objects
 * :class:`MeshViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Mesh` objects
 * :class:`ModelDomainViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.simulations.ModelDomain` objects
+* :class:`ModelRunViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.simulations.ModelRun` objects
+* :class:`ModelViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Model` objects
+* :class:`PlotViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Plot` objects
+* :class:`PointLocationViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.PointLocation` objects
+* :class:`RegionViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Region` objects
+* :class:`SiteViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Site` objects
 
 ----------------------------------
 
@@ -22,11 +28,13 @@ import logging
 
 import djangoplugins
 from basin3d.models import DataSource
-from basin3d.synthesis.models.field import Region
+from basin3d.plugins import InvalidOrMissingCredentials
+from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation
 from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint
 from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh, ModelRun
 from basin3d.synthesis.serializers import RegionSerializer, ModelSerializer, ModelDomainSerializer, MeshSerializer, \
-    DataPointGroupSerializer, ModelRunSerializer, DataPointSerializer
+    DataPointGroupSerializer, ModelRunSerializer, DataPointSerializer, SiteSerializer, \
+    PlotSerializer, PointLocationSerializer
 from rest_framework import status
 from rest_framework import versioning
 from rest_framework.decorators import detail_route
@@ -59,9 +67,13 @@ class DataSourcePluginViewSet(ViewSet):
             if plugin_model.status == djangoplugins.models.ENABLED:
 
                 plugin_views = plugin_model.get_plugin().get_plugin_views()
-                if self.synthesis_model in plugin_views:
-                    for obj in plugin_views[self.synthesis_model].list(request):
-                        items.append(obj)
+                if self.synthesis_model in plugin_views and \
+                        hasattr(plugin_views[self.synthesis_model], "list"):
+                    try:
+                        for obj in plugin_views[self.synthesis_model].list(request):
+                            items.append(obj)
+                    except InvalidOrMissingCredentials as e:
+                        logger.error(e)
 
         serializer = self.__class__.serializer_class(items, many=True, context={'request': request})
         return Response(serializer.data)
@@ -79,7 +91,7 @@ class DataSourcePluginViewSet(ViewSet):
             obj = None
             if datasource:
                 datasource_pk = pk.replace("{}-".format(pk_list[0]),
-                                           "")  # The datasource id prefixe needs to be removed
+                                           "", 1)  # The datasource id prefixe needs to be removed
                 plugin_model = datasource.plugin  # Get the plugin model
                 if plugin_model.status == djangoplugins.models.ENABLED:
 
@@ -146,6 +158,30 @@ class RegionViewSet(DataSourcePluginViewSet):
             return Response({'success': False, 'detail': "There is no detail for datasource object {}. "
                                                          "The datasource id '{}' is invalid.".format(pk, id_prefix)},
                             status=status.HTTP_404_NOT_FOUND, )
+
+
+class SiteViewSet(DataSourcePluginViewSet):
+    """
+    Return a Site
+    """
+    serializer_class = SiteSerializer
+    synthesis_model = Site
+
+
+class PlotViewSet(DataSourcePluginViewSet):
+    """
+    Return a Plot
+    """
+    serializer_class = PlotSerializer
+    synthesis_model = Plot
+
+
+class PointLocationViewSet(DataSourcePluginViewSet):
+    """
+    Return a Point Location
+    """
+    serializer_class = PointLocationSerializer
+    synthesis_model = PointLocation
 
 
 class ModelViewSet(DataSourcePluginViewSet):

@@ -12,9 +12,10 @@
     :local:
     :backlinks: top
 """
-import djangoplugins
 import json
 import logging
+
+import djangoplugins
 from basin3d.models import MeasurementVariable, DataSource, DataSourceMeasurementVariable, \
     Measurement
 from basin3d.serializers import DataSourceSerializer, MeasurementVariableSerializer, \
@@ -75,14 +76,18 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
             plugin = plugin_model.get_plugin()
             response = plugin.direct(request, direct_path)
             if response:
-                return Response(
-                    data=json.loads(response.content.decode('utf-8').replace(datasource.location,
+                try:
+                    return Response(
+                        data=json.loads(
+                            response.content.decode('utf-8').replace(datasource.location,
                                                              request.build_absolute_uri(
                                                                  reverse('direct-path-detail',
                                                                          kwargs={
                                                                              "id_prefix": datasource.id_prefix,
                                                                              "direct_path": ""})))),
                     status=response.status_code)
+                except:
+                    return response
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 

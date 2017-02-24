@@ -59,20 +59,19 @@ class DataPoint(Base):
     Attributes:
         - *id:* string,
         - *measurement_id:* string,
-        - *sampling_feature_id:* string (sampling feature can be site/plot/measurement location),
-        - *unit:* Unit
+        - *geographical_group_id:* string, River system ID (Region ID).
+        - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region): Model_domain (or optionally region)
+        - *units:* Unit
     """
     def __init__(self, datasource, **kwargs):
         self.id = None
         self.measurement_id = None
-        self.sampling_feature_id = None
+        self.geographical_group_id = None
+        self.geographical_group_type = None
         self.units = None
 
         # Initialize after the attributes have been set
-        super().__init__(datasource, **kwargs)
-
-    def __eq__(self, other):
-        return self.id == other.id
+        super().__init__(datasource, datasource_ids=['geographical_group_id'], **kwargs)
 
 
 class ImageDataPoint(DataPoint):
@@ -82,7 +81,8 @@ class ImageDataPoint(DataPoint):
     Inherited attributes (:class:`DataPoint`):
         - *id:* string
         - *measurement_id:* string
-        - *sampling_feature_id:* string (sampling feature can be site/plot/measurement location)
+        - *geographical_group_id:* string, River system ID (Region ID).
+        - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region): Model_domain (or optionally region)
         - *units:* Unit
 
     Attributes:
@@ -99,9 +99,6 @@ class ImageDataPoint(DataPoint):
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
 
-    def __eq__(self, other):
-        return self.id == other.id
-
 
 class TimeSeriesDataPoint(DataPoint):
     """
@@ -110,7 +107,8 @@ class TimeSeriesDataPoint(DataPoint):
     Inherited attributes (:class:`DataPoint`):
         - *id:* string
         - *measurement_id:* string
-        - *sampling_feature_id:* string (sampling feature can be site/plot/measurement location)
+        - *geographical_group_id:* string, River system ID (Region ID).
+        - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region): Model_domain (or optionally region)
         - *units:* Unit
 
     Attributes:
@@ -140,7 +138,4 @@ class TimeSeriesDataPoint(DataPoint):
         self.utc_offset = None
 
         # Initialize after the attributes have been set
-        super().__init__(datasource,  datasource_ids=['geographical_group_id'], **kwargs)
-
-    def __eq__(self, other):
-        return self.id == other.id
+        super().__init__(datasource, **kwargs)

@@ -1,14 +1,14 @@
 import logging
+
 from basin3d.models import SamplingMedium, MeasurementApproach, GeographicalGroup
 from basin3d.plugins import DataSourcePluginPoint, DataSourcePluginViewMeta
-from basin3d.synthesis.models import measurement
+from basin3d.synthesis.models import measurement, Person
 from basin3d.synthesis.models import simulations
-from basin3d.synthesis.models.field import Region
+from basin3d.synthesis.models.field import Region, Site, Coordinates, Plot, PointLocation
 from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint
 from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh, ModelRun
 from collections import OrderedDict
 from django.utils.six import with_metaclass
-from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +36,117 @@ MEASUREMENTS = [{'description': """The method is based on the sample filtration 
                  'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
                  'measurement_approach': MeasurementApproach.SENSOR}
                 ]
+
+
+class AlphaSiteView(with_metaclass(DataSourcePluginViewMeta)):
+    synthesis_model_class = Site
+
+    def list(self, request):
+        """
+        Get the Site information
+
+
+        """
+        obj = self.synthesis_model_class(self.datasource, id=1, name="Foo",
+                                         description="Foo Bar Site",
+                                         country="US",
+                                         state_province="California",
+                                         utc_offset=-6,
+                                         center_coordinates=Coordinates(
+                                             latitude=90,
+                                             longitude=90,
+                                             elevation=500,
+                                             spatial_ref_system=Coordinates.SPATIAL_REF_WGS84
+                                         ),
+                                         pi=Person(first_name="Jessica",
+                                                   last_name="Jones",
+                                                   email="jjones@foo.bar",
+                                                   institution="DC Comics"),
+                                         contacts=[Person(first_name="Barry",
+                                                          last_name="Allen",
+                                                          email="ballen@foo.bar",
+                                                          institution="DC Comics")],
+                                         urls=["http://foo.bar"])
+
+        yield obj
+
+    def get(self, request, pk=None):
+        """
+        Get a Site
+        :param pk: primary key
+        """
+        for s in self.list(request):
+            if s.id.endswith(pk):
+                return s
+        return None
+
+
+class AlphaPlotView(with_metaclass(DataSourcePluginViewMeta)):
+    synthesis_model_class = Plot
+
+    def list(self, request):
+        """
+        Get the Site information
+
+
+        """
+        obj = self.synthesis_model_class(self.datasource, id=1, name="Plot 1",
+                                         site_id="1",
+                                         geom={},
+                                         pi=Person(first_name="Jessica",
+                                                   last_name="Jones",
+                                                   email="jjones@foo.bar",
+                                                   institution="DC Comics"),
+                                         )
+
+        yield obj
+
+    def get(self, request, pk=None):
+        """
+        Get a Site
+        :param pk: primary key
+        """
+        for s in self.list(request):
+            if s.id.endswith(pk):
+                return s
+        return None
+
+
+class AlphaPointLocationView(with_metaclass(DataSourcePluginViewMeta)):
+    synthesis_model_class = PointLocation
+
+    def list(self, request):
+        """
+        Get the Site information
+
+        """
+
+        for i in range(10):
+            obj = self.synthesis_model_class(self.datasource, id=i,
+                                             name="Point Location {}".format(i),
+                                             site_id="1",
+                                             type="well",
+                                             geographical_group_id=1,
+                                             geographical_group_type=GeographicalGroup.PLOT,
+                                             coordinates=Coordinates(
+                                                 latitude=90,
+                                                 longitude=90,
+                                                 elevation=500,
+                                                 spatial_ref_system=Coordinates.SPATIAL_REF_WGS84
+                                             ),
+                                             )
+
+            yield obj
+
+    def get(self, request, pk=None):
+        """
+        Get a Site
+        :param pk: primary key
+        """
+        for s in self.list(request):
+            if s.id.endswith(pk):
+                return s
+        return None
 
 
 class AlphaMeshView(with_metaclass(DataSourcePluginViewMeta)):
@@ -246,8 +357,8 @@ class AlphaSourcePlugin(DataSourcePluginPoint):
     title = 'Alpha Source Plugin'
     plugin_view_classes = (AlphaRegionView, AlphaModelView, AlphaModelDomainView,
                            AlphaMeshView, AlphaModelRunView, AlphaDataPointGroupView,
-                           AlphaDataPointView)
-
+                           AlphaDataPointView, AlphaSiteView, AlphaPlotView,
+                           AlphaPointLocationView)
 
     class DataSourceMeta:
         # Data Source attributes

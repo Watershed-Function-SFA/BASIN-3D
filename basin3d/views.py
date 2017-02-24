@@ -13,25 +13,28 @@
     :backlinks: top
 """
 from collections import OrderedDict
-
+from django.conf import settings
 from django.core.urlresolvers import NoReverseMatch
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from django.conf import settings
 
 
 BASIN3D_DIRECT_VIEWS = [('direct-apis', 'direct-api-list')]\
 
-BASIN3D_SYNTHESIS_VIEWS = [ ('synthesis-datasources', 'datasource-list'),
-                 ('synthesis-variables', 'measurementvariable-list'),
-                 ('synthesis-measurements', 'measurement-list'),
-                 ('synthesis-regions', 'region-list'),
-                 ('synthesis-models', 'model-list'), ('synthesis-modeldomains', 'modeldomain-list'),
-                 ('synthesis-modelruns', 'modelrun-list'),
-                 ('synthesis-datapointgroups', 'datapointgroup-list'),
-                 ('synthesis-datapoints', 'datapoint-list'),
-                 ('synthesis-mesh', 'mesh-list'), ]
+BASIN3D_SYNTHESIS_VIEWS = [('synthesis-datasources', 'datasource-list'),
+                           ('synthesis-variables', 'measurementvariable-list'),
+                           ('synthesis-measurements', 'measurement-list'),
+                           ('synthesis-regions', 'region-list'),
+                           ('synthesis-sites', 'site-list'),
+                           ('synthesis-plots', 'plot-list'),
+                           ('synthesis-pointlocations', 'pointlocation-list'),
+                           ('synthesis-models', 'model-list'),
+                           ('synthesis-modeldomains', 'modeldomain-list'),
+                           ('synthesis-modelruns', 'modelrun-list'),
+                           ('synthesis-datapointgroups', 'datapointgroup-list'),
+                           ('synthesis-datapoints', 'datapoint-list'),
+                           ('synthesis-mesh', 'mesh-list'), ]
 
 
 @api_view(['GET'])

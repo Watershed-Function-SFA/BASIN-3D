@@ -1,15 +1,12 @@
 import json
-from unittest import mock
 
 from basin3d.tests import configure
 
 # Load test settings
-from basin3d.viewsets import DirectAPIViewSet
 
 configure()
 
 from django.test import TestCase, override_settings
-import rest_framework
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -61,19 +58,22 @@ class TestAPIRoot(TestCase):
         response = self.client.get('/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {"direct-apis": "http://testserver/direct/",
-                          "synthesis-datasources": "http://testserver/synthesis/datasources/",
-                          "synthesis-variables": "http://testserver/synthesis/variables/",
-                          "synthesis-measurements": "http://testserver/synthesis/measurements/",
-                          "synthesis-regions": "http://testserver/synthesis/regions/",
-                          "synthesis-models": "http://testserver/synthesis/models/",
-                          "synthesis-modeldomains": "http://testserver/synthesis/model_domains/",
-                          "synthesis-modelruns": "http://testserver/synthesis/model_runs/",
-                          "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",
-                          "synthesis-datapoints": "http://testserver/synthesis/data_points/",
-                          "synthesis-mesh": "http://testserver/synthesis/meshes/"}
-
-                         )
+                         {
+                             "synthesis-datasources": "http://testserver/synthesis/datasources/",
+                             "synthesis-variables": "http://testserver/synthesis/variables/",
+                             "synthesis-measurements": "http://testserver/synthesis/measurements/",
+                             "synthesis-regions": "http://testserver/synthesis/regions/",
+                             "synthesis-sites": "http://testserver/synthesis/sites/",
+                             "synthesis-plots": "http://testserver/synthesis/plots/",
+                             "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
+                             "synthesis-models": "http://testserver/synthesis/models/",
+                             "synthesis-modeldomains": "http://testserver/synthesis/model_domains/",
+                             "synthesis-modelruns": "http://testserver/synthesis/model_runs/",
+                             "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",
+                             "synthesis-datapoints": "http://testserver/synthesis/data_points/",
+                             "synthesis-mesh": "http://testserver/synthesis/meshes/",
+                             "direct-apis": "http://testserver/direct/"
+                         })
 
     @override_settings(BASIN3D={'SYNTHESIS': False, 'DIRECT_API': True})
     def test_get_direct_api_only(self):
@@ -92,6 +92,9 @@ class TestAPIRoot(TestCase):
                              "synthesis-variables": "http://testserver/synthesis/variables/",
                              "synthesis-measurements": "http://testserver/synthesis/measurements/",
                              "synthesis-regions": "http://testserver/synthesis/regions/",
+                             "synthesis-sites": "http://testserver/synthesis/sites/",
+                             "synthesis-plots": "http://testserver/synthesis/plots/",
+                             "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
                              "synthesis-models": "http://testserver/synthesis/models/",
                              "synthesis-modeldomains": "http://testserver/synthesis/model_domains/",
                              "synthesis-modelruns": "http://testserver/synthesis/model_runs/",
@@ -493,9 +496,13 @@ class TestDataPointAPI(TestCase):
                              "type": "time_series",
                              "measurement": "http://testserver/synthesis/measurements/1/",
                              "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                             'geographical_group_type': 'mesh',
+                             "geographical_group_type": "mesh",
                              "units": "nm",
-                             "value": 0.6906906
+                             "timestamp": "2016-02-01",
+                             "value": 0.6906906,
+                             "temporal_resolution": "month",
+                             "reference": None,
+                             "utc_offset": -8
                          })
 
     def test_get(self):
@@ -508,9 +515,13 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                'geographical_group_type': 'mesh',
+                "geographical_group_type": "mesh",
                 "units": "nm",
-                "value": 0.3453453
+                "timestamp": "2016-01-01",
+                "value": 0.3453453,
+                "temporal_resolution": "month",
+                "reference": None,
+                "utc_offset": -8
             },
             {
                 "url": "http://testserver/synthesis/data_points/A-2/",
@@ -518,9 +529,13 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                'geographical_group_type': 'mesh',
+                "geographical_group_type": "mesh",
                 "units": "nm",
-                "value": 0.6906906
+                "timestamp": "2016-02-01",
+                "value": 0.6906906,
+                "temporal_resolution": "month",
+                "reference": None,
+                "utc_offset": -8
             },
             {
                 "url": "http://testserver/synthesis/data_points/A-3/",
@@ -528,9 +543,13 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                'geographical_group_type': 'mesh',
+                "geographical_group_type": "mesh",
                 "units": "nm",
-                "value": 1.0360359000000001
+                "timestamp": "2016-03-01",
+                "value": 1.0360359000000001,
+                "temporal_resolution": "month",
+                "reference": None,
+                "utc_offset": -8
             },
             {
                 "url": "http://testserver/synthesis/data_points/A-4/",
@@ -538,9 +557,13 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                'geographical_group_type': 'mesh',
+                "geographical_group_type": "mesh",
                 "units": "nm",
-                "value": 1.3813812
+                "timestamp": "2016-04-01",
+                "value": 1.3813812,
+                "temporal_resolution": "month",
+                "reference": None,
+                "utc_offset": -8
             },
             {
                 "url": "http://testserver/synthesis/data_points/A-5/",
@@ -548,9 +571,13 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                'geographical_group_type': 'mesh',
+                "geographical_group_type": "mesh",
                 "units": "nm",
-                "value": 1.7267265
+                "timestamp": "2016-05-01",
+                "value": 1.7267265,
+                "temporal_resolution": "month",
+                "reference": None,
+                "utc_offset": -8
             },
             {
                 "url": "http://testserver/synthesis/data_points/A-6/",
@@ -558,9 +585,13 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                'geographical_group_type': 'mesh',
+                "geographical_group_type": "mesh",
                 "units": "nm",
-                "value": 2.0720718000000002
+                "timestamp": "2016-06-01",
+                "value": 2.0720718000000002,
+                "temporal_resolution": "month",
+                "reference": None,
+                "utc_offset": -8
             },
             {
                 "url": "http://testserver/synthesis/data_points/A-7/",
@@ -568,9 +599,13 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                'geographical_group_type': 'mesh',
+                "geographical_group_type": "mesh",
                 "units": "nm",
-                "value": 2.4174171
+                "timestamp": "2016-07-01",
+                "value": 2.4174171,
+                "temporal_resolution": "month",
+                "reference": None,
+                "utc_offset": -8
             },
             {
                 "url": "http://testserver/synthesis/data_points/A-8/",
@@ -578,9 +613,13 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                'geographical_group_type': 'mesh',
+                "geographical_group_type": "mesh",
                 "units": "nm",
-                "value": 2.7627624
+                "timestamp": "2016-08-01",
+                "value": 2.7627624,
+                "temporal_resolution": "month",
+                "reference": None,
+                "utc_offset": -8
             },
             {
                 "url": "http://testserver/synthesis/data_points/A-9/",
@@ -588,8 +627,12 @@ class TestDataPointAPI(TestCase):
                 "type": "time_series",
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                'geographical_group_type': 'mesh',
+                "geographical_group_type": "mesh",
                 "units": "nm",
-                "value": 3.1081077
+                "timestamp": "2016-09-01",
+                "value": 3.1081077,
+                "temporal_resolution": "month",
+                "reference": None,
+                "utc_offset": -8
             }
         ])
