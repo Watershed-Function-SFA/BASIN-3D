@@ -6,44 +6,239 @@
 
 :synopsis: Classes to represent Multi-scale Spatial Hierarchy for Field Observations
 
-* :class:`Coordinates` - Generic XYZ coordinates for a point on earth
+* :class:`AltitudeCoordinate` - The reference frame or system from which altitudes (elevations) are measured.
+* :class:`DepthCoordinate` -  The reference frame or system from which depths are measured.
+* :class:`GeographicCoordinate` - The quantities of latitude and longitude which define the position of a point on
+    the Earth's surface with respect to a reference spheroid.
+* :class:`HorizontalCoordinate` - Generic XY coordinates for a point on earth
 * :class:`MeasurementPosition` - Sublocation within a point location
 * :class:`Plot` -  A group of related point measurements
 * :class:`PointLocation` - A point on the earth where something is being measured
 * :class:`Region` - An arbitrary area
 * :class:`SamplingFeature` - Base class.  A feature where sampling is conducted.
 * :class:`Site` - A demarcated, geographic area where measurements are being conducted.
+* :class:`VerticalCoordinate` - The reference frame or system from which vertical distances (altitudes or depths) are measured.
 
 """
 
 from basin3d.synthesis.models import Base
 
 
-class Coordinates(Base):
-    """Generic XYZ coordinates for a point on earth
+class VerticalCoordinate(Base):
+    """
+    The reference frame or system from which vertical distances (altitudes or depths) are measured.
 
     Attributes:
-        latitude
-        longitude
-        spatial_ref_system,
-        elevation
-        elevation_ref_system
+        *type:* enum ("altitude”, "depth),
+        *value:* float, datum_name: string,
+        *vertical_resolution:* float,
+        *vertical_distance_units:* enum  ("meters", "feet"),
+        *encoding_method:* "Explicit coordinate included with horizontal coordinates", "Implicit coordinate", "Attribute values")
     """
+    TYPE_ALTITUDE = "altitude"
+    TYPE_DEPTH = "depth"
 
-    SPATIAL_REF_WGS84 = "WGS84"
-    SPATIAL_REF_GGRS87 = "GGRS87"
-    SPATIAL_REF_NAD83 = "NAD83"
-    SPATIAL_REF_NAD27 = "NAD27"
+    DISTANCE_UNITS_METERS = "meters"
+    DISTANCE_UNITS_FEET = "feet"
+
+    ENCODING_EXPLICIT = "explicit"
+    ENCODING_IMPLICIT = "implicit"
+    ENCODING_ATTRIBUTE = "attribute"
 
     def __init__(self, **kwargs):
-        self.latitude = None
-        self.longitude = None
-        self.spatial_ref_system = None
-        self.elevation = None
-        self.elevation_ref_system = None
+        self.value = None
+        self.vertical_resolution = None
+        self.vertical_distance_units = None
+        self.encoding_method = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
+
+
+class AltitudeCoordinate(VerticalCoordinate):
+    """
+    The reference frame or system from which altitudes (elevations) are measured. The term
+    "altitude" is used instead of the common term "elevation" to conform to the terminology
+    in Federal Information Processing Standards 70-1 and 173.
+
+    Attributes:
+        *datum_name:*
+            + **NGVD29** "National Geodetic Vertical Datum of 1929"
+            + **NAVD88** "North American Vertical Datum of 1988"
+    """
+    DATUM_NGVD29 = "NGVD29"
+    DATUM_NAVD88 = "NAVD88"
+
+    def __init__(self, **kwargs):
+        self.datum = None
+
+        # Initialize after the attributes have been set
+        super().__init__(type=self.TYPE_ALTITUDE, **kwargs)
+
+
+class DepthCoordinate(VerticalCoordinate):
+    """
+    The reference frame or system from which depths are measured.
+
+    Attributes:
+        + datum_name:
+            + **LS** "Local surface"
+            + **MSL** "Mean sea level"
+    """
+    DATUM_LOCAL_SURFACE = "LS"
+    DATUM_MEAN_SEA_LEVEL = "MSL"
+
+    def __init__(self, **kwargs):
+        self.datum = None
+
+        # Initialize after the attributes have been set
+        super().__init__(type=self.TYPE_DEPTH, **kwargs)
+
+
+class HorizontalCoordinate(Base):
+    """Generic XY coordinates for a point on earth (https://www.fgdc.gov/csdgmgraphical/spref.htm)
+    
+    Attributes: 
+        + *x:* float
+        + *y:* float
+        + *datum:* enum ("WGS84”, "NAD27”, "NAD83”), 
+        + *type:* enum ("geographic”,”planar_grid”,”planar_local”, "planar_map_projection”, "local”)
+    """
+
+    DATUM_WGS84 = "WGS84"
+    DATUM_NAD83 = "NAD83"
+    DATUM_NAD27 = "NAD27"
+
+    TYPE_GEOGRAPHIC = "geographic"
+    TYPE_PLANAR_GRID = "planar_grid"
+    TYPE_PLANAR_LOCAL = "planar_local"
+    TYPE_PLANAR_MAP_PROJECTION = "planar_map_projection"
+    TYPE_LOCAL = "local"
+
+    def __init__(self, **kwargs):
+        self.x = None
+        self.y = None
+        self.datum = None
+        self.type = None
+
+        # Initialize after the attributes have been set
+        super().__init__(None, **kwargs)
+
+
+class GeographicCoordinate(HorizontalCoordinate):
+    """
+    The quantities of latitude and longitude which define the position of a point on 
+    the Earth's surface with respect to a reference spheroid. (https://www.fgdc.gov/csdgmgraphical/spref.htm)
+    
+    Attributes: 
+        + *latitude:*
+        + *longitude:*
+        + *units:* units determine the datatypes of latitude and longitude
+            + **DD** "Decimal degrees"
+            + **DM** "Decimal minutes"
+            + **DS** "Decimal seconds"
+            + **DDM** "Degrees and decimal minutes"
+            + **DMDS** "Degrees, minutes, and decimal seconds"
+            + **Radians** "Radians"
+            + **Grads** "Grads")
+
+    """
+
+    UNITS_DEC_DEGREES = "DD"
+    UNITS_DEC_MINUTES = "DM"
+    UNITS_DEC_SECONDS = "DS"
+    UNITS_DEGREES_DEC_MINUTES = "DDM"
+    UNITS_DEGREES_MIN_DEC_SECS = "DMDS"
+    UNITS_RADIANS = "Radians"
+    UNITS_GRADS = "Grads"
+
+    UNITS = {UNITS_DEC_DEGREES: "Decimal degrees",
+             UNITS_DEC_MINUTES: "Decimal minutes",
+             UNITS_DEC_SECONDS: "Decimal seconds",
+             UNITS_DEGREES_DEC_MINUTES: "Degrees and decimal minutes",
+             UNITS_DEGREES_MIN_DEC_SECS: "Degrees, minutes, and decimal seconds",
+             UNITS_RADIANS: UNITS_RADIANS,
+             UNITS_GRADS: UNITS_GRADS
+             }
+
+    UNITS_DATA_TYPES = {UNITS_DEC_DEGREES: float,
+                        UNITS_DEC_MINUTES: float,
+                        UNITS_DEC_SECONDS: float,
+                        UNITS_DEGREES_DEC_MINUTES: (int, float),
+                        UNITS_DEGREES_MIN_DEC_SECS: (int, int, int),
+                        UNITS_RADIANS: float,
+                        UNITS_GRADS: float
+                        }
+
+    def __init__(self, **kwargs):
+        self.units = None
+
+        if "longitude" in kwargs:
+            kwargs["x"] = kwargs["longitude"]
+            kwargs.pop("longitude")
+        if "latitude" in kwargs:
+            kwargs["y"] = kwargs["latitude"]
+            kwargs.pop("latitude")
+
+        # Initialize after the attributes have been set
+        super().__init__(type=self.TYPE_GEOGRAPHIC, **kwargs)
+        self.__validate__()
+
+    def __validate__(self):
+        """
+        Validate the attributes
+        """
+
+        # Validate that the units are valid
+        if self.units not in self.UNITS.keys():
+            raise AttributeError("{} is not a valid unit. Must be in {}".format(self.units,
+                                                                                ",".join(
+                                                                                    self.UNITS.keys())))
+
+        # Validate that the unit values for x and y are the correct type
+        units_data_type = self.UNITS_DATA_TYPES[self.units]
+        for attribute in {'x', 'y'}:
+            value = getattr(self, attribute)
+            if self.units and value:
+                if isinstance(units_data_type, tuple):
+
+                    if not isinstance(value, tuple) or len(units_data_type) != len(value):
+                        raise TypeError("Value {} for {}.{}  must be type {}({})".format(value,
+                                                                                         self.__class__.__name__,
+                                                                                         attribute,
+                                                                                         type(
+                                                                                             units_data_type).__name__,
+                                                                                         ",".join([
+                                                                                                      x.__name__
+                                                                                                      for
+                                                                                                      x
+                                                                                                      in
+                                                                                                      units_data_type])))
+                    else:
+                        for idx, v in enumerate(value):
+                            if not isinstance(v, units_data_type[idx]):
+                                raise TypeError("Value {} for {}.{}  must be type {}({})".format(
+                                    value,
+                                    self.__class__.__name__,
+                                    attribute,
+                                    type(units_data_type).__name__,
+                                    ",".join([x.__name__ for x in units_data_type])))
+
+                elif not isinstance(value, units_data_type):
+                    raise TypeError("Value {} for {}.{} must be type '{}' not '{}'".format(value,
+                                                                                           self.__class__.__name__,
+                                                                                           attribute,
+                                                                                           units_data_type.__name__,
+                                                                                           type(
+                                                                                               value).__name__))
+
+    @property
+    def latitude(self):
+        return self.x
+
+    @property
+    def longitude(self):
+        return self.y
 
 
 class Region(Base):
@@ -170,7 +365,8 @@ class PointLocation(SamplingFeature):
         *type:* enum (well, gage etc.)
         *site_id:* string (establishes parent-child relationship),
         *geographical_group:* string (plot_id or site_id),
-        *coordinates:* Coordinates
+        *horizontal_coordinate:* HorizontalCoordinate,
+        *vertical_extent:* VerticalCoordinate (this is optional).
         *position:* :class:`MeasurementPosition`
     """
 
@@ -178,7 +374,8 @@ class PointLocation(SamplingFeature):
         self.site_id = None
         self.geographical_group_id = None
         self.geographical_group_type = None
-        self.coordinates = None
+        self.horizontal_coordinate = None
+        self.vertical_extent = None
         self.position = None
 
         # Initialize after the attributes have been set
@@ -193,7 +390,7 @@ class MeasurementPosition(Base):
     Adopted from Danielle’s metadata framework.
 
     Attributes:
-        *type:* enum (“Point3D?”)
+        *type:* enum ("Point3D?”)
         *depth_height:* float (+ve for height, -ve for depth)
         *depth_height_units:* string
     """

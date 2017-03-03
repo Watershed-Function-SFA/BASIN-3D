@@ -9,9 +9,11 @@
 
 Serializers that render :mod:`basin.synthesis.models` from Python objects to `JSON` and back again.
 
-* :class:`CoordinatesSerializer`
+
 * :class:`DataPointGroupSerializer`
 * :class:`DataPointSerializer`
+* :class:`FloatField` -  A Float field that can handle empty strings
+* :class:`HorizontalCoordinateSerializer`
 * :class:`IdUrlSerializerMixin` - Serializer Mixin to support Hypermedia as the Engine of Application State (HATEOAS).
 * :class:`MeasurementPositionSerializer`
 * :class:`MeshSerializer`
@@ -26,14 +28,47 @@ Serializers that render :mod:`basin.synthesis.models` from Python objects to `JS
 * :class:`ReadOnlySynthesisModelField` -  A generic field that can be used against any serializer
 * :class:`RegionSerializer`
 * :class:`SiteSerializer`
+* :class:`TimestampSerializer` - Extends :class:`rest_framework.serializers.DateTimeField` to handle
+    numeric epoch times.
 
 """
+from numbers import Number
+
 from basin3d.models import GeographicalGroup
 from basin3d.serializers import MeasurementVariableSerializer
 from basin3d.synthesis.models.field import Region
 from basin3d.synthesis.models.simulations import ModelDomain
+from django.utils.datetime_safe import datetime
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+
+
+class TimestampField(serializers.DateTimeField):
+    """
+    Extends :class:`rest_framework.serializers.DateTimeField` to handle
+    numeric epoch times.
+
+    """
+
+    def to_representation(self, value):
+        """
+        If specified value is an epoch time, convert it first.
+
+        :param value:
+        :return:
+        """
+
+        # Handle epoch time
+        timestamp = None
+        if isinstance(value, str) and value.isdigit():
+            timestamp = int(value)
+        elif isinstance(value, Number):
+            timestamp = value
+
+        if timestamp:
+            value = datetime.fromtimestamp(timestamp).strftime('%m/%d/%y %H:%M:%S.%f')
+
+        return super(TimestampField, self).to_representation(value)
 
 
 class ReadOnlySynthesisModelField(serializers.Field):
@@ -138,26 +173,62 @@ class PersonSerializer(serializers.Serializer):
         instance.institution = validated_data.get('institution', instance.institution)
 
 
-class CoordinatesSerializer(serializers.Serializer):
-    """ Serializes a :class:`basin3d.synthesis.models.field.Coordinates`"""
+class HorizonatalCoordinateSerializer(serializers.Serializer):
+    """ Serializes a :class:`basin3d.synthesis.models.field.HorizonatalCoordinate` and its base classes """
 
+    # Base Fields
+    x = FloatField()
+    y = FloatField()
+    datum = serializers.CharField()
+    type = serializers.CharField()
+
+    # Geographic Fields
     latitude = FloatField()
     longitude = FloatField()
-    elevation = FloatField()
-    spatial_ref_system = serializers.CharField()
-    elevation_ref_system = serializers.CharField()
+    units = serializers.CharField()
 
-    def create(self, validated_data):
-        return CoordinatesSerializer(**validated_data)
+    # Geographic Fields
 
-    def update(self, instance, validated_data):
-        instance.latitude = validated_data.get('latitude', instance.latitude)
-        instance.longitude = validated_data.get('longitude', instance.longitude)
-        instance.elevation = validated_data.get('elevation', instance.elevation)
-        instance.spatial_ref_system = validated_data.get('spatial_ref_system',
-                                                         instance.spatial_ref_system)
-        instance.elevation_ref_system = validated_data.get('elevation_ref_system',
-                                                           instance.elevation_ref_system)
+    FIELDS_HORIZONTAL = {'x', 'y'}
+    FIELDS_GEOGRAPHIC = {'latitude', 'longitude'}
+
+    def __init__(self, *args, **kwargs):
+        """
+        Override ``BaseSerializer.__init__`` to modify the fields outputted. This depends on the
+        type of coordinate classes in :class:`basin3d.synthesis.field`
+
+        See the synthesis classes for a list of attributes:
+            * :class:`basin3d.synthesis.models.field.GeographicCoordate`
+            * :class:`basin3d.synthesis.models.measurement.ImageDataPoint`
+            * :class:`basin3d.synthesis.models.measurement.TimeSeriesDataPoint`
+
+
+        :param args:
+        :param kwargs:
+        """
+        super(HorizonatalCoordinateSerializer, self).__init__(*args, **kwargs)
+
+        field_to_remove = set()
+        field_to_remove.update(self.FIELDS_HORIZONTAL)
+        field_to_remove.update(self.FIELDS_GEOGRAPHIC)
+        instance = None
+        if "instance" in kwargs:
+            instance = kwargs["instance"]
+        elif len(args) >= 1:
+            if args[0] and isinstance(args[0], (list, tuple)) and not isinstance(args[0], str):
+                instance = args[0][0]
+            else:
+                instance = args[0]
+
+        if instance:
+
+            from basin3d.synthesis.models.field import GeographicCoordinate
+            if isinstance(instance, GeographicCoordinate):
+                field_to_remove -= self.FIELDS_GEOGRAPHIC
+
+        # remove unneeded fields
+        for field in field_to_remove:
+            self.fields.pop(field)
 
 
 class SiteSerializer(IdUrlSerializerMixin, serializers.Serializer):
@@ -172,7 +243,8 @@ class SiteSerializer(IdUrlSerializerMixin, serializers.Serializer):
     country = serializers.CharField()
     state_province = serializers.CharField()
     utc_offset = serializers.IntegerField()
-    center_coordinates = ReadOnlySynthesisModelField(serializer_class=CoordinatesSerializer)
+    center_coordinates = ReadOnlySynthesisModelField(
+        serializer_class=HorizonatalCoordinateSerializer)
     geom = serializers.JSONField()
     contacts = serializers.ListSerializer(child=ReadOnlySynthesisModelField(PersonSerializer))
     pi = ReadOnlySynthesisModelField(serializer_class=PersonSerializer)
@@ -249,7 +321,8 @@ class PointLocationSerializer(IdUrlSerializerMixin, serializers.Serializer):
     site = serializers.SerializerMethodField()
     geographical_group = serializers.SerializerMethodField()
     geographical_group_type = serializers.SerializerMethodField()
-    coordinates = ReadOnlySynthesisModelField(serializer_class=CoordinatesSerializer)
+    horizontal_coordinate = ReadOnlySynthesisModelField(
+        serializer_class=HorizonatalCoordinateSerializer)
 
     def get_geographical_group_type(self, obj):
         """
@@ -296,7 +369,8 @@ class PointLocationSerializer(IdUrlSerializerMixin, serializers.Serializer):
                                                          instance.geographical_group)
         instance.type = validated_data.get('type', instance.type)
         instance.site_id = validated_data.get('site_id', instance.site_id)
-        instance.coordinates = validated_data.get('coordinates', instance.coordinates)
+        instance.horizontal_coordinate = validated_data.get('horizontal_coordinate',
+                                                            instance.horizontal_coordinate)
 
         return instance
 
@@ -537,7 +611,7 @@ class DataPointSerializer(serializers.Serializer):
     units = serializers.CharField()
 
     # Time Series
-    timestamp = serializers.DateTimeField()
+    timestamp = TimestampField()
     value = serializers.FloatField()
     temporal_resolution = serializers.CharField()
     reference = serializers.CharField()
@@ -575,7 +649,7 @@ class DataPointSerializer(serializers.Serializer):
         if "instance" in kwargs:
             instance = kwargs["instance"]
         elif len(args) >= 1:
-            if isinstance(args[0], (list, tuple)) and not isinstance(args[0], str):
+            if args[0] and isinstance(args[0], (list, tuple)) and not isinstance(args[0], str):
                 instance = args[0][0]
             else:
                 instance = args[0]
@@ -590,6 +664,7 @@ class DataPointSerializer(serializers.Serializer):
             elif isinstance(instance, ImageDataPoint):
                 field_to_remove -= self.FIELDS_IMAGE
 
+        # remove unneeded fields
         for field in field_to_remove:
             self.fields.pop(field)
 

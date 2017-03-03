@@ -45,22 +45,60 @@ class DataSourcePluginViewMeta(type):
         if "__init__" in dct:
             old_init = dct["__init__"]
 
-        def get_variable(self, datasource_variable_name):
+        def get_variable(self, variable_name, from_basin3d=False):
+            """
+            Convert the given name to either BASIN-3D from :class:`~basin3d.models.DataSource`
+            variable name or the other way around.
+
+            :param variable_name:  The :class:`~basin3d.models.MeasurmentVariable`
+                 name to convert
+            :param: from_basin3d: boolean that says whether the variable name is a
+                BASIN-3D variable. If not, then this a datasource variable name.
+            :type from_basin3d: boolean
+            :return: A variable name
+            :rtype: str
+            """
 
             from basin3d.models import DataSourceMeasurementVariable
             try:
-                return DataSourceMeasurementVariable.objects.get(
-                    datasource__name=self.datasource.name,
-                    name=datasource_variable_name)
+                if from_basin3d:
+                    # Convert from BASIN-3D to DataSource variable name
+                    return DataSourceMeasurementVariable.objects.get(
+                        datasource__name=self.datasource.name,
+                        measure_variable_id=variable_name)
+                else:
+                    # Convert from DataSource variable name to BASIN-3D
+                    return DataSourceMeasurementVariable.objects.get(
+                        datasource__name=self.datasource.name,
+                        name=variable_name)
             except DataSourceMeasurementVariable.DoesNotExist:
                 return None
 
-        def get_variables(self, datasource_variable_names):
+        def get_variables(self, variable_names, from_basin3d=False):
+            """
+            Convert the given list of names to either BASIN-3D from :class:`~basin3d.models.DataSource`
+            variable name or the other way around.
 
+            :param variable_names:  The :class:`~basin3d.models.MeasurmentVariable`
+                 names to convert
+            :type variable_names: list
+            :param: from_basin3d: boolean that says whether the variable name is a
+                BASIN-3D variable. If not, then this a datasource variable names.
+            :type from_basin3d: boolean
+            :return: list of variable names
+            :rtype: list
+            """
             from basin3d.models import DataSourceMeasurementVariable
-            return DataSourceMeasurementVariable.objects.filter(
-                datasource__name=self.datasource.name,
-                name__in=set(datasource_variable_names))
+            if from_basin3d:
+                # Convert from BASIN-3D to DataSource variable name
+                return DataSourceMeasurementVariable.objects.filter(
+                    datasource__name=self.datasource.name,
+                    measure_variable_id__in=set(variable_names))
+            else:
+                # Convert from DataSource variable name to BASIN-3D
+                return DataSourceMeasurementVariable.objects.filter(
+                    datasource__name=self.datasource.name,
+                    name__in=set(variable_names))
 
         def new_init(self, *args, **kwargs):
 

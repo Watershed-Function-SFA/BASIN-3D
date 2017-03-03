@@ -124,6 +124,85 @@ class TestDirectAPIRoot(TestCase):
                          )
 
 
+class TestSiteAPI(TestCase):
+    """
+    Test /synthesis/regions api
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_get(self):
+        self.maxDiff = None
+        response = self.client.get('/synthesis/sites/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         [
+                             {
+                                 "id": "A-1",
+                                 "name": "Foo",
+                                 "description": "Foo Bar Site",
+                                 "type": "site",
+                                 "country": "US",
+                                 "state_province": "California",
+                                 "utc_offset": -6,
+                                 "center_coordinates": {
+                                     "datum": "WGS84",
+                                     "type": "geographic",
+                                     "latitude": 90.0,
+                                     "longitude": 90.0,
+                                     "units": "DS"
+                                 },
+                                 "geom": None,
+                                 "contacts": [
+                                     {
+                                         "first_name": "Barry",
+                                         "last_name": "Allen",
+                                         "email": "ballen@foo.bar",
+                                         "institution": "DC Comics"
+                                     }
+                                 ],
+                                 "pi": {
+                                     "first_name": "Jessica",
+                                     "last_name": "Jones",
+                                     "email": "jjones@foo.bar",
+                                     "institution": "DC Comics"
+                                 },
+                                 "urls": [
+                                     "http://foo.bar"
+                                 ],
+                                 "url": "http://testserver/synthesis/sites/A-1/"
+                             }
+                         ]
+
+                         )
+
+    def test_get_detail(self):
+        response = self.client.get('/synthesis/regions/A-SI123/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {"id": "A-SI123", "geom": None,
+                          "description": "This is for my site description",
+                          'name': 'a site',
+                          'model_domains': 'http://testserver/synthesis/regions/A-SI123/model_domains/',
+                          "url": "http://testserver/synthesis/regions/A-SI123/"})
+
+    def test_get_detail_missing(self):
+        response = self.client.get('/synthesis/regions/A-FOO/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'content': 'There is no detail for A-FOO', 'success': False})
+
+    def test_get_bad_id_prefix(self):
+        response = self.client.get('/synthesis/regions/B-FOO/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {
+                             'detail': 'There is no detail for datasource object B-FOO. The datasource id '
+                                       "'B' is invalid.",
+                             'success': False})
+
+
 class TestRegionAPI(TestCase):
     """
     Test /synthesis/regions api
@@ -188,7 +267,7 @@ class TestModelAPI(TestCase):
                                  "name": None,
                                  "version": "1.0",
                                  "dimensionality": "1D",
-                                 'web_location': None,
+                                 'web_location': '/testserver/url/0',
                                  "url": "http://testserver/synthesis/models/A-M0/"
                              },
                              {
@@ -196,7 +275,7 @@ class TestModelAPI(TestCase):
                                  "name": None,
                                  "version": "1.0",
                                  "dimensionality": "2D",
-                                 'web_location': None,
+                                 'web_location': '/testserver/url/1',
                                  "url": "http://testserver/synthesis/models/A-M1/"
                              },
                              {
@@ -204,7 +283,7 @@ class TestModelAPI(TestCase):
                                  "name": None,
                                  "version": "1.0",
                                  "dimensionality": "3D",
-                                 'web_location': None,
+                                 'web_location': '/testserver/url/2',
                                  "url": "http://testserver/synthesis/models/A-M2/"
                              }
                          ]
@@ -220,7 +299,7 @@ class TestModelAPI(TestCase):
                              "name": None,
                              "version": "1.0",
                              "dimensionality": "3D",
-                             'web_location': None,
+                             'web_location': '/testserver/url/2',
                              "url": "http://testserver/synthesis/models/A-M2/"
                          })
 

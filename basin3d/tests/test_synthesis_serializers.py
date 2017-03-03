@@ -24,7 +24,8 @@ class RegionSerializerTests(TestCase):
     def test_serializer(self):
         """ Test Regions Serialization"""
 
-        a_region = basin3d.synthesis.models.field.Region(self.datasource, name="a site", id="SI123",
+        a_region = basin3d.synthesis.models.field.Region(self.datasource, name="a region",
+                                                         id="SI123",
                                                          description="US",
                                                          geom={})
 
@@ -32,7 +33,7 @@ class RegionSerializerTests(TestCase):
 
         json_obj = JSONRenderer().render(s.data)
         self.assertEqual(json.loads(json_obj.decode('utf-8')),
-                         {"id": "A-SI123", "description": "US", "geom": {}, 'name': 'a site',
+                         {"id": "A-SI123", "description": "US", "geom": {}, 'name': 'a region',
                           "url": None,
                           'model_domains': None})
 
@@ -44,14 +45,14 @@ class ModelSerializerTests(TestCase):
     def test_serializer(self):
         """ Test Model Serialization"""
 
-        a_region = models.simulations.Model(self.datasource, verion="1.0", id="M1",
+        a_region = models.simulations.Model(self.datasource, version="1.0", id="M1",
                                             dimensionality="1D")
 
         s = ModelSerializer(a_region)
 
         json_obj = JSONRenderer().render(s.data)
         self.assertEqual(json.loads(json_obj.decode('utf-8')),
-                         {'dimensionality': '1D', 'name': None, 'version': None, 'id': 'A-M1',
+                         {'dimensionality': '1D', 'name': None, 'version': "1.0", 'id': 'A-M1',
                           'url': None,
                           'web_location': None})
 
@@ -88,18 +89,28 @@ class MeshSerializerTests(TestCase):
         for num in range(5):
             model_parameters.append(
                 models.simulations.ModelParameter(self.datasource, id=num,
-                                                  name="param_{}".format(num),
+                                                  data_source_name="foo_{}".format(num),
+                                                  model_name="param_{}".format(num),
                                                   value=float(1 / (num + 1))))
 
-        obj = models.simulations.Mesh(self.datasource, id="ME1", parameters=[],
+        obj = models.simulations.Mesh(self.datasource, id="ME1", parameters=model_parameters,
                                       initial_conditions=[])
 
         s = MeshSerializer(obj)
 
         json_obj = JSONRenderer().render(s.data)
         self.assertEqual(json.loads(json_obj.decode('utf-8')),
-                         {"id": "A-ME1", "parameters": [], "geom": {},
-                          "initial_conditions": [], "url": None})
+                         {"id": "A-ME1", "parameters": [
+                             {"id": "A-0", "model_name": "param_0", "data_source_name": "foo_0",
+                              "value": 1.0},
+                             {"id": "A-1", "model_name": "param_1", "data_source_name": "foo_1",
+                              "value": 0.5},
+                             {"id": "A-2", "model_name": "param_2", "data_source_name": "foo_2",
+                              "value": 0.3333333333333333},
+                             {"id": "A-3", "model_name": "param_3", "data_source_name": "foo_3",
+                              "value": 0.25},
+                             {"id": "A-4", "model_name": "param_4", "data_source_name": "foo_4",
+                              "value": 0.2}], "initial_conditions": [], "geom": {}, "url": None})
 
 
 class SiteSerializerTests(TestCase):
@@ -114,11 +125,11 @@ class SiteSerializerTests(TestCase):
                                 country="US",
                                 state_province="California",
                                 utc_offset=-6,
-                                center_coordinates=basin3d.synthesis.models.field.Coordinates(
-                                    latitude=90,
-                                    longitude=90,
-                                    elevation=500,
-                                    spatial_ref_system=models.field.Coordinates.SPATIAL_REF_WGS84
+                                center_coordinates=basin3d.synthesis.models.field.GeographicCoordinate(
+                                    x=90.0,
+                                    y=90.0,
+                                    datum=models.field.GeographicCoordinate.DATUM_WGS84,
+                                    units=models.field.GeographicCoordinate.UNITS_DEC_DEGREES
                                 ),
                                 pi=Person(first_name="Jessica",
                                           last_name="Jones",
@@ -133,6 +144,7 @@ class SiteSerializerTests(TestCase):
         s = SiteSerializer(obj)
 
         json_obj = JSONRenderer().render(s.data)
+        self.maxDiff = None
         self.assertEqual(json.loads(json_obj.decode('utf-8')),
                          {"id": "A-1",
                           "name": "Foo",
@@ -141,20 +153,13 @@ class SiteSerializerTests(TestCase):
                           "country": "US",
                           "state_province": "California",
                           "utc_offset": -6,
-                          'contacts': [{'email': 'ballen@foo.bar',
-                                        'first_name': 'Barry',
-                                        'institution': 'DC Comics',
-                                        'last_name': 'Allen'}],
-                          'pi': {'email': 'jjones@foo.bar',
-                                 'first_name': 'Jessica',
-                                 'institution': 'DC Comics',
-                                 'last_name': 'Jones'},
-                          "center_coordinates":
-                              {"latitude": 90.0,
-                               "longitude": 90.0,
-                               "elevation": 500.0,
-                               "spatial_ref_system": "WGS84",
-                               "elevation_ref_system": None},
-                          "geom": None,
+                          "center_coordinates": {"datum": "WGS84", "type": "geographic",
+                                                 "latitude": 90.0, "longitude": 90.0,
+                                                 "units": "DD"}, "geom": None,
+                          "contacts": [{"first_name": "Barry", "last_name": "Allen",
+                                        "email": "ballen@foo.bar", "institution": "DC Comics"}],
+                          "pi": {"first_name": "Jessica", "last_name": "Jones",
+                                 "email": "jjones@foo.bar", "institution": "DC Comics"},
                           "urls": ["http://foo.bar"],
-                          "url": None})
+                          "url": None}
+                         )

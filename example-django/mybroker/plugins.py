@@ -4,7 +4,8 @@ from basin3d.models import SamplingMedium, MeasurementApproach, GeographicalGrou
 from basin3d.plugins import DataSourcePluginPoint, DataSourcePluginViewMeta
 from basin3d.synthesis.models import measurement, Person
 from basin3d.synthesis.models import simulations
-from basin3d.synthesis.models.field import Region, Site, Coordinates, Plot, PointLocation
+from basin3d.synthesis.models.field import Region, Site, HorizontalCoordinate, Plot, PointLocation, \
+    GeographicCoordinate
 from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint
 from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh, ModelRun
 from collections import OrderedDict
@@ -41,7 +42,7 @@ MEASUREMENTS = [{'description': """The method is based on the sample filtration 
 class AlphaSiteView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = Site
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """
         Get the Site information
 
@@ -52,11 +53,11 @@ class AlphaSiteView(with_metaclass(DataSourcePluginViewMeta)):
                                          country="US",
                                          state_province="California",
                                          utc_offset=-6,
-                                         center_coordinates=Coordinates(
-                                             latitude=90,
-                                             longitude=90,
-                                             elevation=500,
-                                             spatial_ref_system=Coordinates.SPATIAL_REF_WGS84
+                                         center_coordinates=GeographicCoordinate(
+                                             latitude=90.0,
+                                             longitude=90.0,
+                                             datum=GeographicCoordinate.DATUM_WGS84,
+                                             units=GeographicCoordinate.UNITS_DEC_SECONDS
                                          ),
                                          pi=Person(first_name="Jessica",
                                                    last_name="Jones",
@@ -84,7 +85,7 @@ class AlphaSiteView(with_metaclass(DataSourcePluginViewMeta)):
 class AlphaPlotView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = Plot
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """
         Get the Site information
 
@@ -115,7 +116,7 @@ class AlphaPlotView(with_metaclass(DataSourcePluginViewMeta)):
 class AlphaPointLocationView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = PointLocation
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """
         Get the Site information
 
@@ -128,11 +129,11 @@ class AlphaPointLocationView(with_metaclass(DataSourcePluginViewMeta)):
                                              type="well",
                                              geographical_group_id=1,
                                              geographical_group_type=GeographicalGroup.PLOT,
-                                             coordinates=Coordinates(
+                                             coordinates=HorizontalCoordinate(
                                                  latitude=90,
                                                  longitude=90,
                                                  elevation=500,
-                                                 spatial_ref_system=Coordinates.SPATIAL_REF_WGS84
+                                                 spatial_ref_system=HorizontalCoordinate.SPATIAL_REF_WGS84
                                              ),
                                              )
 
@@ -152,7 +153,7 @@ class AlphaPointLocationView(with_metaclass(DataSourcePluginViewMeta)):
 class AlphaMeshView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = Mesh
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """
         Get the Mesh information
         """
@@ -175,7 +176,7 @@ class AlphaMeshView(with_metaclass(DataSourcePluginViewMeta)):
 class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = Region
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """
         Get the Region information
         """
@@ -199,7 +200,7 @@ class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
 class AlphaModelView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = Model
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """
         Generate the simulations.Models for this datasource
         """
@@ -207,7 +208,7 @@ class AlphaModelView(with_metaclass(DataSourcePluginViewMeta)):
             yield simulations.Model(self.datasource, id="M{}".format(num),
                                     version="1.0",
                                     dimensionality=("1D", "2D", "3D")[num],
-                                    url="/testserver/url/{}".format(num))
+                                    web_location="/testserver/url/{}".format(num))
 
     def get(self, request, pk=None):
         """
@@ -223,7 +224,7 @@ class AlphaModelView(with_metaclass(DataSourcePluginViewMeta)):
 class AlphaModelRunView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = ModelRun
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """
         Generate the simulations.ModelRuns for this datasource
 
@@ -252,12 +253,11 @@ class AlphaModelRunView(with_metaclass(DataSourcePluginViewMeta)):
 class AlphaModelDomainView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = ModelDomain
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """ Generate the Model Domains"""
         for num in range(1, 10):
             yield simulations.ModelDomain(self.datasource, id="MD{}".format(num),
                                           name="model domain {}".format(num),
-                                          url="/testserver/url/{}".format(num),
                                           geom={})
 
     def get(self, request, pk=None):
@@ -274,7 +274,7 @@ class AlphaModelDomainView(with_metaclass(DataSourcePluginViewMeta)):
 class AlphaDataPointGroupView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = DataPointGroup
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """ Generate the Data Point Group
 
           Attributes:
@@ -313,7 +313,7 @@ class AlphaDataPointGroupView(with_metaclass(DataSourcePluginViewMeta)):
 class AlphaDataPointView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = DataPoint
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """ Generate the Data Point
 
         Attributes:
