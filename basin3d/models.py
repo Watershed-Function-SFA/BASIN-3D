@@ -25,19 +25,22 @@ class GeographicalGroup(object):
     """
     Geographical groups where a datapoint can come from
     """
-    SAMPLING_FEATURE = 0 # Not implemented
-    SITE = 1 # Not implemented
-    PLOT = 2 # Not implemented
+    SAMPLING_FEATURE = 0  # Not sure how this is used
+    SITE = 1
+    PLOT = 2
     MODEL_DOMAIN = 3
     REGION = 4
     MESH = 5
+    POINT_LOCATION = 6
 
     TYPES = {
             MODEL_DOMAIN: "modeldomain",
             REGION: "region",
-            MESH: "mesh"
-
-             }
+        MESH: "mesh",
+        SITE: "site",
+        PLOT: "plot",
+        POINT_LOCATION: "pointlocation"
+    }
 
 
 class StringListField(models.TextField):
@@ -65,7 +68,7 @@ class StringListField(models.TextField):
         elif isinstance(value, str):
             return value.split(self.delimiter)
 
-        raise ValueError("ListField must be delimited string")
+        raise ValueError("ListField must be  delimited string")
 
     def get_prep_value(self, value):
         if value is None:
@@ -167,7 +170,8 @@ class SamplingMedium(models.Model):
     SURFACE_WATER = "surface water"
     SOIL_GAS = "soil gas"
     GROUNDWATER = "groundwater"
-    SAMPLING_MEDIUMS = [ATOMOSPHERE, SURFACE_WATER, SOIL_SEDIMENT, SOIL_GAS, GROUNDWATER]
+    UNKNOWN = 'unknown'
+    SAMPLING_MEDIUMS = [ATOMOSPHERE, SURFACE_WATER, SOIL_SEDIMENT, SOIL_GAS, GROUNDWATER, UNKNOWN]
 
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
     description = models.TextField(blank=True, null=True)
@@ -188,7 +192,8 @@ class MeasurementApproach(models.Model):
     """
     SENSOR = "sensor"
     MANUAL = "manual"
-    APPROACHES = [MANUAL, SENSOR]
+    UNKNOWN = 'unknown'
+    APPROACHES = [MANUAL, SENSOR, UNKNOWN]
 
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
     description = models.TextField(blank=True, null=True)
@@ -214,17 +219,18 @@ class Measurement(models.Model):
         - *sampling_medium:* enum (atmosphere, surface water, soil/sediment, soil gas, groundwater), atmosphere
         - *owner:* Person (optional), NotImplemented
         - *contact:* Person (optional), NotImplemented
-        - *measurement_approach:* enum (sensor, manual), sensor
-        - *measurement_approach_description:* string (optional), Values measured using car surveys
+        - *approach:* enum (sensor, manual), sensor
+        - *approach_description:* string (optional), Values measured using car surveys
     """
 
     description = models.TextField(null=True, blank=True)
     variable = models.ForeignKey('MeasurementVariable', null=False)
     sampling_medium = models.ForeignKey('SamplingMedium', null=False)
-    measurement_approach = models.ForeignKey('MeasurementApproach', null=False)
+    approach = models.ForeignKey('MeasurementApproach', null=False)
+    datasource = models.ForeignKey('DataSource', null=False)
 
     class Meta:
-        unique_together = ('sampling_medium', 'variable', 'measurement_approach')
+        unique_together = ('variable', 'datasource')
 
     def __str__(self):
         return self.__unicode__()

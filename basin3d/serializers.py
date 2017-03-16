@@ -22,11 +22,30 @@ About Django Serializers:
 
 
 """
-from rest_framework import serializers
-
 from basin3d.models import MeasurementVariable, DataSourceMeasurementVariable, DataSource, \
     Measurement
 from rest_framework import reverse
+from rest_framework import serializers
+
+
+class DelimitedListField(serializers.ListField):
+    """
+    Convert a delemited string field to a list
+    """
+
+    child = serializers.CharField()
+
+    def __init__(self, *args, delimiter=",", **kwargs):
+        super(DelimitedListField, self).__init__(*args, **kwargs)
+        self.delimiter = delimiter
+
+    def to_representation(self, data):
+        """
+        List of object instances -> List of dicts of primitive datatypes.
+        """
+        data_values = data.split(self.delimiter)
+        return [self.child.to_representation(item) if item is not None else None for item in
+                data_values]
 
 
 class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
@@ -75,30 +94,41 @@ class DataSourceMeasurementVariableSerializer(serializers.HyperlinkedModelSerial
 class MeasurementVariableSerializer(serializers.HyperlinkedModelSerializer):
     """
 
-    Broker parameter Serializer
+    Measurement Variable serializer
 
     """
+
+    categories = DelimitedListField()
 
     class Meta:
         model = MeasurementVariable
         depth = 2
+        fields = ('url', 'id', 'full_name', 'categories')
 
 
 class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
     """
 
-    Broker parameter Serializer
+    Measurement Serializer
 
     """
 
     sampling_medium = serializers.SerializerMethodField()
-    measurement_approach = serializers.SerializerMethodField()
+    approach = serializers.SerializerMethodField()
+    datasource = serializers.SerializerMethodField()
+    variable = serializers.SerializerMethodField()
 
     def get_sampling_medium(self, obj):
         return obj.sampling_medium.name
 
-    def get_measurement_approach(self, obj):
-        return obj.measurement_approach.name
+    def get_approach(self, obj):
+        return obj.approach.name
+
+    def get_datasource(self, obj):
+        return obj.datasource.name
+
+    def get_variable(self, obj):
+        return obj.variable.id
 
     class Meta:
         model = Measurement

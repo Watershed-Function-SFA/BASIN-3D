@@ -255,16 +255,4 @@ __insert_basin3d_defaults()
 def get_url(url, params=None, headers=None, verify=False):
     import requests
     response = requests.get(url, params=params, verify=verify, headers=headers)
-    from rest_framework import status
-    if response.status_code == status.HTTP_200_OK:
-        try:
-            return response
-        except Exception as e:
-            logger.error("Datasource error {}: Invalid JSON return from url: {}".format(url,
-                                                                            response.content))
-            return None
-    else:
-        logger.error(
-            "Datasource error {}: HTTP Error {} {}".format(url, response.status_code,
-                                                           response.content))
-    return None
+    return response

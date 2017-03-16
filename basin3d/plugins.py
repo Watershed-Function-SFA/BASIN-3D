@@ -13,14 +13,19 @@
     :backlinks: top
 
 """
+import logging
+from json import JSONDecodeError
+
+import requests
+import yaml
 from basin3d import synthesis, get_url
 from basin3d.apps import Basin3DConfig
 from django.apps import apps
 from django.conf import settings
+from django.http import HttpResponse
+from django.http import JsonResponse
 from djangoplugins.point import PluginPoint
-import requests
-import yaml
-import logging
+from rest_framework import status
 
 __all__ = ['get_url']
 
@@ -41,6 +46,88 @@ class DataSourcePluginViewMeta(type):
         if "__init__" in dct:
             old_init = dct["__init__"]
 
+        def get_measurements(self, variable_names):
+            """t
+            Get the measuremen to the specified variable_name
+            :param variable_names: the variable names to get the :class:`~basin3d.models.Measurment` for
+            :type variable_names: list
+            :return: :class:`~basin3d.models.Measurment`
+            """
+            from basin3d.models import Measurement
+            try:
+                return Measurement.filter.get(datasource__name=self.datasource.name,
+                                              variable_id__in=variable_names)
+            except Measurement.DoesNotExist:
+                return None
+
+        def get_measurement(self, variable_name):
+            """
+            Get the measuremen to the specified variable_name
+            :param variable_name: the variable name to get the :class:`~basin3d.models.Measurment` for
+            :return: :class:`~basin3d.models.Measurment`
+            """
+            from basin3d.models import Measurement
+            try:
+                return Measurement.objects.get(datasource__name=self.datasource.name,
+                                               variable_id=variable_name)
+            except Measurement.DoesNotExist:
+                return None
+
+        def get_variable(self, variable_name, from_basin3d=False):
+            """
+            Convert the given name to either BASIN-3D from :class:`~basin3d.models.DataSource`
+            variable name or the other way around.
+
+            :param variable_name:  The :class:`~basin3d.models.MeasurmentVariable`
+                 name to convert
+            :param: from_basin3d: boolean that says whether the variable name is a
+                BASIN-3D variable. If not, then this a datasource variable name.
+            :type from_basin3d: boolean
+            :return: A variable name
+            :rtype: str
+            """
+
+            from basin3d.models import DataSourceMeasurementVariable
+            try:
+                if from_basin3d:
+                    # Convert from BASIN-3D to DataSource variable name
+                    return DataSourceMeasurementVariable.objects.get(
+                        datasource__name=self.datasource.name,
+                        measure_variable_id=variable_name)
+                else:
+                    # Convert from DataSource variable name to BASIN-3D
+                    return DataSourceMeasurementVariable.objects.get(
+                        datasource__name=self.datasource.name,
+                        name=variable_name)
+            except DataSourceMeasurementVariable.DoesNotExist:
+                return None
+
+        def get_variables(self, variable_names, from_basin3d=False):
+            """
+            Convert the given list of names to either BASIN-3D from :class:`~basin3d.models.DataSource`
+            variable name or the other way around.
+
+            :param variable_names:  The :class:`~basin3d.models.MeasurmentVariable`
+                 names to convert
+            :type variable_names: list
+            :param: from_basin3d: boolean that says whether the variable name is a
+                BASIN-3D variable. If not, then this a datasource variable names.
+            :type from_basin3d: boolean
+            :return: list of variable names
+            :rtype: list
+            """
+            from basin3d.models import DataSourceMeasurementVariable
+            if from_basin3d:
+                # Convert from BASIN-3D to DataSource variable name
+                return DataSourceMeasurementVariable.objects.filter(
+                    datasource__name=self.datasource.name,
+                    measure_variable_id__in=set(variable_names))
+            else:
+                # Convert from DataSource variable name to BASIN-3D
+                return DataSourceMeasurementVariable.objects.filter(
+                    datasource__name=self.datasource.name,
+                    name__in=set(variable_names))
+
         def new_init(self, *args, **kwargs):
 
             DataSource = apps.get_app_config(Basin3DConfig.name).get_model('DataSource')
@@ -54,7 +141,12 @@ class DataSourcePluginViewMeta(type):
 
             self.datasource = args[0]
 
+        # Add methods
         dct["__init__"] = new_init # replace the original init
+        dct["get_variables"] = get_variables  # add get variables
+        dct["get_variable"] = get_variable
+        dct["get_measurement"] = get_measurement
+        dct["get_measurements"] = get_measurements
 
         return type.__new__(cls, name, parents, dct)
 
@@ -95,25 +187,37 @@ class DataSourcePluginPoint(PluginPoint):
 
         datasource = self.get_datasource()
 
-        from rest_framework import status
-        from rest_framework.response import Response
-        response = Response(status=status.HTTP_404_NOT_FOUND)
+        if hasattr(self.get_meta(), "connection_class"):
+            http_auth = self.get_meta().connection_class(datasource)
 
-        if hasattr(self.get_meta(),"auth_class"):
-            http_oauth = self.get_meta().auth_class(datasource)
+            try:
+                response = http_auth.get(direct_path,
+                                         params=request.query_params)
 
-            headers, token = http_oauth.get_auth_header_token()
-            response = None
-            if headers:
-                from django.conf import settings
-                response = get_url("{}{}".format(datasource.location, direct_path),
-                                   params=request.query_params,
-                                   verify=http_oauth.verify_ssl, headers=headers)
-
-            if token:
-                http_oauth.revoke_token(token)
+            finally:
+                http_auth.logout()
         else:
-            response = get_url("{}{}".format(datasource.location, direct_path))
+            try:
+                response = get_url("{}{}".format(datasource.location, direct_path))
+            except Exception as e:
+                response = JsonResponse(data={"error": str(e)},
+                                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if not response:
+            try:
+                response = JsonResponse(data={"error": response.json()},
+                                        status=response.status_code)
+            except JSONDecodeError:
+                response = HttpResponse(response.content,
+                                        status=response.status_code)
+        else:
+            try:
+                if hasattr(response, "json"):
+                    response.json()
+            except JSONDecodeError:
+                response = JsonResponse(data={"error": "Did not receive a JSON Response"},
+                                        status=response.status_code)
+
         return response
 
     @classmethod
@@ -171,7 +275,69 @@ class DataSourcePluginPoint(PluginPoint):
             raise ValueError("{}.DataSourceMeta does not define an 'id_prefix'.")
 
 
-class HTTPOAuth2DataSource(object):
+class HTTPConnectionDataSource(object):
+    """
+    Class for handling Authentication and authorization of
+    :class:`basin3d.models.DataSource` over HTTP
+
+
+    :param datasource: the datasource to authenticate and authorize via HTTP
+    :type datasource: :class:`basin3d.models.DataSource` instance
+    """
+
+    def __init__(self, datasource, *args, **kwargs):
+        self.datasource = datasource
+        self.credentials = None
+        self.verify_ssl = True
+        if datasource.plugin.get_plugin().DataSourceMeta.id in settings.BASIN3D and \
+                        'VERIFY_SSL' in settings.BASIN3D[
+                    datasource.plugin.get_plugin().DataSourceMeta.id]:
+            self.verify_ssl = settings.BASIN3D[datasource.plugin.get_plugin().DataSourceMeta.id][
+                'VERIFY_SSL']
+
+    def login(self):
+        """
+        Login to the :class:`basin3d.models.DataSource`
+
+        :return: JSON response
+        :rtype: dict
+        """
+        raise NotImplemented
+
+    def logout(self):
+        """
+        Login out of the :class:`basin3d.models.DataSource`
+
+        :return: None
+        """
+        raise NotImplemented
+
+    def get(self, url_part, params=None, headers=None):
+        """
+        The resources at the spedicfied url
+
+        :param url_part:
+        :param params:
+        :param headers:
+        :return:
+        """
+        raise NotImplemented
+
+    @classmethod
+    def get_credentials_format(cls):
+        """
+        This returnes the format that the credentials are stored in the DB
+        :return: The format for the credentials
+        """
+        raise NotImplemented
+
+
+class InvalidOrMissingCredentials(Exception):
+    """The credentials are invalid or missing"""
+    pass
+
+
+class HTTPOAuth2DataSource(HTTPConnectionDataSource):
     """
     Class for handling Authentication and authorization of
     :class:`basin3d.models.DataSource` over HTTP with OAuth2
@@ -179,23 +345,23 @@ class HTTPOAuth2DataSource(object):
 
     :param datasource: the datasource to authenticate and authorize via HTTP
     :type datasource: :class:`basin3d.models.DataSource` instance
-    :param verify_ssl: Verify SSL
-    :type verify_ssl: boolean
+    :param auth_token_path: The url part for requesting a token
+    :param revoke_token_path: The url part for revoking a valid token
+    :param auth_scope: The scope of the token being requested (e.g read, write, group)
+    :param grant_type: The type of oauth2 grant (e.g client_credentials, password,
+            refresh_token, authorization_code)
 
     """
 
     CREDENTIALS_FORMAT = 'client_id:\nclient_secret:\n'
 
-    def __init__(self,datasource, verify_ssl=True, auth_token_path="o/token/",
-                 revoke_token_path="o/revoke_token/", auth_scope="read",
+    def __init__(self, datasource, *args, auth_token_path="o/token/",
+                 revoke_token_path="o/logout/", auth_scope="read",
                  grant_type="client_credentials",
-                 *args, **kwargs):
+                 **kwargs):
 
-        self.datasource = datasource
-        self.credentials = None
-        if datasource.plugin.get_plugin().DataSourceMeta.id in settings.BASIN3D and \
-                'VERIFY_SSL' in  settings.BASIN3D[datasource.plugin.get_plugin().DataSourceMeta.id]:
-            self.verify_ssl = settings.BASIN3D[datasource.plugin.get_plugin().DataSourceMeta.id]['VERIFY_SSL']
+        super(HTTPOAuth2DataSource, self).__init__(datasource, *args, **kwargs)
+        self.token = None
         self.auth_token_path = auth_token_path
         self.revoke_token_path = revoke_token_path
         self.auth_scope = auth_scope
@@ -232,10 +398,18 @@ class HTTPOAuth2DataSource(object):
             self.credentials = yaml.load(self.credentials)
             if self._validate_credentials():
                 return self.credentials["client_id"], self.credentials["client_secret"]
+            raise InvalidOrMissingCredentials("client_id and client_secret are missing or invalid")
 
         return None,None
 
-    def get_token(self):
+    @staticmethod
+    def get_credentials_format():
+        """
+        :return: The format for the credentials
+        """
+        return HTTPOAuth2DataSource.CREDENTIALS_FORMAT
+
+    def login(self):
         """
         Get a token
 
@@ -280,38 +454,43 @@ class HTTPOAuth2DataSource(object):
 
             # Get the JSON content (This has the token)
             result_json = res.json()
-            return result_json
+            self.token = result_json
         except Exception as e:
             logger.error("Authentication  error {}: {}".format(url, e))
-            return None
+            # Access is denied!!
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied()
 
-    def get_auth_header_token(self):
+    def get(self, url_part, params=None, headers=None):
         """
-        Login to the Data Source. Return the Authorization header and the access token
+        Login Data Source if not already logged in.
+        Access url with the Authorization header and the access token
 
         Authorization Header:
             - Authorization": "{token_type} {access_token}
 
-        :param datasource: The datasource object
-        :type datasource: :class:`basin3d.models.DataSource`
-        :return: tuple of dict of headers and token
-        :rtype: tuple
+        :param url_part: The url part to request
+        :param params: additional parameters for the request
+        :type params: dict
+        :param headers: request headers
+        :return: None
+        :raises: PermissionDenied
         """
-
-        # Login and get the token
-        token_json = self.get_token()
-        if not token_json:
+        if not self.token:
+            self.login()
+        if not self.token:
             # Access is denied!!
             from django.core.exceptions import PermissionDenied
             raise PermissionDenied()
 
         # Prepare the Authorization header
-        headers = {"Authorization": "{token_type} {access_token}".format(**token_json)}
+        auth_headers = {"Authorization": "{token_type} {access_token}".format(**self.token)}
+        if headers:
+            auth_headers.update(headers)
 
-        # Return the Authorization header and token
-        return headers, token_json["access_token"]
+        return get_url(url_part, params=params, headers=auth_headers, verify=self.verify_ssl)
 
-    def revoke_token(self, token):
+    def logout(self):
         """
         Revokes atoken
 
@@ -323,13 +502,13 @@ class HTTPOAuth2DataSource(object):
         url = '{}{}'.format(self.datasource.location,self.revoke_token_path)
 
         # Request the token to be revoked
-        res = requests.post(url, params={"token": token},
+        res = requests.post(url, params={"token": self.token["access_token"]},
                             auth=(self.client_id, self.client_secret),
                             verify=self.verify_ssl)
 
         # Validate the success of the token revocation
         from rest_framework import status
         if res.status_code != status.HTTP_200_OK:
-            logger.warn("Problem encountered revoking token for '{}' HTTP status {}",
+            logger.warn("Problem encountered revoking token for '{}' HTTP status {} -- {}".format(
                         self.datasource.name,
-                        res.status_code)
+                res.status_code, res.content.decode('utf-8')))

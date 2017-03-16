@@ -12,9 +12,12 @@ class Command(BaseCommand):
         datasource_id = options['datasource_id']
         try:
             datasource = DataSource.objects.get(name=datasource_id)
-            if hasattr(datasource.plugin.get_plugin().get_meta(),"auth_class"):
-                self.stdout.write(datasource.plugin.get_plugin().get_meta().auth_class.CREDENTIALS_FORMAT)
+            if hasattr(datasource.plugin.get_plugin().get_meta(), "connection_class"):
+                self.stdout.write(
+                    datasource.plugin.get_plugin().get_meta().connection_class.get_credentials_format())
             else:
                 self.stdout.write("There is no credentials format set.")
+                self.stdout.write("Set 'connection_class' in {}.DataSourceMeta".format(
+                    datasource.plugin.pythonpath))
         except DataSource.DoesNotExist:
             raise CommandError('DataSource "%s" does not exist' % datasource_id)

@@ -30,12 +30,13 @@ class Model(TestCase):
         self.datasource = DataSource.objects.get(name='Alpha')
 
     def test_create(self):
-        obj = simulations.Model(self.datasource, id="1234", version="1.0", dimensionality="1D", url="/testserver/url")
+        obj = simulations.Model(self.datasource, id="1234", version="1.0", dimensionality="1D",
+                                web_location="/testserver/url")
 
         self.assertEqual("A-1234", obj.id)
         self.assertEqual("1.0", obj.version)
         self.assertEqual("1D", obj.dimensionality)
-        self.assertEqual("/testserver/url", obj.url)
+        self.assertEqual("/testserver/url", obj.web_location)
 
 
 class ModelDomain(TestCase):
@@ -45,10 +46,8 @@ class ModelDomain(TestCase):
     def test_create(self):
         obj = simulations.ModelDomain(self.datasource, id="1234",
                                       name="a model domain",
-                                      url="/testserver/url",
                                       geom={})
 
         self.assertEqual("A-1234", obj.id)
         self.assertEqual("a model domain", obj.name)
-        self.assertEqual("/testserver/url", obj.url)
         self.assertEqual({}, obj.geom)
