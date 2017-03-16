@@ -35,7 +35,7 @@ Serializers that render :mod:`basin.synthesis.models` from Python objects to `JS
 from numbers import Number
 
 from basin3d.models import GeographicalGroup
-from basin3d.serializers import MeasurementVariableSerializer
+from basin3d.serializers import MeasurementVariableSerializer, MeasurementSerializer
 from basin3d.synthesis.models.field import Region
 from basin3d.synthesis.models.simulations import ModelDomain
 from django.utils.datetime_safe import datetime
@@ -84,7 +84,7 @@ class ReadOnlySynthesisModelField(serializers.Field):
         raise NotImplemented
 
     def to_representation(self, obj):
-        serializer = self.serializer_class(obj)
+        serializer = self.serializer_class(obj, context=self.context)
         return serializer.data
 
 
@@ -173,6 +173,17 @@ class PersonSerializer(serializers.Serializer):
         instance.institution = validated_data.get('institution', instance.institution)
 
 
+class VerticalCoordinateSerializer(serializers.Serializer):
+    """ Serializes a :class:`basin3d.synthesis.models.field.VerticalCoordinate` and its base classes """
+
+    value = serializers.FloatField()
+    resolution = serializers.FloatField()
+    distance_units = serializers.CharField()
+    encoding_method = serializers.CharField
+    datum = serializers.CharField()
+    type = serializers.CharField()
+
+
 class HorizonatalCoordinateSerializer(serializers.Serializer):
     """ Serializes a :class:`basin3d.synthesis.models.field.HorizonatalCoordinate` and its base classes """
 
@@ -199,8 +210,6 @@ class HorizonatalCoordinateSerializer(serializers.Serializer):
 
         See the synthesis classes for a list of attributes:
             * :class:`basin3d.synthesis.models.field.GeographicCoordate`
-            * :class:`basin3d.synthesis.models.measurement.ImageDataPoint`
-            * :class:`basin3d.synthesis.models.measurement.TimeSeriesDataPoint`
 
 
         :param args:
@@ -235,6 +244,29 @@ class SiteSerializer(IdUrlSerializerMixin, serializers.Serializer):
     """
     Serializes a :class:`basin3d.synthesis.models.field.Site`
     """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Override ``BaseSerializer.__init__`` to modify the fields outputted. Remove ```geom```
+        if it is not being used
+
+
+        :param args:
+        :param kwargs:
+        """
+        super(SiteSerializer, self).__init__(*args, **kwargs)
+
+        instance = None
+        if "instance" in kwargs:
+            instance = kwargs["instance"]
+        elif len(args) >= 1:
+            if args[0] and isinstance(args[0], (list, tuple)) and not isinstance(args[0], str):
+                instance = args[0][0]
+            else:
+                instance = args[0]
+
+        if instance and not instance.geom:
+            self.fields.pop("geom")
 
     id = serializers.CharField()
     name = serializers.CharField()
@@ -321,7 +353,7 @@ class PointLocationSerializer(IdUrlSerializerMixin, serializers.Serializer):
     site = serializers.SerializerMethodField()
     geographical_group = serializers.SerializerMethodField()
     geographical_group_type = serializers.SerializerMethodField()
-    horizontal_coordinate = ReadOnlySynthesisModelField(
+    horizontal_position = ReadOnlySynthesisModelField(
         serializer_class=HorizonatalCoordinateSerializer)
 
     def get_geographical_group_type(self, obj):
@@ -369,8 +401,8 @@ class PointLocationSerializer(IdUrlSerializerMixin, serializers.Serializer):
                                                          instance.geographical_group)
         instance.type = validated_data.get('type', instance.type)
         instance.site_id = validated_data.get('site_id', instance.site_id)
-        instance.horizontal_coordinate = validated_data.get('horizontal_coordinate',
-                                                            instance.horizontal_coordinate)
+        instance.horizontal_position = validated_data.get('horizontal_position',
+                                                          instance.horizontal_position)
 
         return instance
 
@@ -381,16 +413,28 @@ class MeasurementPositionSerializer(serializers.Serializer):
     """
 
     type = serializers.CharField()
-    depth_height = FloatField()
-    depth_height_units = serializers.CharField()
+    point_location = serializers.SerializerMethodField()
+    vertical_position = ReadOnlySynthesisModelField(
+        serializer_class=VerticalCoordinateSerializer)
+
+    def get_point_location(self, obj):
+        """
+        Get the site url
+        :param obj:
+        :return:
+        """
+        if "request" in self.context and self.context["request"]:
+            return reverse(viewname='pointlocation-detail',
+                           kwargs={'pk': obj.point_location_id},
+                           request=self.context["request"], )
 
     def create(self, validated_data):
         return MeasurementPositionSerializer(**validated_data)
 
     def update(self, instance, validated_data):
         instance.type = validated_data.get('type', instance.type)
-        instance.depth_height = validated_data.get('depth_height', instance.depth_height)
-        instance.depth_height_units = validated_data.get('depth_height_units',
+        instance.point_location_id = validated_data.get('point_location_id', instance.depth_height)
+        instance.vertical_position = validated_data.get('vertical_position',
                                                          instance.depth_height_units)
 
         return instance
@@ -605,10 +649,12 @@ class DataPointSerializer(serializers.Serializer):
     url = serializers.SerializerMethodField()
     id = serializers.CharField()
     type = serializers.SerializerMethodField()
-    measurement = serializers.SerializerMethodField()
     geographical_group = serializers.SerializerMethodField()
     geographical_group_type = serializers.SerializerMethodField()
     units = serializers.CharField()
+    measurement_position = ReadOnlySynthesisModelField(
+        serializer_class=MeasurementPositionSerializer)
+    measurement = ReadOnlySynthesisModelField(serializer_class=MeasurementSerializer)
 
     # Time Series
     timestamp = TimestampField()
@@ -616,7 +662,6 @@ class DataPointSerializer(serializers.Serializer):
     temporal_resolution = serializers.CharField()
     reference = serializers.CharField()
     utc_offset = serializers.IntegerField()
-    position = ReadOnlySynthesisModelField(serializer_class=MeasurementPositionSerializer)
 
     # Image
     size = serializers.FloatField()
@@ -659,10 +704,15 @@ class DataPointSerializer(serializers.Serializer):
             from basin3d.synthesis.models.measurement import TimeSeriesDataPoint, ImageDataPoint
             if isinstance(instance, TimeSeriesDataPoint):
                 field_to_remove -= self.FIELDS_TIME_SERIES
-                if not hasattr(instance, "position"):
-                    field_to_remove.update(("position",))
+                if not hasattr(instance, "measurement_position"):
+                    field_to_remove.update(("measurement_position",))
             elif isinstance(instance, ImageDataPoint):
                 field_to_remove -= self.FIELDS_IMAGE
+
+            # Remove optional fields.  We don't want them crowding
+            # the json
+            if not instance.id:
+                field_to_remove.update(["id", "url"])
 
         # remove unneeded fields
         for field in field_to_remove:
@@ -683,17 +733,6 @@ class DataPointSerializer(serializers.Serializer):
         else:
             return "?"
 
-    def get_measurement(self, obj):
-        """
-        Resolve the URL to the :class:`basin3d.models.Measurement` object
-
-        :param obj: ``DataPoint`` object instance
-        :return: an URL to the :class:`basin3d.models.Measurement` object
-        """
-        if "request" in self.context and self.context["request"]:
-            return reverse(viewname='measurement-detail',
-                           kwargs={'pk': obj.measurement_id},
-                           request=self.context["request"], )
 
     def get_geographical_group_type(self, obj):
         """

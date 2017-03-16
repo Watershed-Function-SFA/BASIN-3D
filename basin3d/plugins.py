@@ -25,6 +25,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.http import JsonResponse
 from djangoplugins.point import PluginPoint
+from rest_framework import status
 
 __all__ = ['get_url']
 
@@ -44,6 +45,33 @@ class DataSourcePluginViewMeta(type):
         old_init=None
         if "__init__" in dct:
             old_init = dct["__init__"]
+
+        def get_measurements(self, variable_names):
+            """t
+            Get the measuremen to the specified variable_name
+            :param variable_names: the variable names to get the :class:`~basin3d.models.Measurment` for
+            :type variable_names: list
+            :return: :class:`~basin3d.models.Measurment`
+            """
+            from basin3d.models import Measurement
+            try:
+                return Measurement.filter.get(datasource__name=self.datasource.name,
+                                              variable_id__in=variable_names)
+            except Measurement.DoesNotExist:
+                return None
+
+        def get_measurement(self, variable_name):
+            """
+            Get the measuremen to the specified variable_name
+            :param variable_name: the variable name to get the :class:`~basin3d.models.Measurment` for
+            :return: :class:`~basin3d.models.Measurment`
+            """
+            from basin3d.models import Measurement
+            try:
+                return Measurement.objects.get(datasource__name=self.datasource.name,
+                                               variable_id=variable_name)
+            except Measurement.DoesNotExist:
+                return None
 
         def get_variable(self, variable_name, from_basin3d=False):
             """
@@ -117,6 +145,8 @@ class DataSourcePluginViewMeta(type):
         dct["__init__"] = new_init # replace the original init
         dct["get_variables"] = get_variables  # add get variables
         dct["get_variable"] = get_variable
+        dct["get_measurement"] = get_measurement
+        dct["get_measurements"] = get_measurements
 
         return type.__new__(cls, name, parents, dct)
 
@@ -163,10 +193,15 @@ class DataSourcePluginPoint(PluginPoint):
             try:
                 response = http_auth.get(direct_path,
                                          params=request.query_params)
+
             finally:
                 http_auth.logout()
         else:
-            response = get_url("{}{}".format(datasource.location, direct_path))
+            try:
+                response = get_url("{}{}".format(datasource.location, direct_path))
+            except Exception as e:
+                response = JsonResponse(data={"error": str(e)},
+                                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if not response:
             try:
@@ -174,6 +209,13 @@ class DataSourcePluginPoint(PluginPoint):
                                         status=response.status_code)
             except JSONDecodeError:
                 response = HttpResponse(response.content,
+                                        status=response.status_code)
+        else:
+            try:
+                if hasattr(response, "json"):
+                    response.json()
+            except JSONDecodeError:
+                response = JsonResponse(data={"error": "Did not receive a JSON Response"},
                                         status=response.status_code)
 
         return response
@@ -356,14 +398,16 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
             self.credentials = yaml.load(self.credentials)
             if self._validate_credentials():
                 return self.credentials["client_id"], self.credentials["client_secret"]
+            raise InvalidOrMissingCredentials("client_id and client_secret are missing or invalid")
 
         return None,None
 
-    def get_credentials_format(cls):
+    @staticmethod
+    def get_credentials_format():
         """
         :return: The format for the credentials
         """
-        return cls.CREDENTIALS_FORMAT
+        return HTTPOAuth2DataSource.CREDENTIALS_FORMAT
 
     def login(self):
         """
@@ -434,7 +478,7 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
         """
         if not self.token:
             self.login()
-        if not self.token():
+        if not self.token:
             # Access is denied!!
             from django.core.exceptions import PermissionDenied
             raise PermissionDenied()
@@ -465,6 +509,6 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
         # Validate the success of the token revocation
         from rest_framework import status
         if res.status_code != status.HTTP_200_OK:
-            logger.warn("Problem encountered revoking token for '{}' HTTP status {}",
+            logger.warn("Problem encountered revoking token for '{}' HTTP status {} -- {}".format(
                         self.datasource.name,
-                        res.status_code)
+                res.status_code, res.content.decode('utf-8')))

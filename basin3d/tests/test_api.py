@@ -1,8 +1,8 @@
 import json
 
+import rest_framework
 from basin3d.tests import configure
-
-# Load test settings
+from basin3d.viewsets import DirectAPIViewSet
 
 configure()
 
@@ -10,40 +10,32 @@ from django.test import TestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from unittest import mock
 
-# def get_direct_api():
-#     def get_url(url, params=None, headers=None, verify=False):
-#         """
-#         Mock direct calls
-#         """
-#
-#         # Return content and status
-#         return type('Dummy', (object,), {
-#             "content": b'{"message":"This is a direct call to the datasource", "url":"https://asource.foo/'
-#                        + str.encode(url) +
-#                        b'"}',
-#             "status_code": status.HTTP_200_OK})
-#     return get_url
-#
-#
-# class DirectAPITest(rest_framework.test.APITestCase):
-#
-#     def setUp(self):
-#         self.view_retrieve = DirectAPIViewSet.as_view({'get':'retrieve'})
-#
-#     @mock.patch('basin3d.get_url', return_value=get_direct_api())
-#     def test_get_detail(self, mock_get_url):
-#         factory = rest_framework.test.APIRequestFactory()
-#         request = factory.get('direct/A/')
-#         response = self.view_retrieve(request, id_prefix="A")
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
-#         self.assertEqual(json.loads(response.content.decode('utf-8')),
-#                          {
-#                              "message": "This is a direct call to the datasource",
-#                              "url": "http://testserver/direct/A/"
-#                          })
-#
-#         mock_get_url.method.assert_called_once()
+
+def get_direct_api():
+    # Return content and status
+    return type('Response', (object,), {
+        "json": lambda: json.loads("kdshfjsdohf"),
+        "status_code": status.HTTP_200_OK})
+
+
+class DirectAPITest(rest_framework.test.APITestCase):
+    def setUp(self):
+        self.view_retrieve = DirectAPIViewSet.as_view({'get': 'retrieve'})
+
+    @mock.patch('basin3d.plugins.get_url')
+    def test_get_detail(self, mock_get_url):
+        mock_get_url.return_value = get_direct_api()
+        import basin3d
+        basin3d.get_url = mock_get_url
+        factory = rest_framework.test.APIRequestFactory()
+        request = factory.get('direct/A/')
+        response = self.view_retrieve(request, id_prefix="A")
+        response.render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'error': 'Did not receive a JSON Response'})
 
 
 class TestAPIRoot(TestCase):
@@ -153,7 +145,6 @@ class TestSiteAPI(TestCase):
                                      "longitude": 90.0,
                                      "units": "DS"
                                  },
-                                 "geom": None,
                                  "contacts": [
                                      {
                                          "first_name": "Barry",
@@ -247,6 +238,216 @@ class TestRegionAPI(TestCase):
                              'detail': 'There is no detail for datasource object B-FOO. The datasource id '
                                        "'B' is invalid.",
                              'success': False})
+
+
+class TestPointLocationAPI(TestCase):
+    """
+    Test /synthesis/point_locations api
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_get(self):
+        response = self.client.get('/synthesis/point_locations/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         [
+                             {
+                                 "id": "A-0",
+                                 "name": "Point Location 0",
+                                 "description": None,
+                                 "type": "pointlocation",
+                                 "site": "http://testserver/synthesis/sites/A-1/",
+                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
+                                 "geographical_group_type": "plot",
+                                 "horizontal_position": {
+                                     "datum": "WGS84",
+                                     "type": "geographic",
+                                     "latitude": 90.0,
+                                     "longitude": 90.0,
+                                     "units": "DD"
+                                 },
+                                 "url": "http://testserver/synthesis/point_locations/A-0/"
+                             },
+                             {
+                                 "id": "A-1",
+                                 "name": "Point Location 1",
+                                 "description": None,
+                                 "type": "pointlocation",
+                                 "site": "http://testserver/synthesis/sites/A-1/",
+                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
+                                 "geographical_group_type": "plot",
+                                 "horizontal_position": {
+                                     "datum": "WGS84",
+                                     "type": "geographic",
+                                     "latitude": 90.0,
+                                     "longitude": 90.0,
+                                     "units": "DD"
+                                 },
+                                 "url": "http://testserver/synthesis/point_locations/A-1/"
+                             },
+                             {
+                                 "id": "A-2",
+                                 "name": "Point Location 2",
+                                 "description": None,
+                                 "type": "pointlocation",
+                                 "site": "http://testserver/synthesis/sites/A-1/",
+                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
+                                 "geographical_group_type": "plot",
+                                 "horizontal_position": {
+                                     "datum": "WGS84",
+                                     "type": "geographic",
+                                     "latitude": 90.0,
+                                     "longitude": 90.0,
+                                     "units": "DD"
+                                 },
+                                 "url": "http://testserver/synthesis/point_locations/A-2/"
+                             },
+                             {
+                                 "id": "A-3",
+                                 "name": "Point Location 3",
+                                 "description": None,
+                                 "type": "pointlocation",
+                                 "site": "http://testserver/synthesis/sites/A-1/",
+                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
+                                 "geographical_group_type": "plot",
+                                 "horizontal_position": {
+                                     "datum": "WGS84",
+                                     "type": "geographic",
+                                     "latitude": 90.0,
+                                     "longitude": 90.0,
+                                     "units": "DD"
+                                 },
+                                 "url": "http://testserver/synthesis/point_locations/A-3/"
+                             },
+                             {
+                                 "id": "A-4",
+                                 "name": "Point Location 4",
+                                 "description": None,
+                                 "type": "pointlocation",
+                                 "site": "http://testserver/synthesis/sites/A-1/",
+                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
+                                 "geographical_group_type": "plot",
+                                 "horizontal_position": {
+                                     "datum": "WGS84",
+                                     "type": "geographic",
+                                     "latitude": 90.0,
+                                     "longitude": 90.0,
+                                     "units": "DD"
+                                 },
+                                 "url": "http://testserver/synthesis/point_locations/A-4/"
+                             },
+                             {
+                                 "id": "A-5",
+                                 "name": "Point Location 5",
+                                 "description": None,
+                                 "type": "pointlocation",
+                                 "site": "http://testserver/synthesis/sites/A-1/",
+                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
+                                 "geographical_group_type": "plot",
+                                 "horizontal_position": {
+                                     "datum": "WGS84",
+                                     "type": "geographic",
+                                     "latitude": 90.0,
+                                     "longitude": 90.0,
+                                     "units": "DD"
+                                 },
+                                 "url": "http://testserver/synthesis/point_locations/A-5/"
+                             },
+                             {
+                                 "id": "A-6",
+                                 "name": "Point Location 6",
+                                 "description": None,
+                                 "type": "pointlocation",
+                                 "site": "http://testserver/synthesis/sites/A-1/",
+                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
+                                 "geographical_group_type": "plot",
+                                 "horizontal_position": {
+                                     "datum": "WGS84",
+                                     "type": "geographic",
+                                     "latitude": 90.0,
+                                     "longitude": 90.0,
+                                     "units": "DD"
+                                 },
+                                 "url": "http://testserver/synthesis/point_locations/A-6/"
+                             },
+                             {
+                                 "id": "A-7",
+                                 "name": "Point Location 7",
+                                 "description": None,
+                                 "type": "pointlocation",
+                                 "site": "http://testserver/synthesis/sites/A-1/",
+                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
+                                 "geographical_group_type": "plot",
+                                 "horizontal_position": {
+                                     "datum": "WGS84",
+                                     "type": "geographic",
+                                     "latitude": 90.0,
+                                     "longitude": 90.0,
+                                     "units": "DD"
+                                 },
+                                 "url": "http://testserver/synthesis/point_locations/A-7/"
+                             },
+                             {
+                                 "id": "A-8",
+                                 "name": "Point Location 8",
+                                 "description": None,
+                                 "type": "pointlocation",
+                                 "site": "http://testserver/synthesis/sites/A-1/",
+                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
+                                 "geographical_group_type": "plot",
+                                 "horizontal_position": {
+                                     "datum": "WGS84",
+                                     "type": "geographic",
+                                     "latitude": 90.0,
+                                     "longitude": 90.0,
+                                     "units": "DD"
+                                 },
+                                 "url": "http://testserver/synthesis/point_locations/A-8/"
+                             },
+                             {
+                                 "id": "A-9",
+                                 "name": "Point Location 9",
+                                 "description": None,
+                                 "type": "pointlocation",
+                                 "site": "http://testserver/synthesis/sites/A-1/",
+                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
+                                 "geographical_group_type": "plot",
+                                 "horizontal_position": {
+                                     "datum": "WGS84",
+                                     "type": "geographic",
+                                     "latitude": 90.0,
+                                     "longitude": 90.0,
+                                     "units": "DD"
+                                 },
+                                 "url": "http://testserver/synthesis/point_locations/A-9/"
+                             }
+                         ]
+
+                         )
+
+    def test_get_detail(self):
+        response = self.client.get('/synthesis/point_locations/A-0/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {
+                             "id": "A-0",
+                             "name": "Point Location 0",
+                             "description": None,
+                             "type": "pointlocation",
+                             "site": "http://testserver/synthesis/sites/A-1/",
+                             "geographical_group": "http://testserver/synthesis/plots/A-1/",
+                             "geographical_group_type": "plot",
+                             "horizontal_position": {
+                                 "datum": "WGS84",
+                                 "type": "geographic",
+                                 "latitude": 90.0,
+                                 "longitude": 90.0,
+                                 "units": "DD"
+                             },
+                             "url": "http://testserver/synthesis/point_locations/A-0/"
+                         })
 
 
 class TestModelAPI(TestCase):
@@ -566,6 +767,7 @@ class TestDataPointAPI(TestCase):
         self.client = APIClient()
 
     def test_get_detail(self):
+        self.maxDiff = None
         response = self.client.get('/synthesis/data_points/A-2/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')),
@@ -573,7 +775,22 @@ class TestDataPointAPI(TestCase):
                              "url": "http://testserver/synthesis/data_points/A-2/",
                              "id": "A-2",
                              "type": "time_series",
-                             "measurement": "http://testserver/synthesis/measurements/1/",
+                             'measurement': {'approach': 'manual',
+                                             'datasource': 'Alpha',
+                                             'description': 'The method is based on the sample filtration '
+                                                            'and dilution ...',
+                                             'sampling_medium': 'groundwater',
+                                             'url': 'http://testserver/synthesis/measurements/1/',
+                                             'variable': 'ACT'},
+                             'measurement_position': {
+                                 'point_location': 'http://testserver/synthesis/point_locations/A-1/',
+                                 'type': 'measurementposition',
+                                 'vertical_position': {'datum': 'LS',
+                                                       'distance_units': 'meters',
+                                                       'resolution': None,
+                                                       'type': 'depth',
+                                                       'value': 0.7069}},
+
                              "geographical_group": "http://testserver/synthesis/meshes/A-1/",
                              "geographical_group_type": "mesh",
                              "units": "nm",
@@ -592,10 +809,28 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-1/",
                 "id": "A-1",
                 "type": "time_series",
-                "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
                 "geographical_group_type": "mesh",
                 "units": "nm",
+                "measurement_position": {
+                    "type": "measurementposition",
+                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                    "vertical_position": {
+                        "value": 0.35345,
+                        "resolution": None,
+                        "distance_units": "meters",
+                        "datum": "LS",
+                        "type": "depth"
+                    }
+                },
+                "measurement": {
+                    "url": "http://testserver/synthesis/measurements/1/",
+                    "sampling_medium": "groundwater",
+                    "approach": "manual",
+                    "datasource": "Alpha",
+                    "variable": "ACT",
+                    "description": "The method is based on the sample filtration and dilution ..."
+                },
                 "timestamp": "2016-01-01",
                 "value": 0.3453453,
                 "temporal_resolution": "month",
@@ -606,10 +841,28 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-2/",
                 "id": "A-2",
                 "type": "time_series",
-                "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
                 "geographical_group_type": "mesh",
                 "units": "nm",
+                "measurement_position": {
+                    "type": "measurementposition",
+                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                    "vertical_position": {
+                        "value": 0.7069,
+                        "resolution": None,
+                        "distance_units": "meters",
+                        "datum": "LS",
+                        "type": "depth"
+                    }
+                },
+                "measurement": {
+                    "url": "http://testserver/synthesis/measurements/1/",
+                    "sampling_medium": "groundwater",
+                    "approach": "manual",
+                    "datasource": "Alpha",
+                    "variable": "ACT",
+                    "description": "The method is based on the sample filtration and dilution ..."
+                },
                 "timestamp": "2016-02-01",
                 "value": 0.6906906,
                 "temporal_resolution": "month",
@@ -620,10 +873,28 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-3/",
                 "id": "A-3",
                 "type": "time_series",
-                "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
                 "geographical_group_type": "mesh",
                 "units": "nm",
+                "measurement_position": {
+                    "type": "measurementposition",
+                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                    "vertical_position": {
+                        "value": 1.06035,
+                        "resolution": None,
+                        "distance_units": "meters",
+                        "datum": "LS",
+                        "type": "depth"
+                    }
+                },
+                "measurement": {
+                    "url": "http://testserver/synthesis/measurements/1/",
+                    "sampling_medium": "groundwater",
+                    "approach": "manual",
+                    "datasource": "Alpha",
+                    "variable": "ACT",
+                    "description": "The method is based on the sample filtration and dilution ..."
+                },
                 "timestamp": "2016-03-01",
                 "value": 1.0360359000000001,
                 "temporal_resolution": "month",
@@ -634,10 +905,28 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-4/",
                 "id": "A-4",
                 "type": "time_series",
-                "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
                 "geographical_group_type": "mesh",
                 "units": "nm",
+                "measurement_position": {
+                    "type": "measurementposition",
+                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                    "vertical_position": {
+                        "value": 1.4138,
+                        "resolution": None,
+                        "distance_units": "meters",
+                        "datum": "LS",
+                        "type": "depth"
+                    }
+                },
+                "measurement": {
+                    "url": "http://testserver/synthesis/measurements/1/",
+                    "sampling_medium": "groundwater",
+                    "approach": "manual",
+                    "datasource": "Alpha",
+                    "variable": "ACT",
+                    "description": "The method is based on the sample filtration and dilution ..."
+                },
                 "timestamp": "2016-04-01",
                 "value": 1.3813812,
                 "temporal_resolution": "month",
@@ -648,10 +937,28 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-5/",
                 "id": "A-5",
                 "type": "time_series",
-                "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
                 "geographical_group_type": "mesh",
                 "units": "nm",
+                "measurement_position": {
+                    "type": "measurementposition",
+                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                    "vertical_position": {
+                        "value": 1.76725,
+                        "resolution": None,
+                        "distance_units": "meters",
+                        "datum": "LS",
+                        "type": "depth"
+                    }
+                },
+                "measurement": {
+                    "url": "http://testserver/synthesis/measurements/1/",
+                    "sampling_medium": "groundwater",
+                    "approach": "manual",
+                    "datasource": "Alpha",
+                    "variable": "ACT",
+                    "description": "The method is based on the sample filtration and dilution ..."
+                },
                 "timestamp": "2016-05-01",
                 "value": 1.7267265,
                 "temporal_resolution": "month",
@@ -662,10 +969,28 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-6/",
                 "id": "A-6",
                 "type": "time_series",
-                "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
                 "geographical_group_type": "mesh",
                 "units": "nm",
+                "measurement_position": {
+                    "type": "measurementposition",
+                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                    "vertical_position": {
+                        "value": 2.1207,
+                        "resolution": None,
+                        "distance_units": "meters",
+                        "datum": "LS",
+                        "type": "depth"
+                    }
+                },
+                "measurement": {
+                    "url": "http://testserver/synthesis/measurements/1/",
+                    "sampling_medium": "groundwater",
+                    "approach": "manual",
+                    "datasource": "Alpha",
+                    "variable": "ACT",
+                    "description": "The method is based on the sample filtration and dilution ..."
+                },
                 "timestamp": "2016-06-01",
                 "value": 2.0720718000000002,
                 "temporal_resolution": "month",
@@ -676,10 +1001,28 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-7/",
                 "id": "A-7",
                 "type": "time_series",
-                "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
                 "geographical_group_type": "mesh",
                 "units": "nm",
+                "measurement_position": {
+                    "type": "measurementposition",
+                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                    "vertical_position": {
+                        "value": 2.47415,
+                        "resolution": None,
+                        "distance_units": "meters",
+                        "datum": "LS",
+                        "type": "depth"
+                    }
+                },
+                "measurement": {
+                    "url": "http://testserver/synthesis/measurements/1/",
+                    "sampling_medium": "groundwater",
+                    "approach": "manual",
+                    "datasource": "Alpha",
+                    "variable": "ACT",
+                    "description": "The method is based on the sample filtration and dilution ..."
+                },
                 "timestamp": "2016-07-01",
                 "value": 2.4174171,
                 "temporal_resolution": "month",
@@ -690,10 +1033,28 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-8/",
                 "id": "A-8",
                 "type": "time_series",
-                "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
                 "geographical_group_type": "mesh",
                 "units": "nm",
+                "measurement_position": {
+                    "type": "measurementposition",
+                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                    "vertical_position": {
+                        "value": 2.8276,
+                        "resolution": None,
+                        "distance_units": "meters",
+                        "datum": "LS",
+                        "type": "depth"
+                    }
+                },
+                "measurement": {
+                    "url": "http://testserver/synthesis/measurements/1/",
+                    "sampling_medium": "groundwater",
+                    "approach": "manual",
+                    "datasource": "Alpha",
+                    "variable": "ACT",
+                    "description": "The method is based on the sample filtration and dilution ..."
+                },
                 "timestamp": "2016-08-01",
                 "value": 2.7627624,
                 "temporal_resolution": "month",
@@ -704,10 +1065,28 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-9/",
                 "id": "A-9",
                 "type": "time_series",
-                "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/meshes/A-1/",
                 "geographical_group_type": "mesh",
                 "units": "nm",
+                "measurement_position": {
+                    "type": "measurementposition",
+                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                    "vertical_position": {
+                        "value": 3.18105,
+                        "resolution": None,
+                        "distance_units": "meters",
+                        "datum": "LS",
+                        "type": "depth"
+                    }
+                },
+                "measurement": {
+                    "url": "http://testserver/synthesis/measurements/1/",
+                    "sampling_medium": "groundwater",
+                    "approach": "manual",
+                    "datasource": "Alpha",
+                    "variable": "ACT",
+                    "description": "The method is based on the sample filtration and dilution ..."
+                },
                 "timestamp": "2016-09-01",
                 "value": 3.1081077,
                 "temporal_resolution": "month",

@@ -1,11 +1,11 @@
 import logging
 
-from basin3d.models import SamplingMedium, MeasurementApproach, GeographicalGroup
+from basin3d.models import SamplingMedium, MeasurementApproach, GeographicalGroup, Measurement
 from basin3d.plugins import DataSourcePluginPoint, DataSourcePluginViewMeta
 from basin3d.synthesis.models import measurement, Person
 from basin3d.synthesis.models import simulations
-from basin3d.synthesis.models.field import Region, Site, HorizontalCoordinate, Plot, PointLocation, \
-    GeographicCoordinate
+from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation, \
+    GeographicCoordinate, MeasurementPosition, DepthCoordinate
 from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint
 from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh, ModelRun
 from collections import OrderedDict
@@ -20,23 +20,7 @@ MEASUREMENT_VARIABLES = [["ACT", "Acetate (CH3COO)", ["Geochemistry", "Anions"]]
                          ["As", "Arsenic (As)", ["Geochemistry", "Trace elements"], ],
                          ]
 
-MEASUREMENTS = [{'description': """The method is based on the sample filtration and dilution ...""",
-                 'variable_id': "ACT",
-                 'sampling_medium': SamplingMedium.GROUNDWATER,
-                 'measurement_approach': MeasurementApproach.MANUAL},
-                {'description': """Aqua regia digestion method.""",
-                 'variable_id': "Ag",
-                 'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
-                 'measurement_approach': MeasurementApproach.SENSOR},
-                {'description': """Aqua regia digestion method.""",
-                 'variable_id': "Al",
-                 'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
-                 'measurement_approach': MeasurementApproach.SENSOR},
-                {'description': """Aqua regia digestion method.""",
-                 'variable_id': "As",
-                 'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
-                 'measurement_approach': MeasurementApproach.SENSOR}
-                ]
+
 
 
 class AlphaSiteView(with_metaclass(DataSourcePluginViewMeta)):
@@ -129,12 +113,12 @@ class AlphaPointLocationView(with_metaclass(DataSourcePluginViewMeta)):
                                              type="well",
                                              geographical_group_id=1,
                                              geographical_group_type=GeographicalGroup.PLOT,
-                                             coordinates=HorizontalCoordinate(
-                                                 latitude=90,
-                                                 longitude=90,
-                                                 elevation=500,
-                                                 spatial_ref_system=HorizontalCoordinate.SPATIAL_REF_WGS84
-                                             ),
+                                             horizontal_position=GeographicCoordinate(
+                                                 latitude=90.0,
+                                                 longitude=90.0,
+                                                 datum=GeographicCoordinate.DATUM_WGS84,
+                                                 units=GeographicCoordinate.UNITS_DEC_DEGREES
+                                             )
                                              )
 
             yield obj
@@ -331,8 +315,16 @@ class AlphaDataPointView(with_metaclass(DataSourcePluginViewMeta)):
         """
         for num in range(1, 10):
             from datetime import date
+
             yield measurement.TimeSeriesDataPoint(self.datasource, id=num,
-                                                  measurement_id=1,
+                                                  measurement=Measurement.objects.get(id=1),
+                                                  measurement_position=MeasurementPosition(
+                                                      self.datasource,
+                                                      point_location_id=1,
+                                                      vertical_position=DepthCoordinate(
+                                                          value=num * .35345,
+                                                          distance_units=DepthCoordinate.DISTANCE_UNITS_METERS,
+                                                          datum=DepthCoordinate.DATUM_LOCAL_SURFACE)),
                                                   geographical_group_id=1,
                                                   geographical_group_type=GeographicalGroup.MESH,
                                                   timestamp=date(2016, num, 1),
@@ -368,5 +360,24 @@ class AlphaSourcePlugin(DataSourcePluginPoint):
         name = id  # Human Friendly Data Source Name
 
         # format basin id:measurement variable id
-        measure_variable_map = OrderedDict(
+        MEASURE_VARIABLE_MAP = OrderedDict(
             [('ACT', 'Acetate'), ('Ag', 'Ag'), ('Al', 'Al'), ('As', 'As')])
+
+        MEASUREMENTS = [
+            {'description': """The method is based on the sample filtration and dilution ...""",
+             'variable_id': "ACT",
+             'sampling_medium': SamplingMedium.GROUNDWATER,
+             'approach': MeasurementApproach.MANUAL},
+            {'description': """Aqua regia digestion method.""",
+             'variable_id': "Ag",
+             'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
+             'approach': MeasurementApproach.SENSOR},
+            {'description': """Aqua regia digestion method.""",
+             'variable_id': "Al",
+             'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
+             'approach': MeasurementApproach.SENSOR},
+            {'description': """Aqua regia digestion method.""",
+             'variable_id': "As",
+             'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
+             'approach': MeasurementApproach.SENSOR}
+        ]

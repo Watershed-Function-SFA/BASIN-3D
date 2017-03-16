@@ -30,9 +30,11 @@ class VerticalCoordinate(Base):
 
     Attributes:
         *type:* enum ("altitude”, "depth),
-        *value:* float, datum_name: string,
-        *vertical_resolution:* float,
-        *vertical_distance_units:* enum  ("meters", "feet"),
+        *value:* float,
+        *datum:* string,
+        *resolution:* float, the minimum distance possible between two adjacent
+                      depth values, expressed in Depth Distance Units of measure
+        *distance_units:* enum  ("meters", "feet"), the means used to encode depths.
         *encoding_method:* "Explicit coordinate included with horizontal coordinates", "Implicit coordinate", "Attribute values")
     """
     TYPE_ALTITUDE = "altitude"
@@ -47,9 +49,11 @@ class VerticalCoordinate(Base):
 
     def __init__(self, **kwargs):
         self.value = None
-        self.vertical_resolution = None
-        self.vertical_distance_units = None
+        self.resolution = None
+        self.distance_units = None
         self.encoding_method = None
+        self.datum = None
+        self.type = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
@@ -374,15 +378,16 @@ class PointLocation(SamplingFeature):
         self.site_id = None
         self.geographical_group_id = None
         self.geographical_group_type = None
-        self.horizontal_coordinate = None
+        self.horizontal_position = None
         self.vertical_extent = None
         self.position = None
 
         # Initialize after the attributes have been set
         super().__init__(datasource, datasource_ids=['site_id', 'geographical_group_id'], **kwargs)
+        self.type = str(self.__class__.__name__).lower()
 
 
-class MeasurementPosition(Base):
+class MeasurementPosition(SamplingFeature):
     """(MAYBE THIS SHOULD BE SPECIFIC TYPES OF MEASUREMENT POSITIONS.. WELL MEASUREMENT,
     TOWER SENSORS, TREE PROBES - NEED DIFFERENT INFO)
 
@@ -390,15 +395,14 @@ class MeasurementPosition(Base):
     Adopted from Danielle’s metadata framework.
 
     Attributes:
-        *type:* enum ("Point3D?”)
-        *depth_height:* float (+ve for height, -ve for depth)
-        *depth_height_units:* string
+        *vertical_position:*
     """
 
-    def __init__(self, **kwargs):
-        self.depth_height = None
-        self.depth_height_units = None
-        self.type = "point-3d"
+    def __init__(self, datasource, **kwargs):
+        self.variable_id = None
+        self.point_location_id = None
+        self.vertical_position = None
 
         # Initialize after the attributes have been set
-        super().__init__(None, **kwargs)
+        super().__init__(datasource, datasource_ids=['point_location_id'], **kwargs)
+        self.type = str(self.__class__.__name__).lower()

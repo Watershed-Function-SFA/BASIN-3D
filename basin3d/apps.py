@@ -16,6 +16,7 @@ def load_data_sources(sender, **kwargs):
 
     from djangoplugins.models import Plugin
     from basin3d.models import DataSource
+    from basin3d.models import SamplingMedium, MeasurementApproach, Measurement
 
     for plugin_model in Plugin.objects.all():
         plugin = plugin_model.get_plugin()
@@ -35,6 +36,37 @@ def load_data_sources(sender, **kwargs):
         datasource.id_prefix = plugin.get_meta().id_prefix
         datasource.plugin = plugin_model
         datasource.save()
+
+        if hasattr(plugin.get_meta(), "MEASUREMENTS"):
+            for m in plugin.get_meta().MEASUREMENTS:
+                try:
+                    sm = None
+                    try:
+                        sm = SamplingMedium.objects.get(name=m["sampling_medium"])
+                    except SamplingMedium.DoesNotExist:
+                        sm = SamplingMedium(m["sampling_medium"])
+                        sm.save()
+
+                    ma = None
+                    try:
+                        ma = MeasurementApproach.objects.get(name=m["approach"])
+                    except SamplingMedium.DoesNotExist:
+                        ma = MeasurementApproach(m["approach"])
+                        ma.save()
+
+                    m["sampling_medium"] = sm
+                    m["approach"] = ma
+                    m["datasource"] = datasource
+
+                    obj = Measurement(**m)
+                    obj.save()
+                    print("Registered Measurement '{} {}'".format(obj.variable_id, obj.description))
+                except IntegrityError as e:
+
+                    # We don't care about the Integrity Errors
+                    pass
+        else:
+            print("There are no MEASUREMENTS to load")
 
 
 def load_measurment_objects(sender, **kwargs):
@@ -56,7 +88,7 @@ def load_measurment_objects(sender, **kwargs):
         :return:
     """
     from djangoplugins.models import Plugin
-    from basin3d.models import MeasurementVariable, Measurement, SamplingMedium, MeasurementApproach
+    from basin3d.models import MeasurementVariable, SamplingMedium, MeasurementApproach
 
     # Load the Sampling Mediums
     for sm in SamplingMedium.SAMPLING_MEDIUMS:
@@ -72,7 +104,7 @@ def load_measurment_objects(sender, **kwargs):
         try:
             obj = MeasurementApproach(name=ma)
             obj.save()
-            print("Registered MeasurementApprach '{}'".format(obj.name))
+            print("Registered MeasurementApproach '{}'".format(obj.name))
         except IntegrityError:
             pass
 
@@ -99,35 +131,7 @@ def load_measurment_objects(sender, **kwargs):
         else:
             print("There are no MEASUREMENT_VARIABLES to load")
 
-        if hasattr(app_plugins, "MEASUREMENTS"):
-            for m in app_plugins.MEASUREMENTS:
-                try:
-                    sm = None
-                    try:
-                        sm = SamplingMedium.objects.get(name=m["sampling_medium"])
-                    except SamplingMedium.DoesNotExist:
-                        sm = SamplingMedium(m["sampling_medium"])
-                        sm.save()
 
-                    ma = None
-                    try:
-                        ma = MeasurementApproach.objects.get(name=m["measurement_approach"])
-                    except SamplingMedium.DoesNotExist:
-                        ma = MeasurementApproach(m["measurement_approach"])
-                        ma.save()
-
-                    m["sampling_medium"] = sm
-                    m["measurement_approach"] = ma
-
-                    obj = Measurement(**m)
-                    obj.save()
-                    print("Registered Measurement '{} {}'".format(obj.variable_id, obj.description))
-                except IntegrityError as e:
-
-                    # We don't care about the Integrity Errors
-                    pass
-        else:
-            print("There are no MEASUREMENTS to load")
 
 
 def load_datasource_parameters(sender,**kwargs):
@@ -142,7 +146,7 @@ def load_datasource_parameters(sender,**kwargs):
 
     for datasource in DataSource.objects.all():
 
-        for id, param in datasource.plugin.get_plugin().get_meta().measure_variable_map.items():
+        for id, param in datasource.plugin.get_plugin().get_meta().MEASURE_VARIABLE_MAP.items():
             try:
                 broker_param = MeasurementVariable.objects.get(id=id)
                 datasource_parameter = DataSourceMeasurementVariable()
@@ -163,8 +167,8 @@ class Basin3DConfig(AppConfig):
     def ready(self):
 
         ## Execute the post migration scripts
-        post_migrate.connect(load_data_sources, sender=self)
         post_migrate.connect(load_measurment_objects, sender=self)
+        post_migrate.connect(load_data_sources, sender=self)
         post_migrate.connect(load_datasource_parameters, sender=self)
 
 

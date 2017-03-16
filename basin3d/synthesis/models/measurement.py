@@ -25,13 +25,13 @@ class DataPointGroup(Base):
     group  level automatically applies to the individual data point.
 
     Attributes:
-        - *id:* string, Cs137 MR survey ID
-        - *measurement_id:* string, Cs137MID
+        - *id:* string,
+        - *measurement:* string, (optional)
         - *start_time:* datetime,  survey start time (month/year)
         - *end_time:* datetime, units: survey end time (month/year)
         - *timestamp_utc_offset:* float (offset in hours), +9
         - *geographical_group_id:* string, River system ID (Region ID).
-        - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region): Model_domain (or optionally region)
+        - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region, point_location, measurement position)
         - *results:* Array of DataPoint objects
 
     """
@@ -57,11 +57,12 @@ class DataPoint(Base):
     Generic Data Point (what, where, when??)
 
     Attributes:
-        - *id:* string,
-        - *measurement_id:* string,
+        - *id:* string (optional),
+        - *measurement:* string,
         - *geographical_group_id:* string, River system ID (Region ID).
         - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region): Model_domain (or optionally region)
         - *units:* Unit
+        - *measurement_position:* The position at which the measurement was taken
     """
     def __init__(self, datasource, **kwargs):
         self.id = None
@@ -69,6 +70,8 @@ class DataPoint(Base):
         self.geographical_group_id = None
         self.geographical_group_type = None
         self.units = None
+        self.measurement_position = None  # For now,
+        self.measurement = None
 
         # Initialize after the attributes have been set
         super().__init__(datasource, datasource_ids=['geographical_group_id'], **kwargs)

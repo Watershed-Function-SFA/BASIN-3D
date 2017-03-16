@@ -155,7 +155,7 @@ class SiteSerializerTests(TestCase):
                           "utc_offset": -6,
                           "center_coordinates": {"datum": "WGS84", "type": "geographic",
                                                  "latitude": 90.0, "longitude": 90.0,
-                                                 "units": "DD"}, "geom": None,
+                                                 "units": "DD"},
                           "contacts": [{"first_name": "Barry", "last_name": "Allen",
                                         "email": "ballen@foo.bar", "institution": "DC Comics"}],
                           "pi": {"first_name": "Jessica", "last_name": "Jones",

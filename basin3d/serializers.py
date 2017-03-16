@@ -109,18 +109,26 @@ class MeasurementVariableSerializer(serializers.HyperlinkedModelSerializer):
 class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
     """
 
-    Broker parameter Serializer
+    Measurement Serializer
 
     """
 
     sampling_medium = serializers.SerializerMethodField()
-    measurement_approach = serializers.SerializerMethodField()
+    approach = serializers.SerializerMethodField()
+    datasource = serializers.SerializerMethodField()
+    variable = serializers.SerializerMethodField()
 
     def get_sampling_medium(self, obj):
         return obj.sampling_medium.name
 
-    def get_measurement_approach(self, obj):
-        return obj.measurement_approach.name
+    def get_approach(self, obj):
+        return obj.approach.name
+
+    def get_datasource(self, obj):
+        return obj.datasource.name
+
+    def get_variable(self, obj):
+        return obj.variable.id
 
     class Meta:
         model = Measurement
