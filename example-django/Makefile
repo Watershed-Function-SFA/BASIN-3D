@@ -1,10 +1,11 @@
 .PHONY: all
+
+PYTHON=python3
+
 all: bin/python keyset db.sqlite3
 
-
-
 bin/python:
-	virtualenv --no-site-packages -p `which python3` $(CURDIR)
+	virtualenv --no-site-packages -p `which $(PYTHON)` $(CURDIR)
 	cd $(CURDIR)/.. && $(CURDIR)/bin/python setup.py develop && cd $(CURDIR)
 
 db.sqlite3:
