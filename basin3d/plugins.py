@@ -14,7 +14,12 @@
 
 """
 import logging
-from json import JSONDecodeError
+
+# Python 3.5 compatibility
+try:
+    from json import JSONDecodeError
+except ImportError:
+    JSONDecodeError = ValueError
 
 import requests
 import yaml

@@ -88,7 +88,11 @@ Run the example application
 
 # Install
  
-TBD
+Install a source distribution with pip:
+
+    $ pip install BASIN-3D-<version>.tar.gz
+    
+To get started read the [quickstart](./docs/quickstart.rst) documentation
 
 ## Versioning
 
@@ -98,7 +102,7 @@ see the [tags on this repository](https://github.com/Watershed-Function-SFA/wfsf
 Workflow for tagging and building release:
 
 1. checkout the version to tag from `master`
-1. `git -a v[version]-[release] -m "Tagging release v[version]-[release]"`
+1. `git tag -a v[version]-[release] -m "Tagging release v[version]-[release]"`
 1. build distribution with `setup.py`
 1. `git push origin v[version]-[release]`
 
