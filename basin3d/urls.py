@@ -79,7 +79,7 @@ def get_synthesis_router():
                                         base_name='datapointgroup')
                     if 'DataPoint' in viewset_models:
                         router.register(r'data_points', DataPointViewSet, base_name='datapoint')
-        except OperationalError as e:
+        except Exception:
             # This will only be raised during a migration because the database has not been
             # created yet.
             pass
