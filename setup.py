@@ -27,7 +27,7 @@ except Exception as e:
         f.write(version_msg + os.linesep + "__version__='0'")
         f.write(os.linesep + "__release__='0'" + os.linesep)
 
-__release__="0"
+__release__=None
 if os.path.exists(version_py):
       with open(version_py) as f:
           code = compile(f.read(), version_py, 'exec')
