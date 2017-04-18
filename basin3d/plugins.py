@@ -361,7 +361,7 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
     CREDENTIALS_FORMAT = 'client_id:\nclient_secret:\n'
 
     def __init__(self, datasource, *args, auth_token_path="o/token/",
-                 revoke_token_path="o/logout/", auth_scope="read",
+                 revoke_token_path="o/revoke_token/", auth_scope="read",
                  grant_type="client_credentials",
                  **kwargs):
 
@@ -507,7 +507,8 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
         url = '{}{}'.format(self.datasource.location,self.revoke_token_path)
 
         # Request the token to be revoked
-        res = requests.post(url, params={"token": self.token["access_token"]},
+        res = requests.post(url, params={"token": self.token["access_token"],
+                                         "client_id": self.client_id},
                             auth=(self.client_id, self.client_secret),
                             verify=self.verify_ssl)
 
