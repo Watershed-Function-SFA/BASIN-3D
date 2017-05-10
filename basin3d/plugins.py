@@ -21,7 +21,7 @@ try:
 except ImportError:
     JSONDecodeError = ValueError
 
-import requests
+
 import yaml
 from basin3d import synthesis, get_url
 from basin3d.apps import Basin3DConfig
@@ -31,6 +31,14 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from djangoplugins.point import PluginPoint
 from rest_framework import status
+
+
+import requests
+
+# Ignore Insecure Warnings in DEBUG Mode
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+if settings.DEBUG:
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 __all__ = ['get_url']
 
