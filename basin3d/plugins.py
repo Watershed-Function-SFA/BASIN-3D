@@ -21,7 +21,7 @@ try:
 except ImportError:
     JSONDecodeError = ValueError
 
-import requests
+
 import yaml
 from basin3d import synthesis, get_url
 from basin3d.apps import Basin3DConfig
@@ -31,6 +31,14 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from djangoplugins.point import PluginPoint
 from rest_framework import status
+
+
+import requests
+
+# Ignore Insecure Warnings in DEBUG Mode
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+if settings.DEBUG:
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 __all__ = ['get_url']
 
@@ -196,7 +204,7 @@ class DataSourcePluginPoint(PluginPoint):
             http_auth = self.get_meta().connection_class(datasource)
 
             try:
-                response = http_auth.get(direct_path,
+                response = http_auth.get("{}{}".format(datasource.location, direct_path),
                                          params=request.query_params)
 
             finally:
@@ -507,14 +515,15 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
         url = '{}{}'.format(self.datasource.location,self.revoke_token_path)
 
         # Request the token to be revoked
-        res = requests.post(url, params={"token": self.token["access_token"],
+        if self.token:
+            res = requests.post(url, params={"token": self.token["access_token"],
                                          "client_id": self.client_id},
                             auth=(self.client_id, self.client_secret),
                             verify=self.verify_ssl)
 
-        # Validate the success of the token revocation
-        from rest_framework import status
-        if res.status_code != status.HTTP_200_OK:
-            logger.warn("Problem encountered revoking token for '{}' HTTP status {} -- {}".format(
-                        self.datasource.name,
-                res.status_code, res.content.decode('utf-8')))
+            # Validate the success of the token revocation
+            from rest_framework import status
+            if res.status_code != status.HTTP_200_OK:
+                logger.warn("Problem encountered revoking token for '{}' HTTP status {} -- {}".format(
+                    self.datasource.name,
+                    res.status_code, res.content.decode('utf-8')))
