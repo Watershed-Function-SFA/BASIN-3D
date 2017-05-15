@@ -122,12 +122,12 @@ class DataSourcePluginViewMeta(type):
 
             :param variable_names:  The :class:`~basin3d.models.MeasurmentVariable`
                  names to convert
-            :type variable_names: list
+            :type variable_names: iterable
             :param: from_basin3d: boolean that says whether the variable name is a
                 BASIN-3D variable. If not, then this a datasource variable names.
             :type from_basin3d: boolean
             :return: list of variable names
-            :rtype: list
+            :rtype: iterable
             """
             from basin3d.models import DataSourceMeasurementVariable
             if from_basin3d:
