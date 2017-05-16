@@ -84,18 +84,23 @@ def get_synthesis_router():
             # created yet.
             pass
 
-        return router
+    return router
 
 # Wire up our API using automatic URL routing.
-router = get_synthesis_router()
+
 
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    url(r'^direct/$',DirectAPIViewSet.as_view({'get':'list'}),name='direct-api-list'),
-    url(r'^direct/(?P<id_prefix>[a-zA-Z]+)/(?P<direct_path>[a-zA-Z/_\-?&0-9]*)$',
-        DirectAPIViewSet.as_view({'get': 'retrieve'}),
-        name='direct-path-detail'),
-    url(r'^synthesis/', include(router.urls)),
     url(r'^$', broker_api_root, name='broker-api-root' )
 ]
 
+if settings.BASIN3D["SYNTHESIS"]:
+    router = get_synthesis_router()
+    urlpatterns.append(url(r'^synthesis/', include(router.urls)))
+
+if settings.BASIN3D["DIRECT_API"]:
+    router = get_synthesis_router()
+    urlpatterns.append(url(r'^direct/$',DirectAPIViewSet.as_view({'get':'list'}),name='direct-api-list'))
+    urlpatterns.append(url(r'^direct/(?P<id_prefix>[a-zA-Z]+)/(?P<direct_path>[a-zA-Z/_\-?&0-9]*)$',
+        DirectAPIViewSet.as_view({'get': 'retrieve'}),
+        name='direct-path-detail'))
