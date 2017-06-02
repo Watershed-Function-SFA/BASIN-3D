@@ -23,9 +23,10 @@ try:
 except Exception as e:
     # If there is an exception, this means that git is not available
     # We will used the existing version.py file
-    with open(version_py, 'w') as f:
-        f.write(version_msg + os.linesep + "__version__='0'")
-        f.write(os.linesep + "__release__='0'" + os.linesep)
+    if not os.path.exists(version_py):
+        with open(version_py, 'w') as f:
+            f.write(version_msg + os.linesep + "__version__='0'")
+            f.write(os.linesep + "__release__='0'" + os.linesep)
 
 __release__=None
 if os.path.exists(version_py):
