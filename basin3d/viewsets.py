@@ -41,6 +41,7 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         """
         Build the list of Direct APIs that can be accessed
+
         :param request:
         :param args:
         :param kwargs:
