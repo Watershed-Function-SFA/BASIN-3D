@@ -60,8 +60,9 @@ class DataSourcePluginViewMeta(type):
             old_init = dct["__init__"]
 
         def get_measurements(self, variable_names):
-            """t
-            Get the measuremen to the specified variable_name
+            """
+            Get the measurement to the specified variable_name
+
             :param variable_names: the variable names to get the :class:`~basin3d.models.Measurment` for
             :type variable_names: list
             :return: :class:`~basin3d.models.Measurment`
@@ -75,7 +76,8 @@ class DataSourcePluginViewMeta(type):
 
         def get_measurement(self, variable_name):
             """
-            Get the measuremen to the specified variable_name
+            Get the measurement to the specified variable_name
+
             :param variable_name: the variable name to get the :class:`~basin3d.models.Measurment` for
             :return: :class:`~basin3d.models.Measurment`
             """
