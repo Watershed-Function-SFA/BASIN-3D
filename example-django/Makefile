@@ -5,7 +5,7 @@ PYTHON=python3
 all: bin/python keyset db.sqlite3
 
 bin/python:
-	virtualenv --no-site-packages -p `which $(PYTHON)` $(CURDIR)
+	$(PYTHON) -m venv .
 	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt
 
 db.sqlite3:

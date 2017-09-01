@@ -1,4 +1,5 @@
 .Python
 .keyset
 db.sqlite3
+pyvenv.cfg
 static/
