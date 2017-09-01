@@ -1,0 +1,8 @@
+django >= 1.8, <= 1.9
+djangorestframework == 3.4.3
+django-filter ==  0.13.0
+django-plugins >= 0.3.0
+django-extensions >= 1.7.4
+python3-keyczar
+pyyaml
+requests

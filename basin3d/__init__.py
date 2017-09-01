@@ -253,6 +253,15 @@ __insert_basin3d_defaults()
 
 
 def get_url(url, params=None, headers=None, verify=False):
+    """
+    Send a GET request to the specified URL
+
+    :param url:
+    :param params: request parameters
+    :param headers: request headers
+    :param verify: verify SSL connection
+    :return: Response
+    """
     import requests
     response = requests.get(url, params=params, verify=verify, headers=headers)
     return response

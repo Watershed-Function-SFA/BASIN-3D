@@ -6,24 +6,24 @@ all: bin/python keyset db.sqlite3
 
 bin/python:
 	virtualenv --no-site-packages -p `which $(PYTHON)` $(CURDIR)
-	cd $(CURDIR)/.. && $(CURDIR)/bin/python setup.py develop && cd $(CURDIR)
+	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt
 
 db.sqlite3:
-	bin/python manage.py migrate
+	PYTHONPATH=$(PYTHONPATH):$(CURDIR)/..:. bin/python manage.py migrate
 
 keyset:
-	mkdir -p $(CURDIR)/.keyset
-	$(CURDIR)/bin/keyczart create --location=$(CURDIR)/.keyset --purpose=crypt --name=basin3d
-	$(CURDIR)/bin/keyczart addkey --location=$(CURDIR)/.keyset --status=primary
+	@mkdir -p $(CURDIR)/.keyset
+	@test -e $(CURDIR)/.keyset/meta || $(CURDIR)/bin/keyczart create --location=$(CURDIR)/.keyset --purpose=crypt --name=basin3d
+	@test -e $(CURDIR)/.keyset/1 || $(CURDIR)/bin/keyczart addkey --location=$(CURDIR)/.keyset --status=primary
 
 
 .PHONY: run
 run:
-	bin/python manage.py runserver
+	PYTHONPATH=$(PYTHONPATH):$(CURDIR)/..:. bin/python manage.py runserver
 
 .PHONY: test
 test:
-	cd .. && PYTHONPATH="$(PYTHONPATH):." $(CURDIR)/bin/python  $(CURDIR)/manage.py test && cd $(CURDIR)
+	cd .. && PYTHONPATH="$(PYTHONPATH):$(CURDIR)/..:." $(CURDIR)/bin/python  $(CURDIR)/manage.py test && cd $(CURDIR)
 
 
 .PHONY: clean
