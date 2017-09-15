@@ -36,9 +36,14 @@ from rest_framework import status
 import requests
 
 # Ignore Insecure Warnings in DEBUG Mode
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-if settings.DEBUG:
-    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+try:
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+    if settings.DEBUG:
+        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+except:
+    pass
+
 
 __all__ = ['get_url']
 
