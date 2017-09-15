@@ -343,7 +343,7 @@ class DataPointViewSet(DataSourcePluginViewSet):
         Parameters Synthesized:
           + locations
           + measure_variables
-          + temporal_resolution (default: daily)
+          + temporal_resolution (default: day)
 
         :param request: the request to synthesize
         :param plugin_view: The plugin view to synthesize query params for

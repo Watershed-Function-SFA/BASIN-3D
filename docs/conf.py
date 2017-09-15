@@ -289,7 +289,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'BASIN-3D.tex', 'BASIN-3D Documentation',
+    (master_doc, 'BASIN-3D-{}.tex'.format(__release__), 'BASIN-3D Documentation',
      'Charuleka Varadharajan, Valerie Hendrix', 'manual'),
 ]
 
