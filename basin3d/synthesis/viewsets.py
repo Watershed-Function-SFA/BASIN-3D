@@ -74,7 +74,12 @@ class DataSourcePluginViewSet(ViewSet):
         Return the synthesized plugin results
         """
         items = []
-        datasources = DataSource.objects.all()
+
+        # Are we filtering by Datasource?
+        if 'datasource' in request.query_params.keys():
+            datasources = DataSource.objects.filter(id_prefix=request.query_params['datasource'])
+        else:
+            datasources = DataSource.objects.all()
 
         # Iterate over the plugins
         # (Consider parallelizing this, and using a StreamingHttpResponse )
@@ -142,6 +147,10 @@ class DataSourcePluginViewSet(ViewSet):
 class RegionViewSet(DataSourcePluginViewSet):
     """
     Return a Region
+
+    * ** URLS **
+      * *url* -- for detail on a single DataPoint Group
+      * *model_domains* -- for the list of model domains associated with this Region
     """
     serializer_class = RegionSerializer
     synthesis_model = Region
@@ -187,7 +196,9 @@ class RegionViewSet(DataSourcePluginViewSet):
 
 class SiteViewSet(DataSourcePluginViewSet):
     """
-    Return a Site
+    Retrieve Sites
+
+    ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
     """
     serializer_class = SiteSerializer
     synthesis_model = Site
@@ -195,7 +206,9 @@ class SiteViewSet(DataSourcePluginViewSet):
 
 class PlotViewSet(DataSourcePluginViewSet):
     """
-    Return a Plot
+    Retrieve Plots
+
+    ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
     """
     serializer_class = PlotSerializer
     synthesis_model = Plot
@@ -203,7 +216,9 @@ class PlotViewSet(DataSourcePluginViewSet):
 
 class PointLocationViewSet(DataSourcePluginViewSet):
     """
-    Return a Point Location
+    Retrieve Point Locations
+
+    ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
     """
     serializer_class = PointLocationSerializer
     synthesis_model = PointLocation
@@ -211,7 +226,9 @@ class PointLocationViewSet(DataSourcePluginViewSet):
 
 class ModelViewSet(DataSourcePluginViewSet):
     """
-    Return a Model
+    Retrieve Models
+
+    * ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
     """
     serializer_class = ModelSerializer
     synthesis_model = Model
@@ -219,7 +236,9 @@ class ModelViewSet(DataSourcePluginViewSet):
 
 class MeshViewSet(DataSourcePluginViewSet):
     """
-    Return a Model Domain
+    Return a Mesh
+
+    * ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
     """
     serializer_class = MeshSerializer
     synthesis_model = Mesh
@@ -228,6 +247,11 @@ class MeshViewSet(DataSourcePluginViewSet):
 class ModelDomainViewSet(DataSourcePluginViewSet):
     """
     Return a Model Domain
+
+    ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
+    * ** URLS **
+      * *url* -- for detail on a single Model Domain
+      * *meshes* -- for the list of meshes associated with this Model Domain
     """
     serializer_class = ModelDomainSerializer
     synthesis_model = ModelDomain
@@ -281,7 +305,13 @@ class ModelRunViewSet(DataSourcePluginViewSet):
 
 class DataPointGroupViewSet(DataSourcePluginViewSet):
     """
-    Return a DataPointGroup
+    Retrieve  Data Point Groups
+
+    * ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
+    * ** URLS **
+          * *url* -- for detail on a single Data Point Group
+          * *data_points* -- for the list of data_points associated with this Data Point Group
+
     """
     serializer_class = DataPointGroupSerializer
     synthesis_model = DataPointGroup
@@ -330,7 +360,19 @@ class DataPointGroupViewSet(DataSourcePluginViewSet):
 
 class DataPointViewSet(DataSourcePluginViewSet):
     """
-    Search for DataPoints
+    Search for Data Points
+
+    * ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
+    * ** Search Parameters **
+        * *locations - * comma separated list of locations ids
+        * *measure_variables - * comma separated list of variable ids
+        * *temporal_resolution (default:day) - *  options (year|month|day|hour|minute|second)
+        * *start_date*
+        * *end_date*
+
+
+
+
     """
 
     serializer_class = DataPointSerializer
