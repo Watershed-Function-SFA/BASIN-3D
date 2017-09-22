@@ -21,7 +21,6 @@ from basin3d.models import MeasurementVariable, DataSource, DataSourceMeasuremen
     Measurement
 from basin3d.serializers import DataSourceSerializer, MeasurementVariableSerializer, \
     MeasurementSerializer
-from django.http import JsonResponse
 from rest_framework import filters
 from rest_framework import status
 from rest_framework import viewsets

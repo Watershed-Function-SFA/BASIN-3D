@@ -83,7 +83,7 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
         url_kwargs = {
             'pk': obj.id,
         }
-        return "{}check".format(reverse.reverse('datasource-detail', kwargs=url_kwargs,
+        return "{}check/".format(reverse.reverse('datasource-detail', kwargs=url_kwargs,
                                request=self.context["request"],))
 
     def get_direct_path(self, obj ):
