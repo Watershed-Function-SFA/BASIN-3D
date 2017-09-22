@@ -454,8 +454,6 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
             }
 
 
-        :return: JSON response
-        :rtype: dict
         """
 
         # Build the authentication url

@@ -57,6 +57,7 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
 
     direct_path = serializers.SerializerMethodField()
     variables = serializers.SerializerMethodField()
+    check = serializers.SerializerMethodField()
 
     def get_variables(self, obj):
         """
@@ -72,6 +73,18 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
         }
         return reverse.reverse('{}-variables'.format(obj.__class__.__name__.lower()), kwargs=url_kwargs,
                                request=self.context["request"], format=format)
+
+    def get_check(self, obj):
+        """
+        Check the datat source
+        :param obj:
+        :return:
+        """
+        url_kwargs = {
+            'pk': obj.id,
+        }
+        return "{}check".format(reverse.reverse('datasource-detail', kwargs=url_kwargs,
+                               request=self.context["request"],))
 
     def get_direct_path(self, obj ):
         """
@@ -92,8 +105,8 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = DataSource
         depth=1
-        fields = ('url', 'direct_path','name', 'location','id_prefix','variables')
-        read_only_fields = ('name', 'location', 'id_prefix','variables')
+        fields = ('url', 'direct_path','name', 'location','id_prefix','variables','check')
+        read_only_fields = ('name', 'location', 'id_prefix','variables','check')
         lookup_field = 'name'
 
 

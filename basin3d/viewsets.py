@@ -16,10 +16,12 @@ import json
 import logging
 
 import djangoplugins
+from basin3d import get_url
 from basin3d.models import MeasurementVariable, DataSource, DataSourceMeasurementVariable, \
     Measurement
 from basin3d.serializers import DataSourceSerializer, MeasurementVariableSerializer, \
     MeasurementSerializer
+from django.http import JsonResponse
 from rest_framework import filters
 from rest_framework import status
 from rest_framework import viewsets
@@ -51,7 +53,6 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
         direct_apis = []
         for datasource in self.queryset:
             plugin_model = datasource.plugin  # Get the plugin model
-            plugin = plugin_model.get_plugin()
 
             direct_apis.append(
                 {datasource.name: request.build_absolute_uri(reverse('direct-path-detail',
@@ -105,10 +106,62 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
         * *url* - for detail on a single Model Domain
         * *direct_path* - a direct call to the data source itself
         * *variables* - returns the measurement variables for the current data source
+        * *check* - validate the datasource connection
 
     """
     queryset = DataSource.objects.all()
     serializer_class = DataSourceSerializer
+
+    @detail_route()
+    def check(self,request, pk=None):
+        """
+        Determine if Datasource is available
+        :param request:
+        :param pk:
+        :return:
+        """
+
+        datasource = self.get_object()
+        plugin_model = datasource.plugin  # Get the plugin model
+        if plugin_model.status == djangoplugins.models.ENABLED:
+            plugin = plugin_model.get_plugin()
+
+            if hasattr(plugin.get_meta(), "connection_class"):
+                http_auth = plugin.get_meta().connection_class(datasource)
+
+                try:
+                    http_auth.login()
+                    return Response(data={"message": "Login to {} data source was successful".format(datasource.name),
+                                       "success": True},
+                                 status=status.HTTP_200_OK)
+                except Exception as e:
+                    return Response(data={"message": str(e), "success":False},
+                                            status=status.HTTP_200_OK)
+
+                finally:
+                    http_auth.logout()
+            else:
+                try:
+                    response = get_url("{}".format(datasource.location))
+
+                    if response.status_code == status.HTTP_200_OK:
+                        return Response(
+                            data={"message": "Response from {} data source was successful".format(datasource.name),
+                                  "success": True},
+                            status=status.HTTP_200_OK)
+                    else:
+                        return Response(
+                            data={"message": "Response from {} data source returns HTTP status {}".format(datasource.name,
+                                                                                                          response.status_code),
+                                  "success": True},
+                            status=status.HTTP_200_OK)
+
+                except Exception as e:
+                    return Response(data={"message": str(e), "success":False},
+                                            status=status.HTTP_200_OK)
+
+
+
 
     @detail_route()  # Custom Route for an association
     def variables(self, request, pk=None):
