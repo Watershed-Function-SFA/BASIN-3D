@@ -31,7 +31,7 @@ class DataPointGroup(Base):
         - *end_time:* datetime, units: survey end time (month/year)
         - *timestamp_utc_offset:* float (offset in hours), +9
         - *geographical_group_id:* string, River system ID (Region ID).
-        - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region, point_location, measurement position)
+        - *geographical_group_type* enum (sampling_feature, site, plot, region, point_location, measurement position)
         - *results:* Array of DataPoint objects
 
     """
@@ -60,7 +60,7 @@ class DataPoint(Base):
         - *id:* string (optional),
         - *measurement:* string,
         - *geographical_group_id:* string, River system ID (Region ID).
-        - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region): Model_domain (or optionally region)
+        - *geographical_group_type* enum (sampling_feature, site, plot, region)
         - *units:* Unit
         - *measurement_position:* The position at which the measurement was taken
     """
@@ -85,7 +85,7 @@ class ImageDataPoint(DataPoint):
         - *id:* string
         - *measurement_id:* string
         - *geographical_group_id:* string, River system ID (Region ID).
-        - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region): Model_domain (or optionally region)
+        - *geographical_group_type* enum (sampling_feature, site, plot, region)
         - *units:* Unit
 
     Attributes:
@@ -111,8 +111,7 @@ class TimeSeriesDataPoint(DataPoint):
         - *id:* string
         - *measurement_id:* string
         - *geographical_group_id:* string, River system ID (Region ID).
-        - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region): Model_domain (or optionally region)
-        - *units:* Unit
+        - *geographical_group_type* enum (sampling_feature, site, plot, region)
 
     Attributes:
         - *timestamp:* datetime

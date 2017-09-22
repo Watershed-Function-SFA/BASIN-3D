@@ -58,12 +58,8 @@ class TestAPIRoot(TestCase):
                              "synthesis-sites": "http://testserver/synthesis/sites/",
                              "synthesis-plots": "http://testserver/synthesis/plots/",
                              "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
-                             "synthesis-models": "http://testserver/synthesis/models/",
-                             "synthesis-modeldomains": "http://testserver/synthesis/model_domains/",
-                             "synthesis-modelruns": "http://testserver/synthesis/model_runs/",
                              "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",
                              "synthesis-datapoints": "http://testserver/synthesis/data_points/",
-                             "synthesis-mesh": "http://testserver/synthesis/meshes/",
                              "direct-apis": "http://testserver/direct/"
                          })
 
@@ -87,12 +83,8 @@ class TestAPIRoot(TestCase):
                              "synthesis-sites": "http://testserver/synthesis/sites/",
                              "synthesis-plots": "http://testserver/synthesis/plots/",
                              "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
-                             "synthesis-models": "http://testserver/synthesis/models/",
-                             "synthesis-modeldomains": "http://testserver/synthesis/model_domains/",
-                             "synthesis-modelruns": "http://testserver/synthesis/model_runs/",
                              "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",
-                             "synthesis-datapoints": "http://testserver/synthesis/data_points/",
-                             "synthesis-mesh": "http://testserver/synthesis/meshes/"})
+                             "synthesis-datapoints": "http://testserver/synthesis/data_points/"})
 
 
 class TestDirectAPIRoot(TestCase):
@@ -175,7 +167,6 @@ class TestSiteAPI(TestCase):
                          {"id": "A-SI123", "geom": None,
                           "description": "This is for my site description",
                           'name': 'a site',
-                          'model_domains': 'http://testserver/synthesis/regions/A-SI123/model_domains/',
                           "url": "http://testserver/synthesis/regions/A-SI123/"})
 
     def test_get_detail_missing(self):
@@ -209,7 +200,6 @@ class TestRegionAPI(TestCase):
                          [{"id": "A-SI123", "geom": None,
                            "description": "This is for my site description",
                            'name': 'a site',
-                           'model_domains': 'http://testserver/synthesis/regions/A-SI123/model_domains/',
                            "url": "http://testserver/synthesis/regions/A-SI123/"}]
 
                          )
@@ -221,7 +211,6 @@ class TestRegionAPI(TestCase):
                          {"id": "A-SI123", "geom": None,
                           "description": "This is for my site description",
                           'name': 'a site',
-                          'model_domains': 'http://testserver/synthesis/regions/A-SI123/model_domains/',
                           "url": "http://testserver/synthesis/regions/A-SI123/"})
 
     def test_get_detail_missing(self):
@@ -450,184 +439,6 @@ class TestPointLocationAPI(TestCase):
                          })
 
 
-class TestModelAPI(TestCase):
-    """
-    Test /synthesis/models api
-    """
-
-    def setUp(self):
-        self.client = APIClient()
-
-    def test_get(self):
-        response = self.client.get('/synthesis/models/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         [
-                             {
-                                 "id": "A-M0",
-                                 "name": None,
-                                 "version": "1.0",
-                                 "dimensionality": "1D",
-                                 'web_location': '/testserver/url/0',
-                                 "url": "http://testserver/synthesis/models/A-M0/"
-                             },
-                             {
-                                 "id": "A-M1",
-                                 "name": None,
-                                 "version": "1.0",
-                                 "dimensionality": "2D",
-                                 'web_location': '/testserver/url/1',
-                                 "url": "http://testserver/synthesis/models/A-M1/"
-                             },
-                             {
-                                 "id": "A-M2",
-                                 "name": None,
-                                 "version": "1.0",
-                                 "dimensionality": "3D",
-                                 'web_location': '/testserver/url/2',
-                                 "url": "http://testserver/synthesis/models/A-M2/"
-                             }
-                         ]
-
-                         )
-
-    def test_get_detail(self):
-        response = self.client.get('/synthesis/models/A-M2/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {
-                             "id": "A-M2",
-                             "name": None,
-                             "version": "1.0",
-                             "dimensionality": "3D",
-                             'web_location': '/testserver/url/2',
-                             "url": "http://testserver/synthesis/models/A-M2/"
-                         })
-
-    def test_get_detail_missing(self):
-        response = self.client.get('/synthesis/models/A-FOO/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {'content': 'There is no detail for A-FOO', 'success': False})
-
-    def test_get_bad_id_prefix(self):
-        response = self.client.get('/synthesis/models/B-FOO/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {
-                             'detail': 'There is no detail for datasource object B-FOO. The datasource id '
-                                       "'B' is invalid.",
-                             'success': False})
-
-
-class TestModelDomainAPI(TestCase):
-    """
-    Test /synthesis/model_domains api
-    """
-
-    def setUp(self):
-        self.client = APIClient()
-
-    def test_get(self):
-        response = self.client.get('/synthesis/model_domains/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         [
-                             {
-                                 "id": "A-MD1",
-                                 "name": "model domain 1",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD1/meshes/',
-                                 "geom": {},
-                                 "url": "http://testserver/synthesis/model_domains/A-MD1/"
-                             },
-                             {
-                                 "id": "A-MD2",
-                                 "name": "model domain 2",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD2/meshes/',
-                                 "geom": {},
-                                 "url": "http://testserver/synthesis/model_domains/A-MD2/"
-                             },
-                             {
-                                 "id": "A-MD3",
-                                 "name": "model domain 3",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD3/meshes/',
-                                 "geom": {},
-                                 "url": "http://testserver/synthesis/model_domains/A-MD3/"
-                             },
-                             {
-                                 "id": "A-MD4",
-                                 "name": "model domain 4",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD4/meshes/',
-                                 "geom": {},
-                                 "url": "http://testserver/synthesis/model_domains/A-MD4/"
-                             },
-                             {
-                                 "id": "A-MD5",
-                                 "name": "model domain 5",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD5/meshes/',
-                                 "geom": {},
-                                 "url": "http://testserver/synthesis/model_domains/A-MD5/"
-                             },
-                             {
-                                 "id": "A-MD6",
-                                 "name": "model domain 6",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD6/meshes/',
-                                 "geom": {},
-                                 "url": "http://testserver/synthesis/model_domains/A-MD6/"
-                             },
-                             {
-                                 "id": "A-MD7",
-                                 "name": "model domain 7",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD7/meshes/',
-                                 "geom": {},
-                                 "url": "http://testserver/synthesis/model_domains/A-MD7/"
-                             },
-                             {
-                                 "id": "A-MD8",
-                                 "name": "model domain 8",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD8/meshes/',
-                                 "geom": {},
-                                 "url": "http://testserver/synthesis/model_domains/A-MD8/"
-                             },
-                             {
-                                 "id": "A-MD9",
-                                 "name": "model domain 9",
-                                 "meshes": 'http://testserver/synthesis/model_domains/A-MD9/meshes/',
-                                 "geom": {},
-                                 "url": "http://testserver/synthesis/model_domains/A-MD9/"
-                             }
-                         ]
-
-                         )
-
-    def test_get_detail(self):
-        response = self.client.get('/synthesis/model_domains/A-MD7/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {
-                             "id": "A-MD7",
-                             "name": "model domain 7",
-                             "meshes": 'http://testserver/synthesis/model_domains/A-MD7/meshes/',
-                             "geom": {},
-                             "url": "http://testserver/synthesis/model_domains/A-MD7/"
-                         })
-
-    def test_get_detail_missing(self):
-        response = self.client.get('/synthesis/model_domains/A-FOO/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {'content': 'There is no detail for A-FOO', 'success': False})
-
-    def test_get_bad_id_prefix(self):
-        response = self.client.get('/synthesis/model_domains/B-FOO/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {
-                             'detail': 'There is no detail for datasource object B-FOO. The datasource id '
-                                       "'B' is invalid.",
-                             'success': False})
-
-
 class TestDataPointGroupAPI(TestCase):
     """
     Test /synthesis/data_point_groups api
@@ -643,8 +454,8 @@ class TestDataPointGroupAPI(TestCase):
                          {
                              "id": "A-2",
                              "measurement": "http://testserver/synthesis/measurements/1/",
-                             "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
-                             'geographical_group_type': 'modeldomain',
+                             "geographical_group": "http://testserver/synthesis/sites/A-1/",
+                             'geographical_group_type': 'site',
                              "start_time": "2016-02-01T00:00:00",
                              "end_time": "2016-02-29T00:00:00",
                              "utc_offset": -8,
@@ -659,8 +470,8 @@ class TestDataPointGroupAPI(TestCase):
             {
                 "id": "A-1",
                 "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
-                'geographical_group_type': 'modeldomain',
+                "geographical_group": "http://testserver/synthesis/sites/A-1/",
+                'geographical_group_type': 'site',
                 "start_time": "2016-01-01T00:00:00",
                 "end_time": "2016-01-31T00:00:00",
                 "utc_offset": -8,
@@ -670,8 +481,8 @@ class TestDataPointGroupAPI(TestCase):
             {
                 "id": "A-2",
                 "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
-                'geographical_group_type': 'modeldomain',
+                "geographical_group": "http://testserver/synthesis/sites/A-1/",
+                'geographical_group_type': 'site',
                 "start_time": "2016-02-01T00:00:00",
                 "end_time": "2016-02-29T00:00:00",
                 "utc_offset": -8,
@@ -681,8 +492,8 @@ class TestDataPointGroupAPI(TestCase):
             {
                 "id": "A-3",
                 "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
-                'geographical_group_type': 'modeldomain',
+                "geographical_group": "http://testserver/synthesis/sites/A-1/",
+                'geographical_group_type': 'site',
                 "start_time": "2016-03-01T00:00:00",
                 "end_time": "2016-03-31T00:00:00",
                 "utc_offset": -8,
@@ -692,8 +503,8 @@ class TestDataPointGroupAPI(TestCase):
             {
                 "id": "A-4",
                 "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
-                'geographical_group_type': 'modeldomain',
+                "geographical_group": "http://testserver/synthesis/sites/A-1/",
+                'geographical_group_type': 'site',
                 "start_time": "2016-04-01T00:00:00",
                 "end_time": "2016-04-30T00:00:00",
                 "utc_offset": -8,
@@ -703,8 +514,8 @@ class TestDataPointGroupAPI(TestCase):
             {
                 "id": "A-5",
                 "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
-                'geographical_group_type': 'modeldomain',
+                "geographical_group": "http://testserver/synthesis/sites/A-1/",
+                'geographical_group_type': 'site',
                 "start_time": "2016-05-01T00:00:00",
                 "end_time": "2016-05-31T00:00:00",
                 "utc_offset": -8,
@@ -714,8 +525,8 @@ class TestDataPointGroupAPI(TestCase):
             {
                 "id": "A-6",
                 "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
-                'geographical_group_type': 'modeldomain',
+                "geographical_group": "http://testserver/synthesis/sites/A-1/",
+                'geographical_group_type': 'site',
                 "start_time": "2016-06-01T00:00:00",
                 "end_time": "2016-06-30T00:00:00",
                 "utc_offset": -8,
@@ -725,8 +536,8 @@ class TestDataPointGroupAPI(TestCase):
             {
                 "id": "A-7",
                 "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
-                'geographical_group_type': 'modeldomain',
+                "geographical_group": "http://testserver/synthesis/sites/A-1/",
+                'geographical_group_type': 'site',
                 "start_time": "2016-07-01T00:00:00",
                 "end_time": "2016-07-31T00:00:00",
                 "utc_offset": -8,
@@ -736,8 +547,8 @@ class TestDataPointGroupAPI(TestCase):
             {
                 "id": "A-8",
                 "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
-                'geographical_group_type': 'modeldomain',
+                "geographical_group": "http://testserver/synthesis/sites/A-1/",
+                'geographical_group_type': 'site',
                 "start_time": "2016-08-01T00:00:00",
                 "end_time": "2016-08-31T00:00:00",
                 "utc_offset": -8,
@@ -747,8 +558,8 @@ class TestDataPointGroupAPI(TestCase):
             {
                 "id": "A-9",
                 "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/model_domains/A-1/",
-                'geographical_group_type': 'modeldomain',
+                "geographical_group": "http://testserver/synthesis/sites/A-1/",
+                'geographical_group_type': 'site',
                 "start_time": "2016-09-01T00:00:00",
                 "end_time": "2016-09-30T00:00:00",
                 "utc_offset": -8,
@@ -791,8 +602,8 @@ class TestDataPointAPI(TestCase):
                                                        'type': 'depth',
                                                        'value': 0.7069}},
 
-                             "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                             "geographical_group_type": "mesh",
+                             "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+                             "geographical_group_type": "pointlocation",
                              "units": "nm",
                              "timestamp": "2016-02-01",
                              "value": 0.6906906,
@@ -809,8 +620,8 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-1/",
                 "id": "A-1",
                 "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                "geographical_group_type": "mesh",
+                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+                "geographical_group_type": "pointlocation",
                 "units": "nm",
                 "measurement_position": {
                     "type": "measurementposition",
@@ -841,8 +652,8 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-2/",
                 "id": "A-2",
                 "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                "geographical_group_type": "mesh",
+                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+                "geographical_group_type": "pointlocation",
                 "units": "nm",
                 "measurement_position": {
                     "type": "measurementposition",
@@ -873,8 +684,8 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-3/",
                 "id": "A-3",
                 "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                "geographical_group_type": "mesh",
+                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+                "geographical_group_type": "pointlocation",
                 "units": "nm",
                 "measurement_position": {
                     "type": "measurementposition",
@@ -905,8 +716,8 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-4/",
                 "id": "A-4",
                 "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                "geographical_group_type": "mesh",
+                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+                "geographical_group_type": "pointlocation",
                 "units": "nm",
                 "measurement_position": {
                     "type": "measurementposition",
@@ -937,8 +748,8 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-5/",
                 "id": "A-5",
                 "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                "geographical_group_type": "mesh",
+                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+                "geographical_group_type": "pointlocation",
                 "units": "nm",
                 "measurement_position": {
                     "type": "measurementposition",
@@ -969,8 +780,8 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-6/",
                 "id": "A-6",
                 "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                "geographical_group_type": "mesh",
+                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+                "geographical_group_type": "pointlocation",
                 "units": "nm",
                 "measurement_position": {
                     "type": "measurementposition",
@@ -1001,8 +812,8 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-7/",
                 "id": "A-7",
                 "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                "geographical_group_type": "mesh",
+                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+                "geographical_group_type": "pointlocation",
                 "units": "nm",
                 "measurement_position": {
                     "type": "measurementposition",
@@ -1033,8 +844,8 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-8/",
                 "id": "A-8",
                 "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                "geographical_group_type": "mesh",
+                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+                "geographical_group_type": "pointlocation",
                 "units": "nm",
                 "measurement_position": {
                     "type": "measurementposition",
@@ -1065,8 +876,8 @@ class TestDataPointAPI(TestCase):
                 "url": "http://testserver/synthesis/data_points/A-9/",
                 "id": "A-9",
                 "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/meshes/A-1/",
-                "geographical_group_type": "mesh",
+                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+                "geographical_group_type": "pointlocation",
                 "units": "nm",
                 "measurement_position": {
                     "type": "measurementposition",

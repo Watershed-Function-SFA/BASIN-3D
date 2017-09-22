@@ -6,3 +6,4 @@ django-extensions >= 1.7.4
 python3-keyczar
 pyyaml
 requests
+markdown

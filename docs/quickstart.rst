@@ -65,7 +65,7 @@ Extend the broker source plugin with the described attributes::
 
         name = 'alpha-source-plugin'
         title = 'Alpha Source Plugin'
-        plugin_view_classes = (AlphaRegionView, AlphaModelView, AlphaModelDomainView,AlphaMeshView)
+        plugin_view_classes = (AlphaRegionView, )
 
         class DataSourceMeta:
             # Data Source attributes
@@ -82,28 +82,24 @@ Extend the broker source plugin with the described attributes::
 
 Create view classes for the desired synthesis models::
 
-    class AlphaModelView(with_metaclass(DataSourcePluginViewMeta)):
-        synthesis_model_class = Model
+    class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
+        synthesis_model_class = Region
 
-        def list(self, request):
+        def list(self, request, **kwargs):
             """
-            Generate the simulations.Models for this datasource
+            Get the Region information
             """
+            region = self.synthesis_model_class(self.datasource, name="a site",
+                                                id="SI123",
+                                                description="This is for my site description", )
 
-            # NOTE: Replace this with a call to the data source
-            for num in range(3):
-                yield simulations.Model(self.datasource, id="M{}".format(num),
-                                        version="1.0",
-                                        dimensionality=("1D", "2D", "3D")[num],
-                                        url="/testserver/url/{}".format(num))
+            yield region
 
         def get(self, request, pk=None):
             """
-            Get a simulations.Model
+            Get a Region
             :param pk: primary key
             """
-
-            # NOTE: Replace this with a call to the data source
             for s in self.list(request):
                 if s.id.endswith(pk):
                     return s

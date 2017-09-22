@@ -56,6 +56,22 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
     """
 
     direct_path = serializers.SerializerMethodField()
+    variables = serializers.SerializerMethodField()
+
+    def get_variables(self, obj):
+        """
+        Return the url for the variables associated with the current datasource
+        :param obj:
+        :return:
+        """
+        format = None
+        if "format" in self.context["request"].query_params:
+            format = self.context["request"].query_params["format"]
+        url_kwargs = {
+            'pk': obj.id,
+        }
+        return reverse.reverse('{}-variables'.format(obj.__class__.__name__.lower()), kwargs=url_kwargs,
+                               request=self.context["request"], format=format)
 
     def get_direct_path(self, obj ):
         """
@@ -76,8 +92,8 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = DataSource
         depth=1
-        fields = ('url', 'direct_path','name', 'location','id_prefix')
-        read_only_fields = ('name', 'location', 'id_prefix')
+        fields = ('url', 'direct_path','name', 'location','id_prefix','variables')
+        read_only_fields = ('name', 'location', 'id_prefix','variables')
         lookup_field = 'name'
 
 
@@ -99,11 +115,28 @@ class MeasurementVariableSerializer(serializers.HyperlinkedModelSerializer):
     """
 
     categories = DelimitedListField()
+    datasources = serializers.SerializerMethodField()
+
+    def get_datasources(self, obj):
+        """
+        Return the url for the data sources associated with the current variable
+        :param obj:
+        :return:
+        """
+        format = None
+        if "format" in self.context["request"].query_params:
+            format = self.context["request"].query_params["format"]
+        url_kwargs = {
+            'pk': obj.id,
+        }
+        return reverse.reverse('{}-datasources'.format(obj.__class__.__name__.lower()), kwargs=url_kwargs,
+                               request=self.context["request"], format=format)
+
 
     class Meta:
         model = MeasurementVariable
         depth = 2
-        fields = ('url', 'id', 'full_name', 'categories')
+        fields = ('url', 'id', 'full_name', 'categories','datasources')
 
 
 class MeasurementSerializer(serializers.HyperlinkedModelSerializer):

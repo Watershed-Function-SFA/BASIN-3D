@@ -28,15 +28,11 @@ class GeographicalGroup(object):
     SAMPLING_FEATURE = 0  # Not sure how this is used
     SITE = 1
     PLOT = 2
-    MODEL_DOMAIN = 3
-    REGION = 4
-    MESH = 5
-    POINT_LOCATION = 6
+    REGION = 3
+    POINT_LOCATION = 4
 
     TYPES = {
-            MODEL_DOMAIN: "modeldomain",
             REGION: "region",
-        MESH: "mesh",
         SITE: "site",
         PLOT: "plot",
         POINT_LOCATION: "pointlocation"

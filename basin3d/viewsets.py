@@ -19,7 +19,7 @@ import djangoplugins
 from basin3d.models import MeasurementVariable, DataSource, DataSourceMeasurementVariable, \
     Measurement
 from basin3d.serializers import DataSourceSerializer, MeasurementVariableSerializer, \
-    DataSourceMeasurementVariableSerializer, MeasurementSerializer
+    MeasurementSerializer
 from rest_framework import filters
 from rest_framework import status
 from rest_framework import viewsets
@@ -50,7 +50,6 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
 
         direct_apis = []
         for datasource in self.queryset:
-
             plugin_model = datasource.plugin  # Get the plugin model
             plugin = plugin_model.get_plugin()
 
@@ -81,12 +80,12 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
                     return Response(
                         data=json.loads(
                             response.content.decode('utf-8').replace(datasource.location,
-                                                             request.build_absolute_uri(
-                                                                 reverse('direct-path-detail',
-                                                                         kwargs={
-                                                                             "id_prefix": datasource.id_prefix,
-                                                                             "direct_path": ""})))),
-                    status=response.status_code)
+                                                                     request.build_absolute_uri(
+                                                                         reverse('direct-path-detail',
+                                                                                 kwargs={
+                                                                                     "id_prefix": datasource.id_prefix,
+                                                                                     "direct_path": ""})))),
+                        status=response.status_code)
                 except:
                     return response
 
@@ -95,9 +94,17 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
 
 class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
     """
-        Returns a list of all  Data Sources available to the BASIN-3D service
+        Returns a list of all Data Sources available to the BASIN-3D service
 
-        The detail view will return a direct call to the data source itself
+
+        ** Properties **
+
+        * *name* - unique name for the datasource
+        * *id_prefix* - unique id prefix for all datasource ids
+        * *location* - the web location of the data source
+        * *url* - for detail on a single Model Domain
+        * *direct_path* - a direct call to the data source itself
+        * *variables* - returns the measurement variables for the current data source
 
     """
     queryset = DataSource.objects.all()
@@ -115,20 +122,31 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
         :return:
         """
         params = DataSourceMeasurementVariable.objects.filter(datasource=pk)
+        v = []
+        for dsmv in params:
+            v.append(dsmv.measure_variable)
 
         # `HyperlinkedRelatedField` requires the request in the
         # serializer context. Add `context={'request': request}`
         # when instantiating the serializer.
 
         # Then just serialize and return it!
-        serializer = DataSourceMeasurementVariableSerializer(params, many=True,
-                                                             context={'request': request})
+        serializer = MeasurementVariableSerializer(v, many=True,
+                                                   context={'request': request})
         return Response(serializer.data)
 
 
 class MeasurementVariableViewSet(viewsets.ReadOnlyModelViewSet):
     """
-        Returns a list of available BASIN-3D MeasurementVariables
+        Returns a list of available Measurement Variables. A measurement variable defines what is
+        being measured. See http://vocabulary.odm2.org/variablename/ for controlled vocabulary.
+
+        **Properties**
+
+        * *id* - unique measurement variable identifier
+        * *full_name* - descriptive name
+        * *categories* - categories listed in hierarchical order
+        * *datasources* - retrieves the datasources that define the current variable
 
     """
     queryset = MeasurementVariable.objects.all()
@@ -136,35 +154,36 @@ class MeasurementVariableViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
 
     @detail_route()  # Custom Route for an association
-    def measure_variables(self, request, pk=None):
+    def datasources(self, request, pk=None):
         """
         Retrieve the DataSource Parameters for a broker parameter.
 
-        Maps to  /measure_variables/{pk}/map/
+        Maps to  /measure_variables/{pk}/datasources/
 
         :param request:
         :param pk: measure_variables primary key
         :return:
         """
         params = DataSourceMeasurementVariable.objects.filter(measure_variable=pk)
+        ds = []
+        for dsmv in params:
+            ds.append(dsmv.datasource)
 
         # `HyperlinkedRelatedField` requires the request in the
         # serializer context. Add `context={'request': request}`
         # when instantiating the serializer.
 
         # Then just serialize and return it!
-        serializer = DataSourceMeasurementVariableSerializer(params, many=True,
-                                                             context={'request': request})
+        serializer = DataSourceSerializer(ds, many=True,
+                                          context={'request': request})
         return Response(serializer.data)
 
 
 class MeasurementViewSet(viewsets.ReadOnlyModelViewSet):
     """
-        Returns a list of available BASIN-3D Measurements
+        Returns a list of available  Measurements
 
     """
     queryset = Measurement.objects.all()
     serializer_class = MeasurementSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-
-

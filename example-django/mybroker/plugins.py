@@ -3,11 +3,9 @@ import logging
 from basin3d.models import SamplingMedium, MeasurementApproach, GeographicalGroup, Measurement
 from basin3d.plugins import DataSourcePluginPoint, DataSourcePluginViewMeta
 from basin3d.synthesis.models import measurement, Person
-from basin3d.synthesis.models import simulations
 from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation, \
     GeographicCoordinate, MeasurementPosition, DepthCoordinate
 from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint
-from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh, ModelRun
 from collections import OrderedDict
 from django.utils.six import with_metaclass
 
@@ -134,29 +132,6 @@ class AlphaPointLocationView(with_metaclass(DataSourcePluginViewMeta)):
         return None
 
 
-class AlphaMeshView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = Mesh
-
-    def list(self, request, **kwargs):
-        """
-        Get the Mesh information
-        """
-        mesh = self.synthesis_model_class(self.datasource, id="SI123",
-                                          geom={})
-
-        yield mesh
-
-    def get(self, request, pk=None):
-        """
-        Get a Region
-        :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
 class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = Region
 
@@ -181,80 +156,6 @@ class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
         return None
 
 
-class AlphaModelView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = Model
-
-    def list(self, request, **kwargs):
-        """
-        Generate the simulations.Models for this datasource
-        """
-        for num in range(3):
-            yield simulations.Model(self.datasource, id="M{}".format(num),
-                                    version="1.0",
-                                    dimensionality=("1D", "2D", "3D")[num],
-                                    web_location="/testserver/url/{}".format(num))
-
-    def get(self, request, pk=None):
-        """
-        Get a simulations.Model
-        :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
-class AlphaModelRunView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = ModelRun
-
-    def list(self, request, **kwargs):
-        """
-        Generate the simulations.ModelRuns for this datasource
-
-
-        """
-        for num in range(3):
-            yield simulations.ModelRun(self.datasource, id="MR{}".format(num),
-                                       name="foo",
-                                       start_time=None,
-                                       end_time=None,
-                                       simulation_length=(num * 10),
-                                       simulation_length_units="years",
-                                       url="/testserver/url/{}".format(num))
-
-    def get(self, request, pk=None):
-        """
-        Get a simulations.Model
-        :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
-class AlphaModelDomainView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = ModelDomain
-
-    def list(self, request, **kwargs):
-        """ Generate the Model Domains"""
-        for num in range(1, 10):
-            yield simulations.ModelDomain(self.datasource, id="MD{}".format(num),
-                                          name="model domain {}".format(num),
-                                          geom={})
-
-    def get(self, request, pk=None):
-        """
-            Get a ModelDomain
-            :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
 class AlphaDataPointGroupView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = DataPointGroup
 
@@ -268,7 +169,7 @@ class AlphaDataPointGroupView(with_metaclass(DataSourcePluginViewMeta)):
             - *end_time:* datetime, units: survey end time (month/year)
             - *utc_offset:* float (offset in hours), +9
             - *geographical_group_id:* string, River system ID (Region ID).
-            - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region): Model_domain (or optionally region)
+            - *geographical_group_type* enum (sampling_feature, site, plot, region)
             - *results:* Array of DataPoint objects
 
         """
@@ -281,11 +182,11 @@ class AlphaDataPointGroupView(with_metaclass(DataSourcePluginViewMeta)):
                                              end_time=datetime(2016, num, last_day),
                                              utc_offset=-8,
                                              geographical_group_id=1,
-                                             geographical_group_type=GeographicalGroup.MODEL_DOMAIN)
+                                             geographical_group_type=GeographicalGroup.SITE)
 
     def get(self, request, pk=None):
         """
-            Get a ModelDomain
+            Get a DataPointGroup
             :param pk: primary key
         """
         for s in self.list(request):
@@ -304,7 +205,7 @@ class AlphaDataPointView(with_metaclass(DataSourcePluginViewMeta)):
             - *id:* string,
             - *measurement_id:* string,
             - *geographical_group_id:* string (sampling feature can be site/plot/measurement location),
-            - *geographical_group_type* enum (sampling_feature, site, plot, model_domain, region): Model_domain (or optionally region)
+            - *geographical_group_type* enum (sampling_feature, site, plot, region)
             - *unit:* Unit
             - *timestamp: datetime,
             - *value: float,
@@ -326,7 +227,7 @@ class AlphaDataPointView(with_metaclass(DataSourcePluginViewMeta)):
                                                           distance_units=DepthCoordinate.DISTANCE_UNITS_METERS,
                                                           datum=DepthCoordinate.DATUM_LOCAL_SURFACE)),
                                                   geographical_group_id=1,
-                                                  geographical_group_type=GeographicalGroup.MESH,
+                                                  geographical_group_type=GeographicalGroup.POINT_LOCATION,
                                                   timestamp=date(2016, num, 1),
                                                   value=num * .3453453,
                                                   units="nm", temporal_resolution="month",
@@ -335,7 +236,7 @@ class AlphaDataPointView(with_metaclass(DataSourcePluginViewMeta)):
 
     def get(self, request, pk=None):
         """
-            Get a ModelDomain
+            Get a DataPoint
             :param pk: primary key
         """
         for s in self.list(request):
@@ -347,8 +248,8 @@ class AlphaDataPointView(with_metaclass(DataSourcePluginViewMeta)):
 class AlphaSourcePlugin(DataSourcePluginPoint):
     name = 'alpha-source-plugin'
     title = 'Alpha Source Plugin'
-    plugin_view_classes = (AlphaRegionView, AlphaModelView, AlphaModelDomainView,
-                           AlphaMeshView, AlphaModelRunView, AlphaDataPointGroupView,
+    plugin_view_classes = (AlphaRegionView,
+                           AlphaDataPointGroupView,
                            AlphaDataPointView, AlphaSiteView, AlphaPlotView,
                            AlphaPointLocationView)
 

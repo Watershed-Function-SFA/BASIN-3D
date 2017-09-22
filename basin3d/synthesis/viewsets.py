@@ -12,10 +12,6 @@ View Controllers for BASIN-3D REST api
 * :class:`DataSourcePluginViewSet` - Base ViewSet for all synthesized model views.
 * :class:`DataPointGroupViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.DataPointGroup` objects
 * :class:`DataPointViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.DataPoint` objects
-* :class:`MeshViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Mesh` objects
-* :class:`ModelDomainViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.simulations.ModelDomain` objects
-* :class:`ModelRunViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.simulations.ModelRun` objects
-* :class:`ModelViewSet` - supports REST ``GET`` methods that synthesize :class:`~basin3d.synthesis.models.simulations.Model` objects
 * :class:`PlotViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Plot` objects
 * :class:`PointLocationViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.PointLocation` objects
 * :class:`RegionViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Region` objects
@@ -31,9 +27,8 @@ from basin3d.models import DataSource
 from basin3d.plugins import InvalidOrMissingCredentials
 from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation
 from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint, TimeSeriesDataPoint
-from basin3d.synthesis.models.simulations import Model, ModelDomain, Mesh, ModelRun
-from basin3d.synthesis.serializers import RegionSerializer, ModelSerializer, ModelDomainSerializer, MeshSerializer, \
-    DataPointGroupSerializer, ModelRunSerializer, DataPointSerializer, SiteSerializer, \
+from basin3d.synthesis.serializers import RegionSerializer, \
+    DataPointGroupSerializer, DataPointSerializer, SiteSerializer, \
     PlotSerializer, PointLocationSerializer
 from rest_framework import status
 from rest_framework import versioning
@@ -148,57 +143,43 @@ class RegionViewSet(DataSourcePluginViewSet):
     """
     Return a Region
 
-    * ** URLS **
-      * *url* -- for detail on a single DataPoint Group
-      * *model_domains* -- for the list of model domains associated with this Region
+    **Properties**
+
+    * *id* - unique identifier
+    * *name* - site name
+    * *geom* - site geometry
+    * *description*
+    * *url* - for detail on a single region
+
+
     """
     serializer_class = RegionSerializer
     synthesis_model = Region
 
-    @detail_route()  # Custom Route for an association
-    def model_domains(self, request, pk=None):
-        """
-        Retrieve the Model Domains  for a Region.
-
-        Maps to  /regions/{pk}/model_domains/
-
-        :param request:
-        :param pk:
-        :return:
-        """
-        id_prefix = pk.split("-")[0]
-        try:
-            datasource = DataSource.objects.get(id_prefix=id_prefix)
-            items = []
-
-            if datasource:
-                plugin_model = datasource.plugin  # Get the plugin model
-
-                if plugin_model.status == djangoplugins.models.ENABLED:
-
-                    plugin_views = plugin_model.get_plugin().get_plugin_views()
-                    if self.synthesis_model in plugin_views:
-                        request.GET = request.GET.copy()  # Make the request mutable
-                        request.GET["region_id"] = pk.replace("{}-".format(id_prefix),
-                                                              "",
-                                                              1)  # The datasource id prefix needs to be removed
-                        for obj in plugin_views[ModelDomain].list(request):
-                            items.append(obj)
-
-            serializer = ModelDomainViewSet.serializer_class(items, many=True, context={'request': request})
-            return Response(serializer.data)
-
-        except DataSource.DoesNotExist:
-            return Response({'success': False, 'detail': "There is no detail for datasource object {}. "
-                                                         "The datasource id '{}' is invalid.".format(pk, id_prefix)},
-                            status=status.HTTP_404_NOT_FOUND, )
-
 
 class SiteViewSet(DataSourcePluginViewSet):
     """
-    Retrieve Sites
+    Retrieve Sites. A demarcated, geographic area where measurements are being c
+    onducted. E.g. East River Site, K34-Manaus.
 
-    ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
+    *Note: Site differs from ODM 2 definition of a site, which is a point location.*
+
+
+    **Filter results** by datasource (e.g ?datasource=<datasource.id_prefix>)
+
+    **Properties**
+
+    * *id* - unique identifier
+    * *name* - Site name
+    * *description*
+    * *country*
+    * *state_province*
+    * *utc_offset*
+    * *center_coordinates* - where the site is located
+    * *contacts* - list of site contacts
+    * *pi* - program investigator
+    * *urls* - websites urls
+    * *url* - returns a single site record
     """
     serializer_class = SiteSerializer
     synthesis_model = Site
@@ -208,7 +189,16 @@ class PlotViewSet(DataSourcePluginViewSet):
     """
     Retrieve Plots
 
-    ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
+    **Filter results** by datasource (e.g ?datasource=<datasource.id_prefix>)
+
+    **Properties**
+
+    * *id* - unique identifier
+    * *name* - Plot name
+    * *description*
+    * *geom* - the geometry of the plot
+    * *pi* - program investigator
+    * *url* - returns a single plot record
     """
     serializer_class = PlotSerializer
     synthesis_model = Plot
@@ -218,99 +208,39 @@ class PointLocationViewSet(DataSourcePluginViewSet):
     """
     Retrieve Point Locations
 
-    ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
+    **Filter results** by datasource (e.g ?datasource=<datasource.id_prefix>)
+
+    **Properties**
+
+    * *id* - unique identifier
+    * *name* - point location name
+    * *description*
+    * *site* - the site associated with this point location
+    * *horizontal_position* - the depth of this point location
+    * *url* - returns a single point location record
     """
     serializer_class = PointLocationSerializer
     synthesis_model = PointLocation
-
-
-class ModelViewSet(DataSourcePluginViewSet):
-    """
-    Retrieve Models
-
-    * ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
-    """
-    serializer_class = ModelSerializer
-    synthesis_model = Model
-
-
-class MeshViewSet(DataSourcePluginViewSet):
-    """
-    Return a Mesh
-
-    * ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
-    """
-    serializer_class = MeshSerializer
-    synthesis_model = Mesh
-
-
-class ModelDomainViewSet(DataSourcePluginViewSet):
-    """
-    Return a Model Domain
-
-    ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
-    * ** URLS **
-      * *url* -- for detail on a single Model Domain
-      * *meshes* -- for the list of meshes associated with this Model Domain
-    """
-    serializer_class = ModelDomainSerializer
-    synthesis_model = ModelDomain
-
-    @detail_route()  # Custom Route for an association
-    def meshes(self, request, pk=None):
-        """
-        Retrieve the Meshes  for a Model Domain.
-
-        Maps to  /model_domains/{pk}/meshes/
-
-        :param request:
-        :param pk:
-        :return:
-        """
-        id_prefix = pk.split("-")[0]
-        try:
-            datasource = DataSource.objects.get(id_prefix=id_prefix)
-
-            items = []
-
-            if datasource:
-                plugin_model = datasource.plugin  # Get the plugin model
-
-                if plugin_model.status == djangoplugins.models.ENABLED:
-
-                    plugin_views = plugin_model.get_plugin().get_plugin_views()
-                    if self.synthesis_model in plugin_views:
-                        request.GET = request.GET.copy()  # Make the request mutable
-                        request.GET["model_domain_id"] = pk.replace("{}-".format(id_prefix),
-                                                                    "",
-                                                                    1)  # The datasource id prefixe needs to be removed
-                        for obj in plugin_views[Mesh].list(request):
-                            items.append(obj)
-
-            serializer = MeshViewSet.serializer_class(items, many=True, context={'request': request})
-            return Response(serializer.data)
-        except DataSource.DoesNotExist:
-            return Response({'success': False, 'detail': "There is no detail for datasource object {}. "
-                                                         "The datasource id '{}' is invalid.".format(pk, id_prefix)},
-                            status=status.HTTP_404_NOT_FOUND, )
-
-
-class ModelRunViewSet(DataSourcePluginViewSet):
-    """
-    Return a Model Runs
-    """
-    serializer_class = ModelRunSerializer
-    synthesis_model = ModelRun
 
 
 class DataPointGroupViewSet(DataSourcePluginViewSet):
     """
     Retrieve  Data Point Groups
 
-    * ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
-    * ** URLS **
-          * *url* -- for detail on a single Data Point Group
-          * *data_points* -- for the list of data_points associated with this Data Point Group
+    **Filter results** by datasource (e.g ?datasource=<datasource.id_prefix>)
+
+    ** Properties **
+
+    * *id* - unique identifier
+    * *measurement:* string, (optional)
+    * *start_time:* datetime,  survey start time
+    * *end_time:* datetime, units: survey end time
+    * *utc_offset:* float (offset in hours), +9
+    * *geographical_group_id:* identifier for the geographical group
+    * *geographical_group_type* enum (sampling_feature, site, plot,
+            region, point_location, measurement position)
+    * *url* - for detail on a single Data Point Group
+    * *data_points* -- for the list of data_points associated with this Data Point Group
 
     """
     serializer_class = DataPointGroupSerializer
@@ -319,9 +249,9 @@ class DataPointGroupViewSet(DataSourcePluginViewSet):
     @detail_route()  # Custom Route for an association
     def datapoints(self, request, pk=None):
         """
-        Retrieve the Meshes  for a Model Domain.
+        Retrieve the data points  for a data point group.
 
-        Maps to  /model_domains/{pk}/meshes/
+        Maps to  /data_point_groups/{pk}/datapoints/
 
         :param request:
         :param pk:
@@ -362,13 +292,24 @@ class DataPointViewSet(DataSourcePluginViewSet):
     """
     Search for Data Points
 
-    * ** Filter results ** by datasource (e.g ?datasource=<datasource.id_prefix>)
-    * ** Search Parameters **
-        * *locations - * comma separated list of locations ids
-        * *measure_variables - * comma separated list of variable ids
-        * *temporal_resolution (default:day) - *  options (year|month|day|hour|minute|second)
-        * *start_date*
-        * *end_date*
+    **Filter results** by datasource (e.g ?datasource=<datasource.id_prefix>)
+    
+    **Properties**
+    
+    * *id:* unique identifier
+    * *measurement:*
+    * *geographical_group_id:*
+    * *geographical_group_type* enum (sampling_feature, site, plot, region)
+    * *units:* Unit
+    * *measurement_position:* The position at which the measurement was taken
+
+    ** Search Parameters **
+    
+    * *locations * * comma separated list of locations ids
+    * *measure_variables * * comma separated list of variable ids
+    * *temporal_resolution (default:day) * *  options (year|month|day|hour|minute|second)
+    * *start_date*
+    * *end_date*
 
 
 

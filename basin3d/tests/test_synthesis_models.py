@@ -1,4 +1,3 @@
-from basin3d.synthesis.models import simulations
 from basin3d.tests import configure
 
 # Load test settings
@@ -24,30 +23,3 @@ class RegionTests(TestCase):
         self.assertEqual("A-SI123", a_region.id)
         self.assertEqual("This is for my site description", a_region.description)
 
-
-class Model(TestCase):
-    def setUp(self):
-        self.datasource = DataSource.objects.get(name='Alpha')
-
-    def test_create(self):
-        obj = simulations.Model(self.datasource, id="1234", version="1.0", dimensionality="1D",
-                                web_location="/testserver/url")
-
-        self.assertEqual("A-1234", obj.id)
-        self.assertEqual("1.0", obj.version)
-        self.assertEqual("1D", obj.dimensionality)
-        self.assertEqual("/testserver/url", obj.web_location)
-
-
-class ModelDomain(TestCase):
-    def setUp(self):
-        self.datasource = DataSource.objects.get(name='Alpha')
-
-    def test_create(self):
-        obj = simulations.ModelDomain(self.datasource, id="1234",
-                                      name="a model domain",
-                                      geom={})
-
-        self.assertEqual("A-1234", obj.id)
-        self.assertEqual("a model domain", obj.name)
-        self.assertEqual({}, obj.geom)

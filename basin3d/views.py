@@ -29,12 +29,9 @@ BASIN3D_SYNTHESIS_VIEWS = [('synthesis-datasources', 'datasource-list'),
                            ('synthesis-sites', 'site-list'),
                            ('synthesis-plots', 'plot-list'),
                            ('synthesis-pointlocations', 'pointlocation-list'),
-                           ('synthesis-models', 'model-list'),
-                           ('synthesis-modeldomains', 'modeldomain-list'),
-                           ('synthesis-modelruns', 'modelrun-list'),
                            ('synthesis-datapointgroups', 'datapointgroup-list'),
                            ('synthesis-datapoints', 'datapoint-list'),
-                           ('synthesis-mesh', 'mesh-list'), ]
+                           ]
 
 
 @api_view(['GET'])

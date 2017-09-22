@@ -15,8 +15,8 @@ Including another URLconf
 """
 import djangoplugins
 from basin3d.models import DataSource
-from basin3d.synthesis.viewsets import RegionViewSet, ModelViewSet, ModelDomainViewSet, MeshViewSet, \
-    ModelRunViewSet, DataPointGroupViewSet, DataPointViewSet, SiteViewSet, PlotViewSet, \
+from basin3d.synthesis.viewsets import RegionViewSet, \
+    DataPointGroupViewSet, DataPointViewSet, SiteViewSet, PlotViewSet, \
     PointLocationViewSet
 from basin3d.views import broker_api_root
 from basin3d.viewsets import DataSourceViewSet, DirectAPIViewSet, MeasurementVariableViewSet, \
@@ -65,15 +65,6 @@ def get_synthesis_router():
                     if 'PointLocation' in viewset_models:
                         router.register(r'point_locations', PointLocationViewSet,
                                         base_name='pointlocation')
-                    if 'Model' in viewset_models:
-                        router.register(r'models', ModelViewSet, base_name='model')
-                    if 'ModelDomain' in viewset_models:
-                        router.register(r'model_domains', ModelDomainViewSet,
-                                        base_name='modeldomain')
-                    if 'ModelRun' in viewset_models:
-                        router.register(r'model_runs', ModelRunViewSet, base_name='modelrun')
-                    if 'Mesh' in viewset_models:
-                        router.register(r'meshes', MeshViewSet, base_name='mesh')
                     if 'DataPointGroup' in viewset_models:
                         router.register(r'data_point_groups', DataPointGroupViewSet,
                                         base_name='datapointgroup')
