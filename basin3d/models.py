@@ -87,6 +87,9 @@ class DataSource(models.Model):
     plugin = PluginField(DataSourcePluginPoint, blank=True)
     credentials = EncryptedTextField(blank=True)
 
+    class Meta:
+        ordering = ['id_prefix']
+
     def __str__(self):
         return self.__unicode__()
 

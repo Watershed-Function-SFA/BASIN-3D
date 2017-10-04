@@ -7,7 +7,7 @@ from django.contrib.admin import ModelAdmin
 @admin.register(DataSource)
 class DataSourceAdmin(ModelAdmin):
     list_display = ('name', 'plugin','location')
-    fields = ('name', 'location', 'plugin')
+    fields = ('name', 'location', 'plugin','id_prefix',)
     readonly_fields = ('name', 'id_prefix', 'plugin')
     actions = None
 
