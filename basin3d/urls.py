@@ -93,5 +93,5 @@ if settings.BASIN3D["DIRECT_API"]:
     router = get_synthesis_router()
     urlpatterns.append(url(r'^direct/$',DirectAPIViewSet.as_view({'get':'list'}),name='direct-api-list'))
     urlpatterns.append(url(r'^direct/(?P<id_prefix>[a-zA-Z0-9]+)/(?P<direct_path>[a-zA-Z/_\-?&0-9]*)$',
-        DirectAPIViewSet.as_view({'get': 'retrieve'}),
+        DirectAPIViewSet.as_view({'get': 'retrieve', 'post':'retrieve'}),
         name='direct-path-detail'))

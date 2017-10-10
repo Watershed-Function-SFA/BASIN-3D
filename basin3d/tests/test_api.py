@@ -23,6 +23,7 @@ def get_direct_api():
 class DirectAPITest(rest_framework.test.APITestCase):
     def setUp(self):
         self.view_retrieve = DirectAPIViewSet.as_view({'get': 'retrieve'})
+        self.view_post_retrieve = DirectAPIViewSet.as_view({'post': 'retrieve'})
 
     @mock.patch('basin3d.plugins.get_url')
     def test_get_detail(self, mock_get_url):
@@ -33,6 +34,20 @@ class DirectAPITest(rest_framework.test.APITestCase):
         request = factory.get('direct/A/')
         response = self.view_retrieve(request, id_prefix="A")
         response.render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'error': 'Did not receive a JSON Response'})
+
+    @mock.patch('basin3d.plugins.post_url')
+    def test_post_detail(self, mock_post_url):
+        mock_post_url.return_value = get_direct_api()
+        import basin3d
+        basin3d.post_url = mock_post_url
+        factory = rest_framework.test.APIRequestFactory()
+        request = factory.post('direct/A/')
+        response = self.view_post_retrieve(request, id_prefix="A")
+        response.render()
+        print(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {'error': 'Did not receive a JSON Response'})

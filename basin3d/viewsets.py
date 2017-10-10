@@ -51,7 +51,6 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
 
         direct_apis = []
         for datasource in self.queryset:
-            plugin_model = datasource.plugin  # Get the plugin model
 
             direct_apis.append(
                 {datasource.name: request.build_absolute_uri(reverse('direct-path-detail',

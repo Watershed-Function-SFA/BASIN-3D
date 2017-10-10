@@ -191,3 +191,18 @@ def get_url(url, params=None, headers=None, verify=False):
     import requests
     response = requests.get(url, params=params, verify=verify, headers=headers)
     return response
+
+
+def post_url(url, params=None, headers=None, verify=False):
+    """
+    Send a POST request to the specified URL
+
+    :param url:
+    :param params: request parameters
+    :param headers: request headers
+    :param verify: verify SSL connection
+    :return: Response
+    """
+    import requests
+    response = requests.post(url, params=params, verify=verify, headers=headers)
+    return response

@@ -23,7 +23,7 @@ except ImportError:
 
 
 import yaml
-from basin3d import synthesis, get_url
+from basin3d import synthesis, get_url, post_url
 from basin3d.apps import Basin3DConfig
 from django.apps import apps
 from django.conf import settings
@@ -211,14 +211,22 @@ class DataSourcePluginPoint(PluginPoint):
             http_auth = self.get_meta().connection_class(datasource)
 
             try:
-                response = http_auth.get("{}{}".format(datasource.location, direct_path),
+                if request.method == "GET":
+                    response = http_auth.get("{}{}".format(datasource.location, direct_path),
                                          params=request.query_params)
+                elif request.method == "POST":
+                    response = http_auth.post("{}{}".format(datasource.location, direct_path),
+                                              params=request.data)
 
             finally:
                 http_auth.logout()
         else:
             try:
-                response = get_url("{}{}".format(datasource.location, direct_path))
+                if request.method == "GET":
+                    response = get_url("{}{}".format(datasource.location, direct_path))
+                elif request.method == "POST":
+                    response = post_url("{}{}".format(datasource.location, direct_path),
+                                              params=request.data)
             except Exception as e:
                 response = JsonResponse(data={"error": str(e)},
                                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -333,6 +341,17 @@ class HTTPConnectionDataSource(object):
         raise NotImplemented
 
     def get(self, url_part, params=None, headers=None):
+        """
+        The resources at the spedicfied url
+
+        :param url_part:
+        :param params:
+        :param headers:
+        :return:
+        """
+        raise NotImplemented
+
+    def post(self, url_part, params=None, headers=None):
         """
         The resources at the spedicfied url
 
@@ -507,6 +526,36 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
             auth_headers.update(headers)
 
         return get_url(url_part, params=params, headers=auth_headers, verify=self.verify_ssl)
+
+    def post(self, url_part, params=None, headers=None):
+        """
+        Login Data Source if not already logged in.
+        Access url with the Authorization header and the access token
+
+        Authorization Header:
+            - Authorization": "{token_type} {access_token}
+
+        :param url_part: The url part to request
+        :param params: additional parameters for the request
+        :type params: dict
+        :param headers: request headers
+        :return: None
+        :raises: PermissionDenied
+        """
+
+        if not self.token:
+            self.login()
+        if not self.token:
+            # Access is denied!!
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied()
+
+        # Prepare the Authorization header
+        auth_headers = {"Authorization": "{token_type} {access_token}".format(**self.token)}
+        if headers:
+            auth_headers.update(headers)
+
+        return post_url(url_part, params=params, headers=auth_headers, verify=self.verify_ssl)
 
     def logout(self):
         """
