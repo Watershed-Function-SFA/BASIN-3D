@@ -421,7 +421,7 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
 
     def _load_credentials(self, datasource):
         """
-        Get the credentials from JAEA Geo Data Source. If the
+        Get the credentials from Data Source. If the
         credentials are invalid `None` is returned.
 
         :param datasource: The datasource object
@@ -479,7 +479,7 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
         url = '{}{}'.format(self.datasource.location,self.auth_token_path)
         try:
 
-            # Login to the JAEA Geo Data Source
+            # Login to the Data Source
             res = requests.post(url, params={"scope": self.auth_scope, "grant_type": self.grant_type},
                                 auth=(self.client_id, self.client_secret),
                                 verify=self.verify_ssl)
