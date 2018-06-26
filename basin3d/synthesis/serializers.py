@@ -29,9 +29,11 @@ Serializers that render :mod:`basin.synthesis.models` from Python objects to `JS
 from numbers import Number
 
 from basin3d.models import GeographicalGroup
-from basin3d.serializers import MeasurementSerializer
+from basin3d.serializers import MeasurementSerializer, ChooseFieldsSerializerMixin
 from basin3d.synthesis.models.field import Region
+from basin3d.synthesis.query import QUERY_PARAM_LOCATIONS, filter_query_param_values
 from django.utils.datetime_safe import datetime
+from django.utils.http import urlencode
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
@@ -115,7 +117,7 @@ class IdUrlSerializerMixin(object):
                            request=self.context["request"], )
 
 
-class RegionSerializer(IdUrlSerializerMixin, serializers.Serializer):
+class RegionSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
     """
     Serializes a :class:`basin3d.synthesis.models.field.Region`
     """
@@ -124,6 +126,13 @@ class RegionSerializer(IdUrlSerializerMixin, serializers.Serializer):
     name = serializers.CharField()
     geom = serializers.JSONField()
     description = serializers.CharField()
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        fields = kwargs.pop('fields', None)
+
+        # Instantiate the superclass normally
+        super(self.__class__, self).__init__(*args, **kwargs)
 
     def create(self, validated_data):
         return Region(**validated_data)
@@ -218,10 +227,11 @@ class HorizonatalCoordinateSerializer(serializers.Serializer):
 
         # remove unneeded fields
         for field in field_to_remove:
-            self.fields.pop(field)
+            if field in self.fields:
+                self.fields.pop(field)
 
 
-class SiteSerializer(IdUrlSerializerMixin, serializers.Serializer):
+class SiteSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
     """
     Serializes a :class:`basin3d.synthesis.models.field.Site`
     """
@@ -235,6 +245,9 @@ class SiteSerializer(IdUrlSerializerMixin, serializers.Serializer):
         :param args:
         :param kwargs:
         """
+        # Don't pass the 'fields' arg up to the superclass
+        kwargs.pop('fields', None)
+
         super(SiteSerializer, self).__init__(*args, **kwargs)
 
         instance = None
@@ -247,7 +260,8 @@ class SiteSerializer(IdUrlSerializerMixin, serializers.Serializer):
                 instance = args[0]
 
         if instance and not instance.geom:
-            self.fields.pop("geom")
+            if "geom" in self.fields:
+                self.fields.pop("geom")
 
     id = serializers.CharField()
     name = serializers.CharField()
@@ -283,7 +297,7 @@ class SiteSerializer(IdUrlSerializerMixin, serializers.Serializer):
         return instance
 
 
-class PlotSerializer(IdUrlSerializerMixin, serializers.Serializer):
+class PlotSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
     """
     Serializes a :class:`basin3d.synthesis.models.field.Plot`
     """
@@ -295,6 +309,13 @@ class PlotSerializer(IdUrlSerializerMixin, serializers.Serializer):
     site = serializers.SerializerMethodField()
     geom = serializers.JSONField()
     pi = ReadOnlySynthesisModelField(serializer_class=PersonSerializer)
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        kwargs.pop('fields', None)
+
+        # Instantiate the superclass normally
+        super(self.__class__, self).__init__(*args, **kwargs)
 
     def get_site(self, obj):
         """
@@ -322,7 +343,7 @@ class PlotSerializer(IdUrlSerializerMixin, serializers.Serializer):
         return instance
 
 
-class PointLocationSerializer(IdUrlSerializerMixin, serializers.Serializer):
+class PointLocationSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
     """
     Serializes a :class:`basin3d.synthesis.models.field.PointLocation`
     """
@@ -336,6 +357,13 @@ class PointLocationSerializer(IdUrlSerializerMixin, serializers.Serializer):
     geographical_group_type = serializers.SerializerMethodField()
     horizontal_position = ReadOnlySynthesisModelField(
         serializer_class=HorizonatalCoordinateSerializer)
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        kwargs.pop('fields', None)
+
+        # Instantiate the superclass normally
+        super(self.__class__, self).__init__(*args, **kwargs)
 
     def get_geographical_group_type(self, obj):
         """
@@ -421,13 +449,14 @@ class MeasurementPositionSerializer(serializers.Serializer):
         return instance
 
 
-class DataPointGroupSerializer(IdUrlSerializerMixin, serializers.Serializer):
+class DataPointGroupSerializer(serializers.Serializer):
     """
         Serializes a :class:`basin3d.synthesis.models.measurement.DataPointGroup`
 
     """
 
     id = serializers.CharField()
+    units = serializers.CharField()
     measurement = serializers.SerializerMethodField()
     geographical_group = serializers.SerializerMethodField()
     geographical_group_type = serializers.SerializerMethodField()
@@ -435,6 +464,41 @@ class DataPointGroupSerializer(IdUrlSerializerMixin, serializers.Serializer):
     end_time = serializers.DateTimeField()
     utc_offset = serializers.IntegerField()
     data_points = serializers.SerializerMethodField()
+
+    def __init__(self, *args, **kwargs):
+        """
+        Override ``BaseSerializer.__init__`` to modify the fields outputted. Remove id if it doesn't exist
+
+
+        :param args:
+        :param kwargs:
+        """
+        # Don't pass the 'fields' arg up to the superclass
+        kwargs.pop('fields', None)
+
+        super(DataPointGroupSerializer, self).__init__(*args, **kwargs)
+
+        field_to_remove = set()
+
+        instance = None
+        if "instance" in kwargs:
+            instance = kwargs["instance"]
+        elif len(args) >= 1:
+            if args[0] and isinstance(args[0], (list, tuple)) and not isinstance(args[0], str):
+                instance = args[0][0]
+            else:
+                instance = args[0]
+
+        if instance:
+            #  Remove optional fields.  We don't want them crowding
+            # the json
+            if not instance.id:
+                field_to_remove.update(["id", "url"])
+
+        # remove unneeded fields
+        for field in field_to_remove:
+            if field in self.fields:
+                self.fields.pop(field)
 
     def get_measurement(self, obj):
         if "request" in self.context and self.context["request"]:
@@ -471,8 +535,28 @@ class DataPointGroupSerializer(IdUrlSerializerMixin, serializers.Serializer):
         :param obj:
         :return:
         """
-        if "request" in self.context and self.context["request"]:
-            return reverse(viewname='{}-datapoints'.format(obj.__class__.__name__.lower()),
+        if obj.data_points:
+            return obj.data_points
+        elif "request" in self.context and self.context["request"]:
+            request = self.context["request"]
+            query_params = {}
+            for key, value in request.query_params.items():
+                query_params[key] = value
+
+            filter_query_param_values(request, QUERY_PARAM_LOCATIONS, obj.datasource.id_prefix, query_params)
+
+            return "{}".format(reverse(viewname='{}-datapoints'.format(obj.__class__.__name__.lower()),
+                           kwargs={'pk': obj.id},
+                           request=self.context["request"]), urlencode(query_params))
+
+    def get_url(self, obj):
+        """
+        Get the  url based on the current context
+        :param obj: ``DataPoint`` object instance
+        :return: An URL to the current object instance
+        """
+        if obj.id and "request" in self.context and self.context["request"]:
+            return reverse(viewname='datapointgroup-detail',
                            kwargs={'pk': obj.id},
                            request=self.context["request"], )
 
@@ -480,7 +564,7 @@ class DataPointGroupSerializer(IdUrlSerializerMixin, serializers.Serializer):
         return DataPointGroupSerializer(**validated_data)
 
 
-class DataPointSerializer(serializers.Serializer):
+class DataPointSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
     """
         Serializes  :class:`basin3d.synthesis.models.measurement.DataPoint` objects and its
         subclasses.
@@ -527,6 +611,9 @@ class DataPointSerializer(serializers.Serializer):
         :param args:
         :param kwargs:
         """
+        # Don't pass the 'fields' arg up to the superclass
+        kwargs.pop('fields', None)
+
         super(DataPointSerializer, self).__init__(*args, **kwargs)
 
         field_to_remove = set()
@@ -558,7 +645,8 @@ class DataPointSerializer(serializers.Serializer):
 
         # remove unneeded fields
         for field in field_to_remove:
-            self.fields.pop(field)
+            if field in self.fields:
+                self.fields.pop(field)
 
     def get_type(self, obj):
         """
@@ -599,7 +687,7 @@ class DataPointSerializer(serializers.Serializer):
 
     def get_url(self, obj):
         """
-        Get the Site url based on the current context
+        Get the  url based on the current context
         :param obj: ``DataPoint`` object instance
         :return: An URL to the current object instance
         """

@@ -27,6 +27,7 @@ class DataPointGroup(Base):
     Attributes:
         - *id:* string,
         - *measurement:* string, (optional)
+        - *units:* Unit
         - *start_time:* datetime,  survey start time (month/year)
         - *end_time:* datetime, units: survey end time (month/year)
         - *timestamp_utc_offset:* float (offset in hours), +9
@@ -37,13 +38,14 @@ class DataPointGroup(Base):
     """
     def __init__(self, datasource, **kwargs):
         self.id = None
+        self.units = None
         self.measurement_id = None
         self.start_time = None
         self.end_time = None
         self.utc_offset = None
         self.geographical_group_id = None
         self.geographical_group_type = None
-        self.results = []
+        self.data_points = []
 
         # Initialize after the attributes have been set
         super().__init__(datasource, datasource_ids=['geographical_group_id'], **kwargs)
@@ -60,7 +62,7 @@ class DataPoint(Base):
         - *id:* string (optional),
         - *measurement:* string,
         - *geographical_group_id:* string, River system ID (Region ID).
-        - *geographical_group_type* enum (sampling_feature, site, plot, region)
+        - *geographical_group_type* en um (sampling_feature, site, plot, region)
         - *units:* Unit
         - *measurement_position:* The position at which the measurement was taken
     """

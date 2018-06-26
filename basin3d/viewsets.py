@@ -158,9 +158,6 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
                     return Response(data={"message": str(e), "success":False},
                                             status=status.HTTP_200_OK)
 
-
-
-
     @detail_route()  # Custom Route for an association
     def variables(self, request, pk=None):
         """

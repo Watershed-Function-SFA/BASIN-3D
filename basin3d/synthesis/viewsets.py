@@ -25,8 +25,11 @@ import logging
 import djangoplugins
 from basin3d.models import DataSource
 from basin3d.plugins import InvalidOrMissingCredentials
+
 from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation
 from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint, TimeSeriesDataPoint
+from basin3d.synthesis.query import extract_id, extract_query_param_ids, QUERY_PARAM_MEASURE_VARIABLES, \
+    QUERY_PARAM_TEMPORAL_RESOLUTION, QUERY_PARAM_LOCATIONS, QUERY_PARAM_REGIONS, QUERY_PARAM_SITES
 from basin3d.synthesis.serializers import RegionSerializer, \
     DataPointGroupSerializer, DataPointSerializer, SiteSerializer, \
     PlotSerializer, PointLocationSerializer
@@ -35,12 +38,6 @@ from rest_framework import versioning
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-
-QUERY_PARAM_LOCATIONS = "locations"
-QUERY_PARAM_MEASURE_VARIABLES = "measure_variables"
-QUERY_PARAM_TEMPORAL_RESOLUTION = "temporal_resolution"
-QUERY_PARAM_START_DATE = "start_date"
-QUERY_PARAM_END_DATE = "end_date"
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -128,7 +125,7 @@ class DataSourcePluginViewSet(ViewSet):
                     return Response(serializer.data)
                 except Exception as e:
                     logger.error("Plugin error: ({},{}) -- {}".format(plugin_model.name,
-                                                                      self.__class__.plugin_retrieve_method,
+                                                                      self.action,
                                                                       e))
 
             return Response({"success": False, "content": "There is no detail for {}".format(pk)},
@@ -143,13 +140,19 @@ class RegionViewSet(DataSourcePluginViewSet):
     """
     Return a Region
 
-    **Properties**
+    **Fields**
 
     * *id* - unique identifier
     * *name* - site name
     * *geom* - site geometry
     * *description*
     * *url* - for detail on a single region
+
+    ** Filter results** by the following attributes 
+
+    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
+    
+    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
 
 
     """
@@ -164,10 +167,7 @@ class SiteViewSet(DataSourcePluginViewSet):
 
     *Note: Site differs from ODM 2 definition of a site, which is a point location.*
 
-
-    **Filter results** by datasource (e.g ?datasource=<datasource.id_prefix>)
-
-    **Properties**
+    **Fields**
 
     * *id* - unique identifier
     * *name* - Site name
@@ -180,18 +180,48 @@ class SiteViewSet(DataSourcePluginViewSet):
     * *pi* - program investigator
     * *urls* - websites urls
     * *url* - returns a single site record
+
+
+    ** Filter results** by the following attributes:
+
+    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
+    * *regions (optional):* comma separated list of region ids (e.g ?regions=`region.id`)
+
+    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
+
     """
     serializer_class = SiteSerializer
     synthesis_model = Site
+
+    def synthesize_query_params(self, request, plugin_view):
+        """
+        Synthesizes query parameters, if necessary
+
+        Parameters Synthesized:
+          + region
+
+        :param request: the request to synthesize
+        :param plugin_view: The plugin view to synthesize query params for
+        :return:
+        """
+        id_prefix = plugin_view.datasource.id_prefix
+        query_params = {}
+        for key, value in request.query_params.items():
+            query_params[key] = value
+
+        extract_query_param_ids(request=request,
+                                param_name=QUERY_PARAM_REGIONS,
+                                id_prefix=id_prefix,
+                                query_params=query_params)
+
+        return query_params
 
 
 class PlotViewSet(DataSourcePluginViewSet):
     """
     Retrieve Plots
 
-    **Filter results** by datasource (e.g ?datasource=<datasource.id_prefix>)
-
-    **Properties**
+    **Fields**
 
     * *id* - unique identifier
     * *name* - Plot name
@@ -199,18 +229,55 @@ class PlotViewSet(DataSourcePluginViewSet):
     * *geom* - the geometry of the plot
     * *pi* - program investigator
     * *url* - returns a single plot record
+
+
+    ** Filter results** by the following attributes:
+
+    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
+    * *regions (optional):* comma separated list of region ids (e.g ?regions=`region.id`)
+    * *sites (optional)* comma separated list of site ids (e.g ?sites=`site.id`)
+
+    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
+
     """
     serializer_class = PlotSerializer
     synthesis_model = Plot
+
+    def synthesize_query_params(self, request, plugin_view):
+        """
+        Synthesizes query parameters, if necessary
+
+        Parameters Synthesized:
+          + site
+          + region
+
+        :param request: the request to synthesize
+        :param plugin_view: The plugin view to synthesize query params for
+        :return:
+        """
+        id_prefix = plugin_view.datasource.id_prefix
+        query_params = {}
+        for key, value in request.query_params.items():
+            query_params[key] = value
+
+        extract_query_param_ids(request=request,
+                                param_name=QUERY_PARAM_SITES,
+                                id_prefix=id_prefix,
+                                query_params=query_params)
+
+        extract_query_param_ids(request=request,
+                                param_name=QUERY_PARAM_REGIONS,
+                                id_prefix=id_prefix,
+                                query_params=query_params)
+
+        return query_params
 
 
 class PointLocationViewSet(DataSourcePluginViewSet):
     """
     Retrieve Point Locations
 
-    **Filter results** by datasource (e.g ?datasource=<datasource.id_prefix>)
-
-    **Properties**
+    **Fields**
 
     * *id* - unique identifier
     * *name* - point location name
@@ -218,20 +285,57 @@ class PointLocationViewSet(DataSourcePluginViewSet):
     * *site* - the site associated with this point location
     * *horizontal_position* - the depth of this point location
     * *url* - returns a single point location record
+
+
+    ** Filter results**  by the following attributes:
+
+    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
+    * *regions (optional):* comma separated list of region ids (e.g ?regions=`region.id`)
+    * *sites (optional)* comma separated list of site ids (e.g ?sites=`site.id`)
+
+    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
+
+
     """
     serializer_class = PointLocationSerializer
     synthesis_model = PointLocation
+
+    def synthesize_query_params(self, request, plugin_view):
+        """
+        Synthesizes query parameters, if necessary
+
+        Parameters Synthesized:
+          + site
+          + region
+
+        :param request: the request to synthesize
+        :param plugin_view: The plugin view to synthesize query params for
+        :return:
+        """
+        id_prefix = plugin_view.datasource.id_prefix
+        query_params = {}
+        for key, value in request.query_params.items():
+            query_params[key] = value
+
+        extract_query_param_ids(request=request,
+                                param_name=QUERY_PARAM_SITES,
+                                id_prefix=id_prefix,
+                                query_params=query_params)
+
+        extract_query_param_ids(request=request,
+                                param_name=QUERY_PARAM_REGIONS,
+                                id_prefix=id_prefix,
+                                query_params=query_params)
+
+        return query_params
 
 
 class DataPointGroupViewSet(DataSourcePluginViewSet):
     """
     Retrieve  Data Point Groups
 
-    **Filter results** by datasource (e.g ?datasource=<datasource.id_prefix>)
-
     ** Properties **
 
-    * *id* - unique identifier
     * *measurement:* string, (optional)
     * *start_time:* datetime,  survey start time
     * *end_time:* datetime, units: survey end time
@@ -239,12 +343,61 @@ class DataPointGroupViewSet(DataSourcePluginViewSet):
     * *geographical_group_id:* identifier for the geographical group
     * *geographical_group_type* enum (sampling_feature, site, plot,
             region, point_location, measurement position)
-    * *url* - for detail on a single Data Point Group
     * *data_points* -- for the list of data_points associated with this Data Point Group
+
+    ** Filter results** by the following attributes:
+
+    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
+    * *locations (required)* comma separated list of locations ids
+    * *measure_variables (required)* comma separated list of variable ids
+    * *start_date (required)*
+    * *end_date*
+    * *temporal_resolution (default:day):*  options (year|month|day|hour|minute|second)
+
+    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
+
 
     """
     serializer_class = DataPointGroupSerializer
     synthesis_model = DataPointGroup
+
+    def synthesize_query_params(self, request, plugin_view):
+        """
+        Synthesizes query parameters, if necessary
+
+        Parameters Synthesized:
+          + locations
+          + measure_variables
+          + temporal_resolution (default: day)
+
+        :param request: the request to synthesize
+        :param plugin_view: The plugin view to synthesize query params for
+        :return:
+        """
+
+        id_prefix = plugin_view.datasource.id_prefix
+        query_params = {}
+        for key, value in request.query_params.items():
+            query_params[key] = value
+
+        extract_query_param_ids(request=request,
+                                param_name=QUERY_PARAM_LOCATIONS,
+                                id_prefix=id_prefix,
+                                query_params=query_params)
+
+        # Synthesize MeasurementVariable (from BASIN-3D to DataSource variable name)
+        if QUERY_PARAM_MEASURE_VARIABLES in request.query_params:
+            measure_variables = request.query_params.get(QUERY_PARAM_MEASURE_VARIABLES, '').split(
+                ",")
+            query_params[QUERY_PARAM_MEASURE_VARIABLES] = plugin_view.get_variables(
+                measure_variables,
+                from_basin3d=True)
+        # Set the default Temporal Resolution
+        if QUERY_PARAM_TEMPORAL_RESOLUTION not in request.query_params:
+            query_params[
+                QUERY_PARAM_TEMPORAL_RESOLUTION] = TimeSeriesDataPoint.TEMPORAL_RESOLUTION_DAY
+
+        return query_params
 
     @detail_route()  # Custom Route for an association
     def datapoints(self, request, pk=None):
@@ -271,10 +424,9 @@ class DataPointGroupViewSet(DataSourcePluginViewSet):
                     plugin_views = plugin_model.get_plugin().get_plugin_views()
                     if self.synthesis_model in plugin_views:
                         request.GET = request.GET.copy()  # Make the request mutable
-                        request.GET["datapoint_group_id"] = pk.replace("{}-".format(id_prefix),
-                                                                       "",
-                                                                       1)  # The datasource id prefixe needs to be removed
-                        for obj in plugin_views[DataPoint].list(request):
+                        request.GET["datapoint_group_id"] = extract_id(pk)  # The datasource id prefix needs to be removed
+                        for obj in plugin_views[DataPoint].list(request,
+                                    **self.synthesize_query_params(request,plugin_views[DataPoint])):
                             items.append(obj)
 
             serializer = DataPointViewSet.serializer_class(items, many=True,
@@ -293,25 +445,30 @@ class DataPointViewSet(DataSourcePluginViewSet):
     Search for Data Points
 
     **Filter results** by datasource (e.g ?datasource=<datasource.id_prefix>)
-    
-    **Properties**
-    
-    * *id:* unique identifier
+
+    **Fields**
+
     * *measurement:*
     * *geographical_group_id:*
     * *geographical_group_type* enum (sampling_feature, site, plot, region)
     * *units:* Unit
     * *measurement_position:* The position at which the measurement was taken
+    * *timestamp:* the time that the measurement was taken
+    * *value:* the measurement value
+    * *temporal_resolution*
+    * *utc_offset*
+    * *reference*
 
-    ** Search Parameters **
-    
-    * *locations * * comma separated list of locations ids
-    * *measure_variables * * comma separated list of variable ids
-    * *temporal_resolution (default:day) * *  options (year|month|day|hour|minute|second)
-    * *start_date*
+     ** Filter results** by the following attributes:
+
+    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
+    * *locations (required)* comma separated list of locations ids
+    * *measure_variables (required)* comma separated list of variable ids
+    * *start_date (required)*
     * *end_date*
+    * *temporal_resolution (default:day):*  options (year|month|day|hour|minute|second)
 
-
+    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
 
 
     """
@@ -338,15 +495,10 @@ class DataPointViewSet(DataSourcePluginViewSet):
         for key, value in request.query_params.items():
             query_params[key] = value
 
-        # Synthesize the locations (remove datasource id_prefix)
-        if QUERY_PARAM_LOCATIONS in request.query_params:
-            locations = request.query_params.get(QUERY_PARAM_LOCATIONS, None)
-
-            if locations:
-                query_params[QUERY_PARAM_LOCATIONS] = [x.replace("{}-".format(id_prefix),
-                                                                 "", 1) for x in
-                                                       locations.split(",")
-                                                       if x.startswith("{}-".format(id_prefix))]
+        extract_query_param_ids(request=request,
+                                param_name=QUERY_PARAM_LOCATIONS,
+                                id_prefix=id_prefix,
+                                query_params=query_params)
 
         # Synthesize MeasurementVariable (from BASIN-3D to DataSource variable name)
         if QUERY_PARAM_MEASURE_VARIABLES in request.query_params:

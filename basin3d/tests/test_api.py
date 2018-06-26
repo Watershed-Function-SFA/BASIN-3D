@@ -474,8 +474,8 @@ class TestDataPointGroupAPI(TestCase):
                              "start_time": "2016-02-01T00:00:00",
                              "end_time": "2016-02-29T00:00:00",
                              "utc_offset": -8,
-                             "data_points": "http://testserver/synthesis/data_point_groups/A-2/datapoints/",
-                             "url": "http://testserver/synthesis/data_point_groups/A-2/"
+                             "units": None,
+                             "data_points": "http://testserver/synthesis/data_point_groups/A-2/datapoints/"
                          })
 
     def test_get(self):
@@ -490,8 +490,8 @@ class TestDataPointGroupAPI(TestCase):
                 "start_time": "2016-01-01T00:00:00",
                 "end_time": "2016-01-31T00:00:00",
                 "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-1/datapoints/",
-                "url": "http://testserver/synthesis/data_point_groups/A-1/"
+                "units": None,
+                "data_points": "http://testserver/synthesis/data_point_groups/A-1/datapoints/"
             },
             {
                 "id": "A-2",
@@ -501,8 +501,8 @@ class TestDataPointGroupAPI(TestCase):
                 "start_time": "2016-02-01T00:00:00",
                 "end_time": "2016-02-29T00:00:00",
                 "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-2/datapoints/",
-                "url": "http://testserver/synthesis/data_point_groups/A-2/"
+                "units": None,
+                "data_points": "http://testserver/synthesis/data_point_groups/A-2/datapoints/"
             },
             {
                 "id": "A-3",
@@ -512,8 +512,8 @@ class TestDataPointGroupAPI(TestCase):
                 "start_time": "2016-03-01T00:00:00",
                 "end_time": "2016-03-31T00:00:00",
                 "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-3/datapoints/",
-                "url": "http://testserver/synthesis/data_point_groups/A-3/"
+                "units": None,
+                "data_points": "http://testserver/synthesis/data_point_groups/A-3/datapoints/"
             },
             {
                 "id": "A-4",
@@ -523,8 +523,8 @@ class TestDataPointGroupAPI(TestCase):
                 "start_time": "2016-04-01T00:00:00",
                 "end_time": "2016-04-30T00:00:00",
                 "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-4/datapoints/",
-                "url": "http://testserver/synthesis/data_point_groups/A-4/"
+                "units": None,
+                "data_points": "http://testserver/synthesis/data_point_groups/A-4/datapoints/"
             },
             {
                 "id": "A-5",
@@ -534,8 +534,8 @@ class TestDataPointGroupAPI(TestCase):
                 "start_time": "2016-05-01T00:00:00",
                 "end_time": "2016-05-31T00:00:00",
                 "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-5/datapoints/",
-                "url": "http://testserver/synthesis/data_point_groups/A-5/"
+                "units": None,
+                "data_points": "http://testserver/synthesis/data_point_groups/A-5/datapoints/"
             },
             {
                 "id": "A-6",
@@ -545,8 +545,8 @@ class TestDataPointGroupAPI(TestCase):
                 "start_time": "2016-06-01T00:00:00",
                 "end_time": "2016-06-30T00:00:00",
                 "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-6/datapoints/",
-                "url": "http://testserver/synthesis/data_point_groups/A-6/"
+                "units": None,
+                "data_points": "http://testserver/synthesis/data_point_groups/A-6/datapoints/"
             },
             {
                 "id": "A-7",
@@ -556,8 +556,8 @@ class TestDataPointGroupAPI(TestCase):
                 "start_time": "2016-07-01T00:00:00",
                 "end_time": "2016-07-31T00:00:00",
                 "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-7/datapoints/",
-                "url": "http://testserver/synthesis/data_point_groups/A-7/"
+                "units": None,
+                "data_points": "http://testserver/synthesis/data_point_groups/A-7/datapoints/"
             },
             {
                 "id": "A-8",
@@ -567,8 +567,8 @@ class TestDataPointGroupAPI(TestCase):
                 "start_time": "2016-08-01T00:00:00",
                 "end_time": "2016-08-31T00:00:00",
                 "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-8/datapoints/",
-                "url": "http://testserver/synthesis/data_point_groups/A-8/"
+                "units": None,
+                "data_points": "http://testserver/synthesis/data_point_groups/A-8/datapoints/"
             },
             {
                 "id": "A-9",
@@ -578,8 +578,8 @@ class TestDataPointGroupAPI(TestCase):
                 "start_time": "2016-09-01T00:00:00",
                 "end_time": "2016-09-30T00:00:00",
                 "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-9/datapoints/",
-                "url": "http://testserver/synthesis/data_point_groups/A-9/"
+                "units": None,
+                "data_points": "http://testserver/synthesis/data_point_groups/A-9/datapoints/"
             }
         ])
 

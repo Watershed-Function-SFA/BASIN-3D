@@ -15,5 +15,7 @@
 
 
 """
-from . import models
-__all__ = ['models']
+from . import models, query
+__all__ = ['models','query']
+
+

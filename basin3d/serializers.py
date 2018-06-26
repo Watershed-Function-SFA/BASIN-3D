@@ -28,6 +28,35 @@ from rest_framework import reverse
 from rest_framework import serializers
 
 
+class ChooseFieldsSerializerMixin(object):
+    """
+    A serializer that  dynamically sets fields
+    """
+
+    def __init__(self, *args, **kwargs):
+
+        # Instantiate the serializer superclass
+        super(ChooseFieldsSerializerMixin, self).__init__(*args, **kwargs)
+
+        if 'request' in self.context:
+            self.handle_fields(self.context['request'])
+
+    def handle_fields(self, request=None ):
+        """
+        Restrict the fields by those in the request
+        :param request:
+        :return:
+        """
+        if request:
+            fields = request.query_params.get('fields')
+            if fields and len(fields) >0:
+                field_set = set(fields.split(","))
+
+                # Remove the fields not in the intersection
+                for field in set(self.fields.keys()).difference(field_set):
+                    self.fields.pop(field)
+
+
 class DelimitedListField(serializers.ListField):
     """
     Convert a delemited string field to a list
