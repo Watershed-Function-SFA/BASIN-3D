@@ -285,12 +285,12 @@ class PointLocationViewSet(DataSourcePluginViewSet):
     * *site* - the site associated with this point location
     * *horizontal_position* - the depth of this point location
     * *url* - returns a single point location record
+    * *measure_variables* - a list of available measure variables
 
 
     ** Filter results**  by the following attributes:
 
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
-    * *regions (optional):* comma separated list of region ids (e.g ?regions=`region.id`)
     * *sites (optional)* comma separated list of site ids (e.g ?sites=`site.id`)
 
     ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
@@ -319,11 +319,6 @@ class PointLocationViewSet(DataSourcePluginViewSet):
 
         extract_query_param_ids(request=request,
                                 param_name=QUERY_PARAM_SITES,
-                                id_prefix=id_prefix,
-                                query_params=query_params)
-
-        extract_query_param_ids(request=request,
-                                param_name=QUERY_PARAM_REGIONS,
                                 id_prefix=id_prefix,
                                 query_params=query_params)
 
@@ -461,10 +456,10 @@ class DataPointViewSet(DataSourcePluginViewSet):
 
      ** Filter results** by the following attributes:
 
-    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
     * *locations (required)* comma separated list of locations ids
     * *measure_variables (required)* comma separated list of variable ids
     * *start_date (required)*
+    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
     * *end_date*
     * *temporal_resolution (default:day):*  options (year|month|day|hour|minute|second)
 
@@ -513,3 +508,5 @@ class DataPointViewSet(DataSourcePluginViewSet):
                 QUERY_PARAM_TEMPORAL_RESOLUTION] = TimeSeriesDataPoint.TEMPORAL_RESOLUTION_DAY
 
         return query_params
+
+

@@ -357,6 +357,7 @@ class PointLocationSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin,
     geographical_group_type = serializers.SerializerMethodField()
     horizontal_position = ReadOnlySynthesisModelField(
         serializer_class=HorizonatalCoordinateSerializer)
+    measure_variables = serializers.ListField()
 
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
@@ -460,10 +461,10 @@ class DataPointGroupSerializer(serializers.Serializer):
     measurement = serializers.SerializerMethodField()
     geographical_group = serializers.SerializerMethodField()
     geographical_group_type = serializers.SerializerMethodField()
-    start_time = serializers.DateTimeField()
-    end_time = serializers.DateTimeField()
     utc_offset = serializers.IntegerField()
     data_points = serializers.SerializerMethodField()
+    measurement_position = ReadOnlySynthesisModelField(
+        serializer_class=MeasurementPositionSerializer)
 
     def __init__(self, *args, **kwargs):
         """
@@ -535,7 +536,7 @@ class DataPointGroupSerializer(serializers.Serializer):
         :param obj:
         :return:
         """
-        if obj.data_points:
+        if not obj.data_points is None:
             return obj.data_points
         elif "request" in self.context and self.context["request"]:
             request = self.context["request"]

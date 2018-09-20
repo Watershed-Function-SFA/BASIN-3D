@@ -1,10 +1,8 @@
 import json
 
 import rest_framework
-from basin3d.tests import configure
 from basin3d.viewsets import DirectAPIViewSet
 
-configure()
 
 from django.test import TestCase, override_settings
 from rest_framework import status
@@ -471,10 +469,9 @@ class TestDataPointGroupAPI(TestCase):
                              "measurement": "http://testserver/synthesis/measurements/1/",
                              "geographical_group": "http://testserver/synthesis/sites/A-1/",
                              'geographical_group_type': 'site',
-                             "start_time": "2016-02-01T00:00:00",
-                             "end_time": "2016-02-29T00:00:00",
                              "utc_offset": -8,
                              "units": None,
+                             "measurement_position":None,
                              "data_points": "http://testserver/synthesis/data_point_groups/A-2/datapoints/"
                          })
 
@@ -487,9 +484,8 @@ class TestDataPointGroupAPI(TestCase):
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/sites/A-1/",
                 'geographical_group_type': 'site',
-                "start_time": "2016-01-01T00:00:00",
-                "end_time": "2016-01-31T00:00:00",
                 "utc_offset": -8,
+                "measurement_position":None,
                 "units": None,
                 "data_points": "http://testserver/synthesis/data_point_groups/A-1/datapoints/"
             },
@@ -498,9 +494,8 @@ class TestDataPointGroupAPI(TestCase):
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/sites/A-1/",
                 'geographical_group_type': 'site',
-                "start_time": "2016-02-01T00:00:00",
-                "end_time": "2016-02-29T00:00:00",
                 "utc_offset": -8,
+                "measurement_position":None,
                 "units": None,
                 "data_points": "http://testserver/synthesis/data_point_groups/A-2/datapoints/"
             },
@@ -509,9 +504,8 @@ class TestDataPointGroupAPI(TestCase):
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/sites/A-1/",
                 'geographical_group_type': 'site',
-                "start_time": "2016-03-01T00:00:00",
-                "end_time": "2016-03-31T00:00:00",
                 "utc_offset": -8,
+                "measurement_position":None,
                 "units": None,
                 "data_points": "http://testserver/synthesis/data_point_groups/A-3/datapoints/"
             },
@@ -520,9 +514,8 @@ class TestDataPointGroupAPI(TestCase):
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/sites/A-1/",
                 'geographical_group_type': 'site',
-                "start_time": "2016-04-01T00:00:00",
-                "end_time": "2016-04-30T00:00:00",
                 "utc_offset": -8,
+                "measurement_position":None,
                 "units": None,
                 "data_points": "http://testserver/synthesis/data_point_groups/A-4/datapoints/"
             },
@@ -531,9 +524,8 @@ class TestDataPointGroupAPI(TestCase):
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/sites/A-1/",
                 'geographical_group_type': 'site',
-                "start_time": "2016-05-01T00:00:00",
-                "end_time": "2016-05-31T00:00:00",
                 "utc_offset": -8,
+                "measurement_position":None,
                 "units": None,
                 "data_points": "http://testserver/synthesis/data_point_groups/A-5/datapoints/"
             },
@@ -542,9 +534,8 @@ class TestDataPointGroupAPI(TestCase):
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/sites/A-1/",
                 'geographical_group_type': 'site',
-                "start_time": "2016-06-01T00:00:00",
-                "end_time": "2016-06-30T00:00:00",
                 "utc_offset": -8,
+                "measurement_position":None,
                 "units": None,
                 "data_points": "http://testserver/synthesis/data_point_groups/A-6/datapoints/"
             },
@@ -553,9 +544,8 @@ class TestDataPointGroupAPI(TestCase):
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/sites/A-1/",
                 'geographical_group_type': 'site',
-                "start_time": "2016-07-01T00:00:00",
-                "end_time": "2016-07-31T00:00:00",
                 "utc_offset": -8,
+                "measurement_position":None,
                 "units": None,
                 "data_points": "http://testserver/synthesis/data_point_groups/A-7/datapoints/"
             },
@@ -564,9 +554,8 @@ class TestDataPointGroupAPI(TestCase):
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/sites/A-1/",
                 'geographical_group_type': 'site',
-                "start_time": "2016-08-01T00:00:00",
-                "end_time": "2016-08-31T00:00:00",
                 "utc_offset": -8,
+                "measurement_position":None,
                 "units": None,
                 "data_points": "http://testserver/synthesis/data_point_groups/A-8/datapoints/"
             },
@@ -575,9 +564,8 @@ class TestDataPointGroupAPI(TestCase):
                 "measurement": "http://testserver/synthesis/measurements/1/",
                 "geographical_group": "http://testserver/synthesis/sites/A-1/",
                 'geographical_group_type': 'site',
-                "start_time": "2016-09-01T00:00:00",
-                "end_time": "2016-09-30T00:00:00",
                 "utc_offset": -8,
+                "measurement_position":None,
                 "units": None,
                 "data_points": "http://testserver/synthesis/data_point_groups/A-9/datapoints/"
             }
@@ -607,7 +595,7 @@ class TestDataPointAPI(TestCase):
                                                             'and dilution ...',
                                              'sampling_medium': 'groundwater',
                                              'url': 'http://testserver/synthesis/measurements/1/',
-                                             'variable': 'ACT'},
+                                             'variable':  'ACT'},
                              'measurement_position': {
                                  'point_location': 'http://testserver/synthesis/point_locations/A-1/',
                                  'type': 'measurementposition',
@@ -631,292 +619,292 @@ class TestDataPointAPI(TestCase):
         response = self.client.get('/synthesis/data_points/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')), [
-            {
-                "url": "http://testserver/synthesis/data_points/A-1/",
-                "id": "A-1",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 0.35345,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "groundwater",
-                    "approach": "manual",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": "The method is based on the sample filtration and dilution ..."
-                },
-                "timestamp": "2016-01-01",
-                "value": 0.3453453,
-                "temporal_resolution": "month",
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-2/",
-                "id": "A-2",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 0.7069,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "groundwater",
-                    "approach": "manual",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": "The method is based on the sample filtration and dilution ..."
-                },
-                "timestamp": "2016-02-01",
-                "value": 0.6906906,
-                "temporal_resolution": "month",
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-3/",
-                "id": "A-3",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 1.06035,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "groundwater",
-                    "approach": "manual",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": "The method is based on the sample filtration and dilution ..."
-                },
-                "timestamp": "2016-03-01",
-                "value": 1.0360359000000001,
-                "temporal_resolution": "month",
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-4/",
-                "id": "A-4",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 1.4138,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "groundwater",
-                    "approach": "manual",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": "The method is based on the sample filtration and dilution ..."
-                },
-                "timestamp": "2016-04-01",
-                "value": 1.3813812,
-                "temporal_resolution": "month",
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-5/",
-                "id": "A-5",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 1.76725,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "groundwater",
-                    "approach": "manual",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": "The method is based on the sample filtration and dilution ..."
-                },
-                "timestamp": "2016-05-01",
-                "value": 1.7267265,
-                "temporal_resolution": "month",
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-6/",
-                "id": "A-6",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 2.1207,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "groundwater",
-                    "approach": "manual",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": "The method is based on the sample filtration and dilution ..."
-                },
-                "timestamp": "2016-06-01",
-                "value": 2.0720718000000002,
-                "temporal_resolution": "month",
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-7/",
-                "id": "A-7",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 2.47415,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "groundwater",
-                    "approach": "manual",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": "The method is based on the sample filtration and dilution ..."
-                },
-                "timestamp": "2016-07-01",
-                "value": 2.4174171,
-                "temporal_resolution": "month",
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-8/",
-                "id": "A-8",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 2.8276,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "groundwater",
-                    "approach": "manual",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": "The method is based on the sample filtration and dilution ..."
-                },
-                "timestamp": "2016-08-01",
-                "value": 2.7627624,
-                "temporal_resolution": "month",
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-9/",
-                "id": "A-9",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 3.18105,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "groundwater",
-                    "approach": "manual",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": "The method is based on the sample filtration and dilution ..."
-                },
-                "timestamp": "2016-09-01",
-                "value": 3.1081077,
-                "temporal_resolution": "month",
-                "reference": None,
-                "utc_offset": -8
+    {
+        "url": "http://testserver/synthesis/data_points/A-1/",
+        "id": "A-1",
+        "type": "time_series",
+        "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+        "geographical_group_type": "pointlocation",
+        "units": "nm",
+        "measurement_position": {
+            "type": "measurementposition",
+            "point_location": "http://testserver/synthesis/point_locations/A-1/",
+            "vertical_position": {
+                "value": 0.35345,
+                "resolution": None,
+                "distance_units": "meters",
+                "datum": "LS",
+                "type": "depth"
             }
-        ])
+        },
+        "measurement": {
+            "url": "http://testserver/synthesis/measurements/1/",
+            "sampling_medium": "groundwater",
+            "approach": "manual",
+            "datasource": "Alpha",
+            "description": "The method is based on the sample filtration and dilution ...",
+            "variable": "ACT"
+        },
+        "timestamp": "2016-01-01",
+        "value": 0.3453453,
+        "temporal_resolution": "month",
+        "reference": None,
+        "utc_offset": -8
+    },
+    {
+        "url": "http://testserver/synthesis/data_points/A-2/",
+        "id": "A-2",
+        "type": "time_series",
+        "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+        "geographical_group_type": "pointlocation",
+        "units": "nm",
+        "measurement_position": {
+            "type": "measurementposition",
+            "point_location": "http://testserver/synthesis/point_locations/A-1/",
+            "vertical_position": {
+                "value": 0.7069,
+                "resolution": None,
+                "distance_units": "meters",
+                "datum": "LS",
+                "type": "depth"
+            }
+        },
+        "measurement": {
+            "url": "http://testserver/synthesis/measurements/1/",
+            "sampling_medium": "groundwater",
+            "approach": "manual",
+            "datasource": "Alpha",
+            "description": "The method is based on the sample filtration and dilution ...",
+            "variable": "ACT"
+        },
+        "timestamp": "2016-02-01",
+        "value": 0.6906906,
+        "temporal_resolution": "month",
+        "reference": None,
+        "utc_offset": -8
+    },
+    {
+        "url": "http://testserver/synthesis/data_points/A-3/",
+        "id": "A-3",
+        "type": "time_series",
+        "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+        "geographical_group_type": "pointlocation",
+        "units": "nm",
+        "measurement_position": {
+            "type": "measurementposition",
+            "point_location": "http://testserver/synthesis/point_locations/A-1/",
+            "vertical_position": {
+                "value": 1.06035,
+                "resolution": None,
+                "distance_units": "meters",
+                "datum": "LS",
+                "type": "depth"
+            }
+        },
+        "measurement": {
+            "url": "http://testserver/synthesis/measurements/1/",
+            "sampling_medium": "groundwater",
+            "approach": "manual",
+            "datasource": "Alpha",
+            "description": "The method is based on the sample filtration and dilution ...",
+            "variable": "ACT"
+        },
+        "timestamp": "2016-03-01",
+        "value": 1.0360359000000001,
+        "temporal_resolution": "month",
+        "reference": None,
+        "utc_offset": -8
+    },
+    {
+        "url": "http://testserver/synthesis/data_points/A-4/",
+        "id": "A-4",
+        "type": "time_series",
+        "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+        "geographical_group_type": "pointlocation",
+        "units": "nm",
+        "measurement_position": {
+            "type": "measurementposition",
+            "point_location": "http://testserver/synthesis/point_locations/A-1/",
+            "vertical_position": {
+                "value": 1.4138,
+                "resolution": None,
+                "distance_units": "meters",
+                "datum": "LS",
+                "type": "depth"
+            }
+        },
+        "measurement": {
+            "url": "http://testserver/synthesis/measurements/1/",
+            "sampling_medium": "groundwater",
+            "approach": "manual",
+            "datasource": "Alpha",
+            "description": "The method is based on the sample filtration and dilution ...",
+            "variable": "ACT"
+        },
+        "timestamp": "2016-04-01",
+        "value": 1.3813812,
+        "temporal_resolution": "month",
+        "reference": None,
+        "utc_offset": -8
+    },
+    {
+        "url": "http://testserver/synthesis/data_points/A-5/",
+        "id": "A-5",
+        "type": "time_series",
+        "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+        "geographical_group_type": "pointlocation",
+        "units": "nm",
+        "measurement_position": {
+            "type": "measurementposition",
+            "point_location": "http://testserver/synthesis/point_locations/A-1/",
+            "vertical_position": {
+                "value": 1.76725,
+                "resolution": None,
+                "distance_units": "meters",
+                "datum": "LS",
+                "type": "depth"
+            }
+        },
+        "measurement": {
+            "url": "http://testserver/synthesis/measurements/1/",
+            "sampling_medium": "groundwater",
+            "approach": "manual",
+            "datasource": "Alpha",
+            "description": "The method is based on the sample filtration and dilution ...",
+            "variable": "ACT"
+        },
+        "timestamp": "2016-05-01",
+        "value": 1.7267265,
+        "temporal_resolution": "month",
+        "reference": None,
+        "utc_offset": -8
+    },
+    {
+        "url": "http://testserver/synthesis/data_points/A-6/",
+        "id": "A-6",
+        "type": "time_series",
+        "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+        "geographical_group_type": "pointlocation",
+        "units": "nm",
+        "measurement_position": {
+            "type": "measurementposition",
+            "point_location": "http://testserver/synthesis/point_locations/A-1/",
+            "vertical_position": {
+                "value": 2.1207,
+                "resolution": None,
+                "distance_units": "meters",
+                "datum": "LS",
+                "type": "depth"
+            }
+        },
+        "measurement": {
+            "url": "http://testserver/synthesis/measurements/1/",
+            "sampling_medium": "groundwater",
+            "approach": "manual",
+            "datasource": "Alpha",
+            "description": "The method is based on the sample filtration and dilution ...",
+            "variable": "ACT"
+        },
+        "timestamp": "2016-06-01",
+        "value": 2.0720718000000002,
+        "temporal_resolution": "month",
+        "reference": None,
+        "utc_offset": -8
+    },
+    {
+        "url": "http://testserver/synthesis/data_points/A-7/",
+        "id": "A-7",
+        "type": "time_series",
+        "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+        "geographical_group_type": "pointlocation",
+        "units": "nm",
+        "measurement_position": {
+            "type": "measurementposition",
+            "point_location": "http://testserver/synthesis/point_locations/A-1/",
+            "vertical_position": {
+                "value": 2.47415,
+                "resolution": None,
+                "distance_units": "meters",
+                "datum": "LS",
+                "type": "depth"
+            }
+        },
+        "measurement": {
+            "url": "http://testserver/synthesis/measurements/1/",
+            "sampling_medium": "groundwater",
+            "approach": "manual",
+            "datasource": "Alpha",
+            "description": "The method is based on the sample filtration and dilution ...",
+            "variable": "ACT"
+        },
+        "timestamp": "2016-07-01",
+        "value": 2.4174171,
+        "temporal_resolution": "month",
+        "reference": None,
+        "utc_offset": -8
+    },
+    {
+        "url": "http://testserver/synthesis/data_points/A-8/",
+        "id": "A-8",
+        "type": "time_series",
+        "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+        "geographical_group_type": "pointlocation",
+        "units": "nm",
+        "measurement_position": {
+            "type": "measurementposition",
+            "point_location": "http://testserver/synthesis/point_locations/A-1/",
+            "vertical_position": {
+                "value": 2.8276,
+                "resolution": None,
+                "distance_units": "meters",
+                "datum": "LS",
+                "type": "depth"
+            }
+        },
+        "measurement": {
+            "url": "http://testserver/synthesis/measurements/1/",
+            "sampling_medium": "groundwater",
+            "approach": "manual",
+            "datasource": "Alpha",
+            "description": "The method is based on the sample filtration and dilution ...",
+            "variable": "ACT"
+        },
+        "timestamp": "2016-08-01",
+        "value": 2.7627624,
+        "temporal_resolution": "month",
+        "reference": None,
+        "utc_offset": -8
+    },
+    {
+        "url": "http://testserver/synthesis/data_points/A-9/",
+        "id": "A-9",
+        "type": "time_series",
+        "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+        "geographical_group_type": "pointlocation",
+        "units": "nm",
+        "measurement_position": {
+            "type": "measurementposition",
+            "point_location": "http://testserver/synthesis/point_locations/A-1/",
+            "vertical_position": {
+                "value": 3.18105,
+                "resolution": None,
+                "distance_units": "meters",
+                "datum": "LS",
+                "type": "depth"
+            }
+        },
+        "measurement": {
+            "url": "http://testserver/synthesis/measurements/1/",
+            "sampling_medium": "groundwater",
+            "approach": "manual",
+            "datasource": "Alpha",
+            "description": "The method is based on the sample filtration and dilution ...",
+            "variable": "ACT"
+        },
+        "timestamp": "2016-09-01",
+        "value": 3.1081077,
+        "temporal_resolution": "month",
+        "reference": None,
+        "utc_offset": -8
+    }
+])

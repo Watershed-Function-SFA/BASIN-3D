@@ -1,9 +1,6 @@
 import basin3d.synthesis.models.field
 from basin3d.synthesis.models import Person
-from basin3d.tests import configure
 
-# Load test settings
-configure()
 import json
 
 from django.test import TestCase

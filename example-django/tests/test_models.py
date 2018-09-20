@@ -1,7 +1,3 @@
-from basin3d.tests import configure
-
-# Load test settings
-configure()
 
 from django.test import TestCase
 

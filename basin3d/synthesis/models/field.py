@@ -20,7 +20,7 @@
 * :class:`VerticalCoordinate` - The reference frame or system from which vertical distances (altitudes or depths) are measured.
 
 """
-
+from basin3d.plugins import get_datasource_variable, get_datasource_variables
 from basin3d.synthesis.models import Base
 
 
@@ -381,10 +381,19 @@ class PointLocation(SamplingFeature):
         self.horizontal_position = None
         self.vertical_extent = None
         self.position = None
+        self.measure_variables = None
 
         # Initialize after the attributes have been set
         super().__init__(datasource, datasource_ids=['site_id', 'geographical_group_id'], **kwargs)
         self.type = str(self.__class__.__name__).lower()
+
+        if self.measure_variables and isinstance(self.measure_variables, (tuple,list,enumerate)):
+            # synthesize measurement variables
+            synth_params=[]
+            for synth_param in get_datasource_variables(datasource, self.measure_variables):
+                synth_params.append(synth_param.measure_variable_id)
+
+            self.measure_variables = synth_params
 
 
 class MeasurementPosition(SamplingFeature):

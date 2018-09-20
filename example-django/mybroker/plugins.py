@@ -174,12 +174,7 @@ class AlphaDataPointGroupView(with_metaclass(DataSourcePluginViewMeta)):
 
         """
         for num in range(1, 10):
-            from datetime import datetime
-            from calendar import monthrange
-            last_day = monthrange(2016, num)[-1]
             yield measurement.DataPointGroup(self.datasource, id=num, measurement_id=1,
-                                             start_time=datetime(2016, num, 1),
-                                             end_time=datetime(2016, num, last_day),
                                              utc_offset=-8,
                                              geographical_group_id=1,
                                              geographical_group_type=GeographicalGroup.SITE)

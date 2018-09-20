@@ -24,6 +24,6 @@ admin.autodiscover()
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^', include(b3durls)),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

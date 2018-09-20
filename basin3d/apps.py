@@ -1,5 +1,7 @@
 import importlib
 
+import sys
+
 from django.apps import AppConfig
 from django.db import IntegrityError
 from django.db.models.signals import post_migrate
@@ -30,24 +32,22 @@ def load_data_sources(sender, **kwargs):
                 datasource.credentials = plugin.get_meta().connection_class.get_credentials_format()
 
         # Update the datasource
-        print("Updated Data Source '{}'".format(plugin.get_meta().id))
         datasource.name = plugin.get_meta().id
         datasource.location = plugin.get_meta().location
         datasource.id_prefix = plugin.get_meta().id_prefix
         datasource.plugin = plugin_model
         datasource.save()
+        print("Updated Data Source '{}'".format(plugin.get_meta().id))
 
         if hasattr(plugin.get_meta(), "MEASUREMENTS"):
             for m in plugin.get_meta().MEASUREMENTS:
                 try:
-                    sm = None
                     try:
                         sm = SamplingMedium.objects.get(name=m["sampling_medium"])
                     except SamplingMedium.DoesNotExist:
                         sm = SamplingMedium(m["sampling_medium"])
                         sm.save()
 
-                    ma = None
                     try:
                         ma = MeasurementApproach.objects.get(name=m["approach"])
                     except SamplingMedium.DoesNotExist:
@@ -60,11 +60,10 @@ def load_data_sources(sender, **kwargs):
 
                     obj = Measurement(**m)
                     obj.save()
-                    print("Registered Measurement '{} {}'".format(obj.variable_id, obj.description))
-                except IntegrityError as e:
 
-                    # We don't care about the Integrity Errors
-                    pass
+                except Exception as e:
+
+                    print("Error Registering Measurement '{} {}': {}".format(obj.variable_id, obj.description, str(e)))
         else:
             print("There are no MEASUREMENTS to load")
 
@@ -95,18 +94,24 @@ def load_measurment_objects(sender, **kwargs):
         try:
             obj = SamplingMedium(name=sm)
             obj.save()
-            print("Registered SamplingMedium '{}'".format(obj.name))
         except IntegrityError:
+            # This object has already been loaded
             pass
+        except Exception as e:
+            print("Error Registering SamplingMedium '{}': {}".format(obj.name, str(e)), file=sys.stderr)
 
     # Load the Measurement Approaches
     for ma in MeasurementApproach.APPROACHES:
         try:
             obj = MeasurementApproach(name=ma)
             obj.save()
-            print("Registered MeasurementApproach '{}'".format(obj.name))
+
         except IntegrityError:
+            # This object has already been loaded
             pass
+
+        except Exception as e:
+            print("Error Registering MeasurementApproach '{}': {}".format(obj.name, str(e)), file=sys.stderr)
 
     plugins = Plugin.objects.all()
     for plugin in plugins:
@@ -123,15 +128,17 @@ def load_measurment_objects(sender, **kwargs):
                     p.full_name = param[1]
                     p.categories = ",".join(param[2])
                     p.save()
-                    print("Registered MeasurementVariable '{}'".format(p.id))
-                except IntegrityError as e:
 
-                    # We don't care about the Integrity Errors
+                except IntegrityError:
+
+                    # This object has already been loaded
                     pass
+
+                except Exception as e:
+
+                    print("Error Registering MeasurementVariable '{}': {}".format(param[0], str(e)))
         else:
             print("There are no MEASUREMENT_VARIABLES to load")
-
-
 
 
 def load_datasource_parameters(sender,**kwargs):
@@ -154,11 +161,14 @@ def load_datasource_parameters(sender,**kwargs):
                 datasource_parameter.datasource = datasource
                 datasource_parameter.name = param
                 datasource_parameter.save()
-                print("Registered Measurement Variable '{}' for Data Source '{}'".format(id,
-                                                                                         datasource.name))
-            except IntegrityError as e:
-                # We don't care about the Integrity Errors
+
+            except IntegrityError:
+                # This object has already been loaded
                 pass
+
+            except MeasurementVariable.DoesNotExist as e:
+               print("Not Found Measurement Variable '{}' for Data Source '{}': {}".format(id,
+                                                                                         datasource.name, str(e)), file=sys.stderr)
 
 
 class Basin3DConfig(AppConfig):

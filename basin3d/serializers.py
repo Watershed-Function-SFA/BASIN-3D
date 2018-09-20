@@ -208,6 +208,7 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Measurement
         depth = 2
+        fields = '__all__'
 
 
 

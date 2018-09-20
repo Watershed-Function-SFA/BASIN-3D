@@ -12,3 +12,6 @@ def configure():
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mybroker.settings")
         django.setup()
         configured=True
+
+
+configure()

@@ -16,7 +16,32 @@
 
 ---------------------
 """
+from collections import namedtuple
+from numbers import Number
+
+from basin3d.plugins import get_datasource_variable, get_datasource_measurement
 from basin3d.synthesis.models import Base
+from django.utils.datetime_safe import datetime
+
+
+class TimeValuePair(namedtuple('TimeValuePair', ['timestamp', 'value'])):
+    """
+    Tuple that represents a time value pair.  This will handle timestamp conversion
+    """
+
+    def __new__(cls, timestamp, value):
+        # Handle epoch time
+        if timestamp:
+            timestamp_resolved = None
+            if isinstance(timestamp, str) and timestamp.isdigit():
+                timestamp_resolved = int(timestamp)
+            elif isinstance(timestamp, Number):
+                timestamp_resolved = timestamp
+
+            if timestamp_resolved:
+                timestamp = datetime.fromtimestamp(timestamp_resolved).isoformat()
+
+        return super().__new__(cls, timestamp, value)
 
 
 class DataPointGroup(Base):
@@ -26,26 +51,32 @@ class DataPointGroup(Base):
 
     Attributes:
         - *id:* string,
-        - *measurement:* string, (optional)
         - *units:* Unit
-        - *start_time:* datetime,  survey start time (month/year)
-        - *end_time:* datetime, units: survey end time (month/year)
         - *timestamp_utc_offset:* float (offset in hours), +9
         - *geographical_group_id:* string, River system ID (Region ID).
         - *geographical_group_type* enum (sampling_feature, site, plot, region, point_location, measurement position)
-        - *results:* Array of DataPoint objects
+        - *measurement:* string, (optional)
+        - *measurement_position:* The position at which the measurement was taken
+        - *data_points:* Array of Time Value pairs
 
     """
     def __init__(self, datasource, **kwargs):
         self.id = None
         self.units = None
         self.measurement_id = None
-        self.start_time = None
-        self.end_time = None
         self.utc_offset = None
         self.geographical_group_id = None
         self.geographical_group_type = None
-        self.data_points = []
+        self.measurement_position = None  # For now,
+        self.data_points = None
+
+        if "measure_variable" in kwargs:
+
+            synth_param = get_datasource_variable(datasource, kwargs["measure_variable"])
+            measurement = get_datasource_measurement(datasource,synth_param.measure_variable_id)
+            kwargs=measurement.id
+            kwargs.pop("measure_variable")
+
 
         # Initialize after the attributes have been set
         super().__init__(datasource, datasource_ids=['geographical_group_id'], **kwargs)
@@ -74,6 +105,12 @@ class DataPoint(Base):
         self.units = None
         self.measurement_position = None  # For now,
         self.measurement = None
+
+        if "measure_variable" in kwargs:
+
+            synth_param = get_datasource_variable(datasource, kwargs["measure_variable"])
+            self.measurement = get_datasource_measurement(datasource, synth_param.measure_variable_id)
+            kwargs.pop("measure_variable")
 
         # Initialize after the attributes have been set
         super().__init__(datasource, datasource_ids=['geographical_group_id'], **kwargs)

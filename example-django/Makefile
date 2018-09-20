@@ -1,15 +1,15 @@
 .PHONY: all
 
-PYTHON=python3
+PYTHON=python3.6
 
 all: bin/python keyset db.sqlite3
 
 bin/python:
 	$(PYTHON) -m venv .
-	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt
+	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt pytest-django pytest-cov $(CURDIR)/..
 
 db.sqlite3:
-	PYTHONPATH=$(PYTHONPATH):$(CURDIR)/..:. bin/python manage.py migrate
+	$(CURDIR)/bin/python manage.py migrate
 
 keyset:
 	@mkdir -p $(CURDIR)/.keyset
@@ -23,7 +23,7 @@ run:
 
 .PHONY: test
 test:
-	cd .. && PYTHONPATH="$(PYTHONPATH):$(CURDIR)/..:." $(CURDIR)/bin/python  $(CURDIR)/manage.py test && cd $(CURDIR)
+	$(CURDIR)/bin/pytest -v --cov basin3d  $(CURDIR)/tests && cd $(CURDIR)
 
 
 .PHONY: clean
