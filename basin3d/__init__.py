@@ -159,7 +159,6 @@ def __insert_basin3d_defaults():
     for key in dir(basin3d_settings):
         if key.isupper():
 
-
             # Add the defaults to the global setting
             setattr(global_settings, key, getattr(basin3d_settings, key))
 
@@ -190,6 +189,7 @@ def get_url(url, params=None, headers=None, verify=False):
     """
     import requests
     response = requests.get(url, params=params, verify=verify, headers=headers)
+    logger.debug("url:{}".format(response.url))
     return response
 
 
@@ -205,6 +205,7 @@ def post_url(url, params=None, headers=None, verify=False):
     """
     import requests
     response = requests.post(url, params=params, verify=verify, headers=headers)
+    logger.debug("url:{}".format(response.url))
     return response
 
 

@@ -1,6 +1,6 @@
 import importlib
 
-import sys
+import sys, os, csv, inspect
 
 from django.apps import AppConfig
 from django.db import IntegrityError
@@ -18,7 +18,8 @@ def load_data_sources(sender, **kwargs):
 
     from djangoplugins.models import Plugin
     from basin3d.models import DataSource
-    from basin3d.models import SamplingMedium, MeasurementApproach, Measurement
+    from basin3d.models import SamplingMedium, Measurement, MeasurementVariable
+    SamplingMedium.objects.all().delete()
 
     for plugin_model in Plugin.objects.all():
         plugin = plugin_model.get_plugin()
@@ -39,33 +40,36 @@ def load_data_sources(sender, **kwargs):
         datasource.save()
         print("Updated Data Source '{}'".format(plugin.get_meta().id))
 
-        if hasattr(plugin.get_meta(), "MEASUREMENTS"):
-            for m in plugin.get_meta().MEASUREMENTS:
+        for variable_mapping in __iterate_measurement_mapping(plugin):
+
                 try:
-                    try:
-                        sm = SamplingMedium.objects.get(name=m["sampling_medium"])
-                    except SamplingMedium.DoesNotExist:
-                        sm = SamplingMedium(m["sampling_medium"])
-                        sm.save()
+                    sm = SamplingMedium.objects.get(name=variable_mapping["sampling_medium"])
+                except SamplingMedium.DoesNotExist:
+                    sm = SamplingMedium(name=variable_mapping["sampling_medium"])
+                    sm.save()
 
-                    try:
-                        ma = MeasurementApproach.objects.get(name=m["approach"])
-                    except SamplingMedium.DoesNotExist:
-                        ma = MeasurementApproach(m["approach"])
-                        ma.save()
+                v = MeasurementVariable.objects.get(id=variable_mapping['broker_id'])
 
-                    m["sampling_medium"] = sm
-                    m["approach"] = ma
-                    m["datasource"] = datasource
+                try:
+                    m = Measurement.objects.get(variable=v, datasource=datasource)
+                    m.sampling_medium = sm
+                    m.description = variable_mapping['description']
+                except Measurement.DoesNotExist:
 
-                    obj = Measurement(**m)
-                    obj.save()
+                    m = Measurement(sampling_medium=sm,
+                                    description=variable_mapping["description"],
+                                    datasource=datasource,
+                                    variable=v)
+                try:
+                    m.save()
+
+                except IntegrityError:
+                    # Its OK that is has already been created
+                    pass
 
                 except Exception as e:
 
-                    print("Error Registering Measurement '{} {}': {}".format(obj.variable_id, obj.description, str(e)))
-        else:
-            print("There are no MEASUREMENTS to load")
+                    print("Error Registering Measurement '{} {}': {}".format(m.variable_id, m.description, str(e)))
 
 
 def load_measurment_objects(sender, **kwargs):
@@ -87,7 +91,7 @@ def load_measurment_objects(sender, **kwargs):
         :return:
     """
     from djangoplugins.models import Plugin
-    from basin3d.models import MeasurementVariable, SamplingMedium, MeasurementApproach
+    from basin3d.models import MeasurementVariable, SamplingMedium
 
     # Load the Sampling Mediums
     for sm in SamplingMedium.SAMPLING_MEDIUMS:
@@ -100,45 +104,52 @@ def load_measurment_objects(sender, **kwargs):
         except Exception as e:
             print("Error Registering SamplingMedium '{}': {}".format(obj.name, str(e)), file=sys.stderr)
 
-    # Load the Measurement Approaches
-    for ma in MeasurementApproach.APPROACHES:
-        try:
-            obj = MeasurementApproach(name=ma)
-            obj.save()
-
-        except IntegrityError:
-            # This object has already been loaded
-            pass
-
-        except Exception as e:
-            print("Error Registering MeasurementApproach '{}': {}".format(obj.name, str(e)), file=sys.stderr)
-
     plugins = Plugin.objects.all()
+    MeasurementVariable.objects.all().delete()
     for plugin in plugins:
         plugin_path = plugin.pythonpath
         idx = plugin_path.index('plugins')
         module_name = plugin_path[0:idx+len('plugins')]
         app_plugins = importlib.import_module(module_name)
 
-        if hasattr(app_plugins, "MEASUREMENT_VARIABLES"):
-            for param in app_plugins.MEASUREMENT_VARIABLES:
-                try:
-                    p = MeasurementVariable()
-                    p.id = param[0]
-                    p.full_name = param[1]
-                    p.categories = ",".join(param[2])
-                    p.save()
+        # Find the directory where the plugs live.
+        #  There should be a CSV file with this broker's m
+        #  measurement variables in it.
+        plugin_file_path = os.path.dirname(inspect.getfile(app_plugins))
+        variables_file = os.path.join(plugin_file_path,
+                                      "measurement_variables.csv")
+        if os.path.exists(plugin_file_path) and os.path.exists(variables_file):
 
-                except IntegrityError:
+            # Open the CSV from reading
+            with open(variables_file, 'r') as csvfile:
+                # Create a dictionary reader where the header
+                # row becomes the dict keys for each entry.
+                reader = csv.DictReader(csvfile)
 
-                    # This object has already been loaded
-                    pass
+                # Now iterate over the mapping file and yield
+                # each row to the caller
+                for row in reader:
+                    try:
+                        # Create a new Measurement Variable
+                        p = MeasurementVariable()
+                        p.id = row['broker_id']
+                        p.full_name = row['description']
+                        p.categories = row['categories']
+                        p.save()
 
-                except Exception as e:
+                    except IntegrityError:
 
-                    print("Error Registering MeasurementVariable '{}': {}".format(param[0], str(e)))
+                        # This object has already been loaded
+                        pass
+
+                    except Exception as e:
+
+                        print("Error Registering MeasurementVariable '{}': {}".format(row['broker_id'], str(e)))
+
+                # If Measurement Variables were loaded quit out of the loop
+                break
         else:
-            print("There are no MEASUREMENT_VARIABLES to load")
+            print("There are no measurement variables to load to load - {} is missing".format(variables_file))
 
 
 def load_datasource_parameters(sender,**kwargs):
@@ -153,13 +164,13 @@ def load_datasource_parameters(sender,**kwargs):
 
     for datasource in DataSource.objects.all():
 
-        for id, param in datasource.plugin.get_plugin().get_meta().MEASURE_VARIABLE_MAP.items():
+        for variable_mapping in __iterate_measurement_mapping(datasource.plugin.get_plugin()):
             try:
-                broker_param = MeasurementVariable.objects.get(id=id)
+                broker_id = MeasurementVariable.objects.get(id=variable_mapping['broker_id'])
                 datasource_parameter = DataSourceMeasurementVariable()
-                datasource_parameter.measure_variable = broker_param
+                datasource_parameter.measure_variable = broker_id
                 datasource_parameter.datasource = datasource
-                datasource_parameter.name = param
+                datasource_parameter.name = variable_mapping['datasource_name']
                 datasource_parameter.save()
 
             except IntegrityError:
@@ -167,8 +178,39 @@ def load_datasource_parameters(sender,**kwargs):
                 pass
 
             except MeasurementVariable.DoesNotExist as e:
-               print("Not Found Measurement Variable '{}' for Data Source '{}': {}".format(id,
+               print("Not Found Measurement Variable '{}' for Data Source '{}': {}".format(variable_mapping['broker_id'],
                                                                                          datasource.name, str(e)), file=sys.stderr)
+
+
+def __iterate_measurement_mapping(plugin):
+    """
+    Generator for iterating over the measurement mapping
+    :param plugin: the plugin to find the mapping for
+    :yield:  row
+    """
+
+    # Grab the file path from the Plugin's python path
+    plugin_file_path = os.path.dirname(inspect.getfile(plugin.__class__))
+    if os.path.exists(plugin_file_path):
+
+        # There should be a mapping file for this data sources parameters.  If there isn't
+        # throw an exception.
+        mapping_file = os.path.join(plugin_file_path,"mapping_{}.csv".format(plugin.get_meta().id.lower()))
+        if os.path.exists(mapping_file):
+            with open(mapping_file, ) as csvfile:
+                # Create a dictionary reader where the header
+                # row becomes the dict keys for each entry.
+                reader = csv.DictReader(csvfile)
+
+                # Now iterate over the mapping file and yield
+                # each row to the caller
+                for row in reader:
+                    yield row
+        else:
+            raise Exception("There are no measurement variables ({}) mapped for this plugin {}".format(mapping_file, plugin.pythonpath))
+
+    else:
+        raise Exception("File path does not exist for plugin {}".format(plugin.pythonpath))
 
 
 class Basin3DConfig(AppConfig):
@@ -176,7 +218,7 @@ class Basin3DConfig(AppConfig):
 
     def ready(self):
 
-        ## Execute the post migration scripts
+        # Execute the post migration scripts
         post_migrate.connect(load_measurment_objects, sender=self)
         post_migrate.connect(load_data_sources, sender=self)
         post_migrate.connect(load_datasource_parameters, sender=self)

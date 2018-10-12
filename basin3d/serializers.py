@@ -189,15 +189,11 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
     """
 
     sampling_medium = serializers.SerializerMethodField()
-    approach = serializers.SerializerMethodField()
     datasource = serializers.SerializerMethodField()
     variable = serializers.SerializerMethodField()
 
     def get_sampling_medium(self, obj):
         return obj.sampling_medium.name
-
-    def get_approach(self, obj):
-        return obj.approach.name
 
     def get_datasource(self, obj):
         return obj.datasource.name

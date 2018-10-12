@@ -74,9 +74,8 @@ class DataPointGroup(Base):
 
             synth_param = get_datasource_variable(datasource, kwargs["measure_variable"])
             measurement = get_datasource_measurement(datasource,synth_param.measure_variable_id)
-            kwargs=measurement.id
+            kwargs['measurement_id']=measurement.id
             kwargs.pop("measure_variable")
-
 
         # Initialize after the attributes have been set
         super().__init__(datasource, datasource_ids=['geographical_group_id'], **kwargs)
@@ -96,6 +95,7 @@ class DataPoint(Base):
         - *geographical_group_type* en um (sampling_feature, site, plot, region)
         - *units:* Unit
         - *measurement_position:* The position at which the measurement was taken
+        - *qualifier:s* list of quality codes
     """
     def __init__(self, datasource, **kwargs):
         self.id = None
@@ -105,6 +105,7 @@ class DataPoint(Base):
         self.units = None
         self.measurement_position = None  # For now,
         self.measurement = None
+        self.qualifiers = None
 
         if "measure_variable" in kwargs:
 

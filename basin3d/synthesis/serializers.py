@@ -357,6 +357,8 @@ class PointLocationSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin,
     geographical_group_type = serializers.SerializerMethodField()
     horizontal_position = ReadOnlySynthesisModelField(
         serializer_class=HorizonatalCoordinateSerializer)
+    vertical_extent = ReadOnlySynthesisModelField(
+        serializer_class=VerticalCoordinateSerializer)
     measure_variables = serializers.ListField()
 
     def __init__(self, *args, **kwargs):
@@ -465,6 +467,7 @@ class DataPointGroupSerializer(serializers.Serializer):
     data_points = serializers.SerializerMethodField()
     measurement_position = ReadOnlySynthesisModelField(
         serializer_class=MeasurementPositionSerializer)
+    qualifiers = serializers.ListField
 
     def __init__(self, *args, **kwargs):
         """
@@ -495,6 +498,8 @@ class DataPointGroupSerializer(serializers.Serializer):
             # the json
             if not instance.id:
                 field_to_remove.update(["id", "url"])
+            if not instance.measurement_position:
+                field_to_remove.update(["measurement_position"])
 
         # remove unneeded fields
         for field in field_to_remove:
@@ -582,6 +587,7 @@ class DataPointSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
     measurement_position = ReadOnlySynthesisModelField(
         serializer_class=MeasurementPositionSerializer)
     measurement = ReadOnlySynthesisModelField(serializer_class=MeasurementSerializer)
+    qualifiers = serializers.ListField()
 
     # Time Series
     timestamp = TimestampField()
@@ -634,8 +640,10 @@ class DataPointSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
             from basin3d.synthesis.models.measurement import TimeSeriesDataPoint, ImageDataPoint
             if isinstance(instance, TimeSeriesDataPoint):
                 field_to_remove -= self.FIELDS_TIME_SERIES
-                if not hasattr(instance, "measurement_position"):
+                if not hasattr(instance, "measurement_position") or not instance.measurement_position:
                     field_to_remove.update(("measurement_position",))
+                if not instance.qualifiers:
+                    field_to_remove.update(("qualifiers",))
             elif isinstance(instance, ImageDataPoint):
                 field_to_remove -= self.FIELDS_IMAGE
 

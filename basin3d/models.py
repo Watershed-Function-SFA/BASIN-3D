@@ -164,13 +164,12 @@ class SamplingMedium(models.Model):
     Types of sampling mediums for Measurements
     """
 
-    ATOMOSPHERE = "atmosphere"
-    SOIL_SEDIMENT = "soil/sediment"
-    SURFACE_WATER = "surface water"
-    SOIL_GAS = "soil gas"
-    GROUNDWATER = "groundwater"
-    UNKNOWN = 'unknown'
-    SAMPLING_MEDIUMS = [ATOMOSPHERE, SURFACE_WATER, SOIL_SEDIMENT, SOIL_GAS, GROUNDWATER, UNKNOWN]
+    SOLID_PHASE = "solid phase"
+    WATER = "water"
+    GAS = "gas"
+    OTHER = 'other'
+    NOT_APPLICABLE = 'N/A'
+    SAMPLING_MEDIUMS = [WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE]
 
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
     description = models.TextField(blank=True, null=True)
@@ -185,28 +184,6 @@ class SamplingMedium(models.Model):
         return '<SamplingMedium %r>' % (self.name)
 
 
-class MeasurementApproach(models.Model):
-    """
-    Types of measurement approaches for Measurements
-    """
-    SENSOR = "sensor"
-    MANUAL = "manual"
-    UNKNOWN = 'unknown'
-    APPROACHES = [MANUAL, SENSOR, UNKNOWN]
-
-    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return self.name
-
-    def __repr__(self):
-        return '<MeasurementApproach %r>' % (self.name)
-
-
 class Measurement(models.Model):
     """
     Defining the attributes for a single/multiple measurements
@@ -215,17 +192,14 @@ class Measurement(models.Model):
         - *id:* string, (Cs137 MID)
         - *description:* id, Cs 137 air dose rate car survey campaigns
         - *measurement_variable_id:* string, Cs137MVID
-        - *sampling_medium:* enum (atmosphere, surface water, soil/sediment, soil gas, groundwater), atmosphere
+        - *sampling_medium:* enum (water, gas, solid phase, other, not applicable)
         - *owner:* Person (optional), NotImplemented
         - *contact:* Person (optional), NotImplemented
-        - *approach:* enum (sensor, manual), sensor
-        - *approach_description:* string (optional), Values measured using car surveys
     """
 
     description = models.TextField(null=True, blank=True)
     variable = models.ForeignKey('MeasurementVariable', null=False)
     sampling_medium = models.ForeignKey('SamplingMedium', null=False)
-    approach = models.ForeignKey('MeasurementApproach', null=False)
     datasource = models.ForeignKey('DataSource', null=False)
 
     class Meta:
