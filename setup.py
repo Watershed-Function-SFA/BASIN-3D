@@ -48,7 +48,7 @@ setup(name='BASIN-3D',
       include_package_data=True,
       install_requires=[
           "django >= 1.8, <= 1.9",
-          "djangorestframework == 3.4.3",
+          "djangorestframework == 3.5",
           "django-filter ==  0.13.0",
           "django-plugins >= 0.3.0",
           "django-extensions >= 1.7.4",
