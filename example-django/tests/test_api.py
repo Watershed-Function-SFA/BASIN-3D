@@ -270,6 +270,8 @@ class TestPointLocationAPI(TestCase):
                                      "longitude": 90.0,
                                      "units": "DD"
                                  },
+                                 "vertical_extent": None,
+                                 "measure_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-0/"
                              },
                              {
@@ -287,6 +289,8 @@ class TestPointLocationAPI(TestCase):
                                      "longitude": 90.0,
                                      "units": "DD"
                                  },
+                                 "vertical_extent": None,
+                                 "measure_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-1/"
                              },
                              {
@@ -304,6 +308,8 @@ class TestPointLocationAPI(TestCase):
                                      "longitude": 90.0,
                                      "units": "DD"
                                  },
+                                 "vertical_extent": None,
+                                 "measure_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-2/"
                              },
                              {
@@ -321,6 +327,8 @@ class TestPointLocationAPI(TestCase):
                                      "longitude": 90.0,
                                      "units": "DD"
                                  },
+                                 "vertical_extent": None,
+                                 "measure_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-3/"
                              },
                              {
@@ -338,6 +346,8 @@ class TestPointLocationAPI(TestCase):
                                      "longitude": 90.0,
                                      "units": "DD"
                                  },
+                                 "vertical_extent": None,
+                                 "measure_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-4/"
                              },
                              {
@@ -355,6 +365,8 @@ class TestPointLocationAPI(TestCase):
                                      "longitude": 90.0,
                                      "units": "DD"
                                  },
+                                 "vertical_extent": None,
+                                 "measure_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-5/"
                              },
                              {
@@ -372,6 +384,8 @@ class TestPointLocationAPI(TestCase):
                                      "longitude": 90.0,
                                      "units": "DD"
                                  },
+                                 "vertical_extent": None,
+                                 "measure_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-6/"
                              },
                              {
@@ -389,6 +403,8 @@ class TestPointLocationAPI(TestCase):
                                      "longitude": 90.0,
                                      "units": "DD"
                                  },
+                                 "vertical_extent": None,
+                                 "measure_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-7/"
                              },
                              {
@@ -406,6 +422,8 @@ class TestPointLocationAPI(TestCase):
                                      "longitude": 90.0,
                                      "units": "DD"
                                  },
+                                 "vertical_extent": None,
+                                 "measure_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-8/"
                              },
                              {
@@ -423,6 +441,8 @@ class TestPointLocationAPI(TestCase):
                                      "longitude": 90.0,
                                      "units": "DD"
                                  },
+                                 "vertical_extent": None,
+                                 "measure_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-9/"
                              }
                          ]
@@ -448,6 +468,8 @@ class TestPointLocationAPI(TestCase):
                                  "longitude": 90.0,
                                  "units": "DD"
                              },
+                             "vertical_extent": None,
+                             "measure_variables": None,
                              "url": "http://testserver/synthesis/point_locations/A-0/"
                          })
 
@@ -466,12 +488,11 @@ class TestDataPointGroupAPI(TestCase):
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {
                              "id": "A-2",
+                             "units": None,
                              "measurement": "http://testserver/synthesis/measurements/1/",
                              "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                             'geographical_group_type': 'site',
+                             "geographical_group_type": "site",
                              "utc_offset": -8,
-                             "units": None,
-                             "measurement_position":None,
                              "data_points": "http://testserver/synthesis/data_point_groups/A-2/datapoints/"
                          })
 
@@ -479,97 +500,88 @@ class TestDataPointGroupAPI(TestCase):
         response = self.client.get('/synthesis/data_point_groups/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')), [
-            {
-                "id": "A-1",
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                'geographical_group_type': 'site',
-                "utc_offset": -8,
-                "measurement_position":None,
-                "units": None,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-1/datapoints/"
-            },
-            {
-                "id": "A-2",
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                'geographical_group_type': 'site',
-                "utc_offset": -8,
-                "measurement_position":None,
-                "units": None,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-2/datapoints/"
-            },
-            {
-                "id": "A-3",
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                'geographical_group_type': 'site',
-                "utc_offset": -8,
-                "measurement_position":None,
-                "units": None,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-3/datapoints/"
-            },
-            {
-                "id": "A-4",
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                'geographical_group_type': 'site',
-                "utc_offset": -8,
-                "measurement_position":None,
-                "units": None,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-4/datapoints/"
-            },
-            {
-                "id": "A-5",
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                'geographical_group_type': 'site',
-                "utc_offset": -8,
-                "measurement_position":None,
-                "units": None,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-5/datapoints/"
-            },
-            {
-                "id": "A-6",
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                'geographical_group_type': 'site',
-                "utc_offset": -8,
-                "measurement_position":None,
-                "units": None,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-6/datapoints/"
-            },
-            {
-                "id": "A-7",
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                'geographical_group_type': 'site',
-                "utc_offset": -8,
-                "measurement_position":None,
-                "units": None,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-7/datapoints/"
-            },
-            {
-                "id": "A-8",
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                'geographical_group_type': 'site',
-                "utc_offset": -8,
-                "measurement_position":None,
-                "units": None,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-8/datapoints/"
-            },
-            {
-                "id": "A-9",
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                'geographical_group_type': 'site',
-                "utc_offset": -8,
-                "measurement_position":None,
-                "units": None,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-9/datapoints/"
-            }
-        ])
+    {
+        "id": "A-1",
+        "units": None,
+        "measurement": "http://testserver/synthesis/measurements/1/",
+        "geographical_group": "http://testserver/synthesis/sites/A-1/",
+        "geographical_group_type": "site",
+        "utc_offset": -8,
+        "data_points": "http://testserver/synthesis/data_point_groups/A-1/datapoints/"
+    },
+    {
+        "id": "A-2",
+        "units": None,
+        "measurement": "http://testserver/synthesis/measurements/1/",
+        "geographical_group": "http://testserver/synthesis/sites/A-1/",
+        "geographical_group_type": "site",
+        "utc_offset": -8,
+        "data_points": "http://testserver/synthesis/data_point_groups/A-2/datapoints/"
+    },
+    {
+        "id": "A-3",
+        "units": None,
+        "measurement": "http://testserver/synthesis/measurements/1/",
+        "geographical_group": "http://testserver/synthesis/sites/A-1/",
+        "geographical_group_type": "site",
+        "utc_offset": -8,
+        "data_points": "http://testserver/synthesis/data_point_groups/A-3/datapoints/"
+    },
+    {
+        "id": "A-4",
+        "units": None,
+        "measurement": "http://testserver/synthesis/measurements/1/",
+        "geographical_group": "http://testserver/synthesis/sites/A-1/",
+        "geographical_group_type": "site",
+        "utc_offset": -8,
+        "data_points": "http://testserver/synthesis/data_point_groups/A-4/datapoints/"
+    },
+    {
+        "id": "A-5",
+        "units": None,
+        "measurement": "http://testserver/synthesis/measurements/1/",
+        "geographical_group": "http://testserver/synthesis/sites/A-1/",
+        "geographical_group_type": "site",
+        "utc_offset": -8,
+        "data_points": "http://testserver/synthesis/data_point_groups/A-5/datapoints/"
+    },
+    {
+        "id": "A-6",
+        "units": None,
+        "measurement": "http://testserver/synthesis/measurements/1/",
+        "geographical_group": "http://testserver/synthesis/sites/A-1/",
+        "geographical_group_type": "site",
+        "utc_offset": -8,
+        "data_points": "http://testserver/synthesis/data_point_groups/A-6/datapoints/"
+    },
+    {
+        "id": "A-7",
+        "units": None,
+        "measurement": "http://testserver/synthesis/measurements/1/",
+        "geographical_group": "http://testserver/synthesis/sites/A-1/",
+        "geographical_group_type": "site",
+        "utc_offset": -8,
+        "data_points": "http://testserver/synthesis/data_point_groups/A-7/datapoints/"
+    },
+    {
+        "id": "A-8",
+        "units": None,
+        "measurement": "http://testserver/synthesis/measurements/1/",
+        "geographical_group": "http://testserver/synthesis/sites/A-1/",
+        "geographical_group_type": "site",
+        "utc_offset": -8,
+        "data_points": "http://testserver/synthesis/data_point_groups/A-8/datapoints/"
+    },
+    {
+        "id": "A-9",
+        "units": None,
+        "measurement": "http://testserver/synthesis/measurements/1/",
+        "geographical_group": "http://testserver/synthesis/sites/A-1/",
+        "geographical_group_type": "site",
+        "utc_offset": -8,
+        "data_points": "http://testserver/synthesis/data_point_groups/A-9/datapoints/"
+    }
+])
 
 
 class TestDataPointAPI(TestCase):
@@ -589,31 +601,34 @@ class TestDataPointAPI(TestCase):
                              "url": "http://testserver/synthesis/data_points/A-2/",
                              "id": "A-2",
                              "type": "time_series",
-                             'measurement': {'approach': 'manual',
-                                             'datasource': 'Alpha',
-                                             'description': 'The method is based on the sample filtration '
-                                                            'and dilution ...',
-                                             'sampling_medium': 'groundwater',
-                                             'url': 'http://testserver/synthesis/measurements/1/',
-                                             'variable':  'ACT'},
-                             'measurement_position': {
-                                 'point_location': 'http://testserver/synthesis/point_locations/A-1/',
-                                 'type': 'measurementposition',
-                                 'vertical_position': {'datum': 'LS',
-                                                       'distance_units': 'meters',
-                                                       'resolution': None,
-                                                       'type': 'depth',
-                                                       'value': 0.7069}},
-
                              "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
                              "geographical_group_type": "pointlocation",
                              "units": "nm",
+                             "measurement_position": {
+                                 "type": "measurementposition",
+                                 "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                                 "vertical_position": {
+                                     "value": 0.7069,
+                                     "resolution": None,
+                                     "distance_units": "meters",
+                                     "datum": "LS",
+                                     "type": "depth"
+                                 }
+                             },
+                             "measurement": {
+                                 "url": "http://testserver/synthesis/measurements/1/",
+                                 "sampling_medium": "water",
+                                 "datasource": "Alpha",
+                                 "variable": "ACT",
+                                 "description": ""
+                             },
                              "timestamp": "2016-02-01",
                              "value": 0.6906906,
                              "temporal_resolution": "month",
                              "reference": None,
                              "utc_offset": -8
-                         })
+                         }
+                         )
 
     def test_get(self):
         response = self.client.get('/synthesis/data_points/', format='json')
@@ -639,11 +654,10 @@ class TestDataPointAPI(TestCase):
         },
         "measurement": {
             "url": "http://testserver/synthesis/measurements/1/",
-            "sampling_medium": "groundwater",
-            "approach": "manual",
+            "sampling_medium": "water",
             "datasource": "Alpha",
-            "description": "The method is based on the sample filtration and dilution ...",
-            "variable": "ACT"
+            "variable": "ACT",
+            "description": ""
         },
         "timestamp": "2016-01-01",
         "value": 0.3453453,
@@ -671,11 +685,10 @@ class TestDataPointAPI(TestCase):
         },
         "measurement": {
             "url": "http://testserver/synthesis/measurements/1/",
-            "sampling_medium": "groundwater",
-            "approach": "manual",
+            "sampling_medium": "water",
             "datasource": "Alpha",
-            "description": "The method is based on the sample filtration and dilution ...",
-            "variable": "ACT"
+            "variable": "ACT",
+            "description": ""
         },
         "timestamp": "2016-02-01",
         "value": 0.6906906,
@@ -703,11 +716,10 @@ class TestDataPointAPI(TestCase):
         },
         "measurement": {
             "url": "http://testserver/synthesis/measurements/1/",
-            "sampling_medium": "groundwater",
-            "approach": "manual",
+            "sampling_medium": "water",
             "datasource": "Alpha",
-            "description": "The method is based on the sample filtration and dilution ...",
-            "variable": "ACT"
+            "variable": "ACT",
+            "description": ""
         },
         "timestamp": "2016-03-01",
         "value": 1.0360359000000001,
@@ -735,11 +747,10 @@ class TestDataPointAPI(TestCase):
         },
         "measurement": {
             "url": "http://testserver/synthesis/measurements/1/",
-            "sampling_medium": "groundwater",
-            "approach": "manual",
+            "sampling_medium": "water",
             "datasource": "Alpha",
-            "description": "The method is based on the sample filtration and dilution ...",
-            "variable": "ACT"
+            "variable": "ACT",
+            "description": ""
         },
         "timestamp": "2016-04-01",
         "value": 1.3813812,
@@ -767,11 +778,10 @@ class TestDataPointAPI(TestCase):
         },
         "measurement": {
             "url": "http://testserver/synthesis/measurements/1/",
-            "sampling_medium": "groundwater",
-            "approach": "manual",
+            "sampling_medium": "water",
             "datasource": "Alpha",
-            "description": "The method is based on the sample filtration and dilution ...",
-            "variable": "ACT"
+            "variable": "ACT",
+            "description": ""
         },
         "timestamp": "2016-05-01",
         "value": 1.7267265,
@@ -799,11 +809,10 @@ class TestDataPointAPI(TestCase):
         },
         "measurement": {
             "url": "http://testserver/synthesis/measurements/1/",
-            "sampling_medium": "groundwater",
-            "approach": "manual",
+            "sampling_medium": "water",
             "datasource": "Alpha",
-            "description": "The method is based on the sample filtration and dilution ...",
-            "variable": "ACT"
+            "variable": "ACT",
+            "description": ""
         },
         "timestamp": "2016-06-01",
         "value": 2.0720718000000002,
@@ -831,11 +840,10 @@ class TestDataPointAPI(TestCase):
         },
         "measurement": {
             "url": "http://testserver/synthesis/measurements/1/",
-            "sampling_medium": "groundwater",
-            "approach": "manual",
+            "sampling_medium": "water",
             "datasource": "Alpha",
-            "description": "The method is based on the sample filtration and dilution ...",
-            "variable": "ACT"
+            "variable": "ACT",
+            "description": ""
         },
         "timestamp": "2016-07-01",
         "value": 2.4174171,
@@ -863,11 +871,10 @@ class TestDataPointAPI(TestCase):
         },
         "measurement": {
             "url": "http://testserver/synthesis/measurements/1/",
-            "sampling_medium": "groundwater",
-            "approach": "manual",
+            "sampling_medium": "water",
             "datasource": "Alpha",
-            "description": "The method is based on the sample filtration and dilution ...",
-            "variable": "ACT"
+            "variable": "ACT",
+            "description": ""
         },
         "timestamp": "2016-08-01",
         "value": 2.7627624,
@@ -895,11 +902,10 @@ class TestDataPointAPI(TestCase):
         },
         "measurement": {
             "url": "http://testserver/synthesis/measurements/1/",
-            "sampling_medium": "groundwater",
-            "approach": "manual",
+            "sampling_medium": "water",
             "datasource": "Alpha",
-            "description": "The method is based on the sample filtration and dilution ...",
-            "variable": "ACT"
+            "variable": "ACT",
+            "description": ""
         },
         "timestamp": "2016-09-01",
         "value": 3.1081077,

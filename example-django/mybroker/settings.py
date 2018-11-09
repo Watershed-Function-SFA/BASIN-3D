@@ -35,8 +35,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
 
     'mybroker',
-    'djangoplugins',
     'rest_framework',
+    'djangoplugins',
     'basin3d',
     'django_extensions',
     'django.contrib.admin',
@@ -147,5 +147,6 @@ REST_FRAMEWORK = {
 }
 
 BASIN3D = {
-    'SYNTHESIS':True
+    'SYNTHESIS': True,  # Turn on/off synthesis API
+    'DIRECT_API': True,  # Turn on/off direct API
 }

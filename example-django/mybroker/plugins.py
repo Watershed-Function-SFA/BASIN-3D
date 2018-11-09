@@ -1,24 +1,14 @@
 import logging
 
-from basin3d.models import SamplingMedium, MeasurementApproach, GeographicalGroup, Measurement
+from basin3d.models import SamplingMedium, GeographicalGroup, Measurement
 from basin3d.plugins import DataSourcePluginPoint, DataSourcePluginViewMeta
 from basin3d.synthesis.models import measurement, Person
 from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation, \
     GeographicCoordinate, MeasurementPosition, DepthCoordinate
 from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint
-from collections import OrderedDict
 from django.utils.six import with_metaclass
 
 logger = logging.getLogger(__name__)
-
-# Format: id, full_name, categories (ordered by priority)
-MEASUREMENT_VARIABLES = [["ACT", "Acetate (CH3COO)", ["Geochemistry", "Anions"]],
-                         ["Ag", "Silver (Ag)", ["Geochemistry", "Trace elements"]],
-                         ["Al", "Aluminum (Al)", ["Geochemistry", "Trace elements"]],
-                         ["As", "Arsenic (As)", ["Geochemistry", "Trace elements"], ],
-                         ]
-
-
 
 
 class AlphaSiteView(with_metaclass(DataSourcePluginViewMeta)):
@@ -249,31 +239,21 @@ class AlphaSourcePlugin(DataSourcePluginPoint):
                            AlphaPointLocationView)
 
     class DataSourceMeta:
+        """
+        This is an internal metadata class for defining additional :class:`~basin3d.models.DataSource`
+        attributes.
+
+        **Attributes:**
+            - *id* - unique id short name
+            - *name* - human friendly name (more descriptive)
+            - *location* - resource location
+            - *id_prefix* - id prefix to make model object ids unique across datasources
+            - *credentials_format* - if the data source requires authentication, this is where the
+                format of the stored credentials is defined.
+
+        """
         # Data Source attributes
         location = 'https://asource.foo/'
         id = 'Alpha'  # unique id for the datasource
         id_prefix = 'A'
         name = id  # Human Friendly Data Source Name
-
-        # format basin id:measurement variable id
-        MEASURE_VARIABLE_MAP = OrderedDict(
-            [('ACT', 'Acetate'), ('Ag', 'Ag'), ('Al', 'Al'), ('As', 'As')])
-
-        MEASUREMENTS = [
-            {'description': """The method is based on the sample filtration and dilution ...""",
-             'variable_id': "ACT",
-             'sampling_medium': SamplingMedium.GROUNDWATER,
-             'approach': MeasurementApproach.MANUAL},
-            {'description': """Aqua regia digestion method.""",
-             'variable_id': "Ag",
-             'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
-             'approach': MeasurementApproach.SENSOR},
-            {'description': """Aqua regia digestion method.""",
-             'variable_id': "Al",
-             'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
-             'approach': MeasurementApproach.SENSOR},
-            {'description': """Aqua regia digestion method.""",
-             'variable_id': "As",
-             'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
-             'approach': MeasurementApproach.SENSOR}
-        ]

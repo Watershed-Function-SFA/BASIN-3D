@@ -1,4 +1,4 @@
-django >= 1.8, <= 1.9
+django>=1.8,<= 1.9
 djangorestframework == 3.5
 django-filter ==  0.15.3
 django-plugins >= 0.3.0
