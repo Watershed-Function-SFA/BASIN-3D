@@ -48,28 +48,29 @@ def load_data_sources(sender, **kwargs):
                     sm = SamplingMedium(name=variable_mapping["sampling_medium"])
                     sm.save()
 
-                v = MeasurementVariable.objects.get(id=variable_mapping['broker_id'])
+
+
 
                 try:
+                    v = MeasurementVariable.objects.get(id=variable_mapping['broker_id'])
                     m = Measurement.objects.get(variable=v, datasource=datasource)
                     m.sampling_medium = sm
                     m.description = variable_mapping['description']
+                    m.save()
                 except Measurement.DoesNotExist:
 
                     m = Measurement(sampling_medium=sm,
                                     description=variable_mapping["description"],
                                     datasource=datasource,
                                     variable=v)
-                try:
                     m.save()
-
                 except IntegrityError:
                     # Its OK that is has already been created
                     pass
 
                 except Exception as e:
 
-                    print("Error Registering Measurement '{} {}': {}".format(m.variable_id, m.description, str(e)))
+                    print("Error Registering Measurement '{} {}': {}".format(variable_mapping['broker_id'], variable_mapping['description'], str(e)))
 
 
 def load_measurment_objects(sender, **kwargs):
