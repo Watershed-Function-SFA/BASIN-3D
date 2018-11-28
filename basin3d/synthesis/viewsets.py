@@ -22,7 +22,6 @@ View Controllers for BASIN-3D REST api
 """
 import logging
 
-import djangoplugins
 from basin3d.models import DataSource
 from basin3d.plugins import InvalidOrMissingCredentials
 
@@ -75,12 +74,11 @@ class DataSourcePluginViewSet(ViewSet):
 
         # Iterate over the plugins
         # (Consider parallelizing this, and using a StreamingHttpResponse )
-        for datasource in datasources:
-            plugin_model = datasource.plugin  # Get the plugin model
+        for datasource in datasources: # Get the plugin model
 
-            if plugin_model.status == djangoplugins.models.ENABLED:
+            if datasource.enabled:
 
-                plugin_views = plugin_model.get_plugin().get_plugin_views()
+                plugin_views = datasource.get_plugin().get_plugin_views()
                 if self.synthesis_model in plugin_views and \
                         hasattr(plugin_views[self.synthesis_model], "list"):
                     try:
@@ -113,10 +111,9 @@ class DataSourcePluginViewSet(ViewSet):
             if datasource:
                 datasource_pk = pk.replace("{}-".format(pk_list[0]),
                                            "", 1)  # The datasource id prefix needs to be removed
-                plugin_model = datasource.plugin  # Get the plugin model
-                if plugin_model.status == djangoplugins.models.ENABLED:
+                if datasource.enabled:
 
-                    plugin_views = plugin_model.get_plugin().get_plugin_views()
+                    plugin_views = datasource.get_plugin().get_plugin_views()
                     if self.synthesis_model in plugin_views:
                         obj = plugin_views[self.synthesis_model].get(request, pk=datasource_pk)
             if obj:
@@ -124,7 +121,7 @@ class DataSourcePluginViewSet(ViewSet):
                     serializer = self.__class__.serializer_class(obj, context={'request': request})
                     return Response(serializer.data)
                 except Exception as e:
-                    logger.error("Plugin error: ({},{}) -- {}".format(plugin_model.name,
+                    logger.error("Plugin error: ({},{}) -- {}".format(datasource.name,
                                                                       self.action,
                                                                       e))
 
@@ -148,10 +145,10 @@ class RegionViewSet(DataSourcePluginViewSet):
     * *description*
     * *url* - for detail on a single region
 
-    ** Filter results** by the following attributes 
+    ** Filter results** by the following attributes
 
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
-    
+
     ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
 
 
@@ -414,7 +411,7 @@ class DataPointGroupViewSet(DataSourcePluginViewSet):
             if datasource:
                 plugin_model = datasource.plugin  # Get the plugin model
 
-                if plugin_model.status == djangoplugins.models.ENABLED:
+                if plugin_model.enabled:
 
                     plugin_views = plugin_model.get_plugin().get_plugin_views()
                     if self.synthesis_model in plugin_views:

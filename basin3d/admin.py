@@ -6,9 +6,9 @@ from django.contrib.admin import ModelAdmin
 
 @admin.register(DataSource)
 class DataSourceAdmin(ModelAdmin):
-    list_display = ('name', 'plugin','location')
-    fields = ('name', 'location', 'plugin','id_prefix',)
-    readonly_fields = ('name', 'id_prefix', 'plugin')
+    list_display = ('name', 'plugin_module','plugin_class','location')
+    fields = ('name', 'location', 'plugin_module','plugin_class','id_prefix',)
+    readonly_fields = ('name', 'id_prefix', 'plugin_module','plugin_class')
     actions = None
 
 

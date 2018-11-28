@@ -63,7 +63,7 @@ class TimestampField(serializers.DateTimeField):
         if timestamp:
             value = datetime.fromtimestamp(timestamp).strftime('%m/%d/%y %H:%M:%S.%f')
 
-        return super(TimestampField, self).to_representation(value)
+        return value
 
 
 class ReadOnlySynthesisModelField(serializers.Field):

@@ -8,6 +8,7 @@ REST_FRAMEWORK = {
         #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.AcceptHeaderVersioning',
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_VERSION':'1.0',
     'ALLOWED_VERSIONS':['1.0'],
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',

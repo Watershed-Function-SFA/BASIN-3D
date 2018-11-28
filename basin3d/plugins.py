@@ -16,6 +16,8 @@
 import logging
 
 # Python 3.5 compatibility
+import six
+
 try:
     from json import JSONDecodeError
 except ImportError:
@@ -29,7 +31,6 @@ from django.apps import apps
 from django.conf import settings
 from django.http import HttpResponse
 from django.http import JsonResponse
-from djangoplugins.point import PluginPoint
 from rest_framework import status
 
 
@@ -258,7 +259,36 @@ class DataSourcePluginViewMeta(type):
         super(DataSourcePluginViewMeta, cls).__init__(name, parents, dct)
 
 
-class DataSourcePluginPoint(PluginPoint):
+class PluginMount(type):
+    """
+    The idea for the Simple Plugin Framework comes from a post
+    by Marty Alchin on January 10, 2008 about Django
+
+    See: http://martyalchin.com/2008/jan/10/simple-plugin-framework/
+
+    it is under CC-BY-SA 3.0 US License
+    (https://creativecommons.org/licenses/by-sa/3.0/us/)
+
+    Plugin classes that extend this will register themselves as
+    soon as they are loaded
+
+    """
+
+    def __init__(cls, name, bases, attrs):
+        if cls.__name__ == 'DataSourcePluginPoint':
+            # This branch only executes when processing the mount point itself.
+            # So, since this is a new plugin type, not an implementation, this
+            # class shouldn't be registered as a plugin. Instead, it sets up a
+            # list where plugins can be registered later.
+            PluginMount.plugins = []
+        else:
+            # This must be a plugin implementation, which should be registered.
+            # Simply appending it to the list is all that's needed to keep
+            # track of it later.
+            PluginMount.plugins.append(cls)
+
+
+class DataSourcePluginPoint(six.with_metaclass(PluginMount, object)):
     """
     Base class for DataSourcePlugins.
     """
@@ -384,10 +414,10 @@ class HTTPConnectionDataSource(object):
         self.datasource = datasource
         self.credentials = None
         self.verify_ssl = True
-        if datasource.plugin.get_plugin().DataSourceMeta.id in settings.BASIN3D and \
+        if datasource.get_plugin().DataSourceMeta.id in settings.BASIN3D and \
                         'VERIFY_SSL' in settings.BASIN3D[
-                    datasource.plugin.get_plugin().DataSourceMeta.id]:
-            self.verify_ssl = settings.BASIN3D[datasource.plugin.get_plugin().DataSourceMeta.id][
+                    datasource.get_plugin().DataSourceMeta.id]:
+            self.verify_ssl = settings.BASIN3D[datasource.get_plugin().DataSourceMeta.id][
                 'VERIFY_SSL']
 
     def login(self):

@@ -15,10 +15,10 @@
 """
 from __future__ import unicode_literals
 
-from basin3d.plugins import DataSourcePluginPoint
+from importlib import import_module
+
 from django.db import models
 from django_extensions.db.fields.encrypted import EncryptedTextField
-from djangoplugins.fields import PluginField
 
 
 class GeographicalGroup(object):
@@ -46,7 +46,6 @@ class StringListField(models.TextField):
     :param: delimiter
     :type: str
     """
-    __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
         self.delimiter = ","
@@ -84,8 +83,11 @@ class DataSource(models.Model):
     name = models.CharField(max_length=20, unique=True, blank=False)
     id_prefix = models.CharField(max_length=5, unique=True, blank=False)
     location = models.TextField(blank=True)
-    plugin = PluginField(DataSourcePluginPoint, blank=True)
+    plugin_module = models.TextField(blank=True)
+    plugin_class = models.TextField(blank=True)
     credentials = EncryptedTextField(blank=True)
+    enabled = models.BooleanField(default=True)
+
 
     class Meta:
         ordering = ['id_prefix']
@@ -98,6 +100,16 @@ class DataSource(models.Model):
 
     def __repr__(self):
         return '<DataSource %r>' % (self.name)
+
+    def get_plugin(self):
+        """
+        Return the plugin
+        :return:
+        """
+
+        module = import_module(self.plugin_module)
+        plugin_class = getattr(module,self.plugin_class)
+        return plugin_class()
 
 
 class MeasurementVariable(models.Model):
@@ -141,9 +153,9 @@ class DataSourceMeasurementVariable(models.Model):
     """
     Synthesis of Data Source Parameters with Broker parameters
     """
-    datasource = models.ForeignKey(DataSource, related_name='basin3d_datasource')
+    datasource = models.ForeignKey(DataSource, related_name='basin3d_datasource', on_delete=models.CASCADE)
     measure_variable = models.ForeignKey(MeasurementVariable,
-                                         related_name='basin3d_measurementvariable')
+                                         related_name='basin3d_measurementvariable', on_delete=models.CASCADE)
     name = models.CharField(max_length=255, blank=False)
 
     class Meta:
@@ -198,9 +210,9 @@ class Measurement(models.Model):
     """
 
     description = models.TextField(null=True, blank=True)
-    variable = models.ForeignKey('MeasurementVariable', null=False)
-    sampling_medium = models.ForeignKey('SamplingMedium', null=False)
-    datasource = models.ForeignKey('DataSource', null=False)
+    variable = models.ForeignKey('MeasurementVariable', null=False, on_delete=models.CASCADE)
+    sampling_medium = models.ForeignKey('SamplingMedium', null=False, on_delete=models.CASCADE)
+    datasource = models.ForeignKey('DataSource', null=False, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('variable', 'datasource')

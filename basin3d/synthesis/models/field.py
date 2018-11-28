@@ -101,11 +101,11 @@ class DepthCoordinate(VerticalCoordinate):
 
 class HorizontalCoordinate(Base):
     """Generic XY coordinates for a point on earth (https://www.fgdc.gov/csdgmgraphical/spref.htm)
-    
-    Attributes: 
+
+    Attributes:
         + *x:* float
         + *y:* float
-        + *datum:* enum ("WGS84”, "NAD27”, "NAD83”), 
+        + *datum:* enum ("WGS84”, "NAD27”, "NAD83”),
         + *type:* enum ("geographic”,”planar_grid”,”planar_local”, "planar_map_projection”, "local”)
     """
 
@@ -131,10 +131,10 @@ class HorizontalCoordinate(Base):
 
 class GeographicCoordinate(HorizontalCoordinate):
     """
-    The quantities of latitude and longitude which define the position of a point on 
+    The quantities of latitude and longitude which define the position of a point on
     the Earth's surface with respect to a reference spheroid. (https://www.fgdc.gov/csdgmgraphical/spref.htm)
-    
-    Attributes: 
+
+    Attributes:
         + *latitude:*
         + *longitude:*
         + *units:* units determine the datatypes of latitude and longitude

@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 import basin3d.models
 import django.db.models.deletion
 import django_extensions.db.fields.encrypted
-import djangoplugins.fields
 from django.db import migrations, models
 
 
@@ -14,7 +13,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('djangoplugins', '0001_initial'),
     ]
 
     operations = [
@@ -26,7 +24,7 @@ class Migration(migrations.Migration):
                 ('id_prefix', models.CharField(max_length=5, unique=True)),
                 ('location', models.TextField(blank=True)),
                 ('credentials', django_extensions.db.fields.encrypted.EncryptedTextField(blank=True, max_length=None)),
-                ('plugin', djangoplugins.fields.PluginField(blank=True, on_delete=django.db.models.deletion.CASCADE, to='djangoplugins.Plugin')),
+                ('plugin_id', models.IntegerField(blank=True)),
             ],
         ),
         migrations.CreateModel(

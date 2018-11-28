@@ -43,7 +43,7 @@ class UploadcredentialsTest(TestCase):
         sys.stdin = StringIO('username: Foo\npassword: Bar\n')
         out = StringIO()
 
-        call_command('uploadcredentials', 'Alpha', stdin=input, stdout=out)
+        call_command('uploadcredentials', 'Alpha', stdout=out)
         self.assertIn("Credentials have been uploaded to Data Source 'Alpha'", out.getvalue())
 
         sys.stdin = oldstdin

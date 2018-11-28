@@ -3,6 +3,7 @@ import importlib
 import sys, os, csv, inspect
 
 from django.apps import AppConfig
+from django.conf import settings
 from django.db import IntegrityError
 from django.db.models.signals import post_migrate
 
@@ -16,18 +17,29 @@ def load_data_sources(sender, **kwargs):
     :return:
     """
 
-    from djangoplugins.models import Plugin
-    from basin3d.models import DataSource
-    from basin3d.models import SamplingMedium, Measurement, MeasurementVariable
-    SamplingMedium.objects.all().delete()
+    # Load all the plugins found in apps
+    for django_app in settings.INSTALLED_APPS:
 
-    for plugin_model in Plugin.objects.all():
-        plugin = plugin_model.get_plugin()
+        try:
+            importlib.import_module("{}.plugins".format(django_app))
+        except ImportError:
+            pass
+
+    load_sampling_mediums()
+
+    from basin3d.models import SamplingMedium, Measurement, MeasurementVariable, DataSourceMeasurementVariable
+
+    from basin3d.plugins import PluginMount
+    from basin3d.models import DataSource
+    for plugin in PluginMount.plugins:
+        module_name = plugin.__module__
+        class_name = plugin.__name__
+        print("Loading Plugin = {}.{}".format(module_name,class_name))
 
         try:
             datasource = DataSource.objects.get(name=plugin.get_meta().id)
         except DataSource.DoesNotExist:
-            print("Registering NEW Data Source '{}'".format(plugin.get_meta().id))
+            print("Registering NEW Data Source Plugin '{}.{}'".format(module_name, class_name))
             datasource = DataSource()
             if hasattr(plugin.get_meta(), "connection_class"):
                 datasource.credentials = plugin.get_meta().connection_class.get_credentials_format()
@@ -36,27 +48,24 @@ def load_data_sources(sender, **kwargs):
         datasource.name = plugin.get_meta().id
         datasource.location = plugin.get_meta().location
         datasource.id_prefix = plugin.get_meta().id_prefix
-        datasource.plugin = plugin_model
+        datasource.plugin_module = module_name
+        datasource.plugin_class = class_name
         datasource.save()
         print("Updated Data Source '{}'".format(plugin.get_meta().id))
 
-        for variable_mapping in __iterate_measurement_mapping(plugin):
+        load_measurment_variables(datasource.get_plugin())
 
-                try:
-                    sm = SamplingMedium.objects.get(name=variable_mapping["sampling_medium"])
-                except SamplingMedium.DoesNotExist:
-                    sm = SamplingMedium(name=variable_mapping["sampling_medium"])
-                    sm.save()
+        for variable_mapping in __iterate_measurement_mapping(datasource.get_plugin()):
 
-
-
-
+                sm = SamplingMedium.objects.get(name=variable_mapping["sampling_medium"])
+                v = None
                 try:
                     v = MeasurementVariable.objects.get(id=variable_mapping['broker_id'])
                     m = Measurement.objects.get(variable=v, datasource=datasource)
                     m.sampling_medium = sm
                     m.description = variable_mapping['description']
                     m.save()
+
                 except Measurement.DoesNotExist:
 
                     m = Measurement(sampling_medium=sm,
@@ -64,123 +73,96 @@ def load_data_sources(sender, **kwargs):
                                     datasource=datasource,
                                     variable=v)
                     m.save()
-                except IntegrityError:
+                    print("Created Measurement {} for {}".format(v,datasource))
+                except IntegrityError as ie:
                     # Its OK that is has already been created
+                    print(str(ie), file=sys.stderr)
+
+                except Exception as e:
+
+                    print("Error Registering Measurement '{} {}': {}".format(variable_mapping['broker_id'],
+                                                                             variable_mapping['description'], str(e)))
+
+                try:
+                    datasource_parameter = DataSourceMeasurementVariable()
+                    datasource_parameter.measure_variable = v
+                    datasource_parameter.datasource = datasource
+                    datasource_parameter.name = variable_mapping['datasource_name']
+                    datasource_parameter.save()
+
+                except IntegrityError:
+                    # This object has already been loaded
+                    pass
+
+                except Exception as e:
+                    print("Error Registering  DataSource Meaturement Variable '{}' for Data Source '{}': {}".format(variable_mapping['broker_id'],
+                                                                                            datasource.name, str(e)),file=sys.stderr)
+
+
+def load_measurment_variables(plugin):
+    """
+        Load all measurement objects into the database
+
+        :param sender:
+        :param kwargs:
+        :return:
+    """
+    from basin3d.models import MeasurementVariable
+
+    plugin_file_path = os.path.dirname(inspect.getfile(plugin.__class__))
+    variables_file = os.path.join(plugin_file_path,
+                                  "measurement_variables.csv")
+    if os.path.exists(plugin_file_path) and os.path.exists(variables_file):
+
+        # Open the CSV from reading
+        with open(variables_file, 'r') as csvfile:
+            # Create a dictionary reader where the header
+            # row becomes the dict keys for each entry.
+            reader = csv.DictReader(csvfile)
+
+            # Now iterate over the mapping file and yield
+            # each row to the caller
+            for row in reader:
+                try:
+                    # Create a new Measurement Variable
+                    p = MeasurementVariable()
+                    p.id = row['broker_id']
+                    p.full_name = row['description']
+                    p.categories = row['categories']
+                    p.save()
+
+                except IntegrityError:
+
+                    # This object has already been loaded
                     pass
 
                 except Exception as e:
 
-                    print("Error Registering Measurement '{} {}': {}".format(variable_mapping['broker_id'], variable_mapping['description'], str(e)))
+                    print("Error Registering MeasurementVariable '{}': {}".format(row['broker_id'], str(e)))
+
+    else:
+        print("There are no measurement variables to load to load - {} is missing".format(variables_file))
 
 
-def load_measurment_objects(sender, **kwargs):
+def load_sampling_mediums():
     """
-        Load all measurement objects into the database
-
-        Global:
-
-            + Sampling Medium
-            + Measurement Approaches
-
-        Plugin Specified
-
-            + MEASURMENT_VARIABLES
-             + MEASUREMENTS
-
-        :param sender:
-        :param kwargs:
-        :return:
+    Load the predefined sampling mediums in the database
+    :param sender:
+    :param kwargs:
+    :return:
     """
-    from djangoplugins.models import Plugin
-    from basin3d.models import MeasurementVariable, SamplingMedium
-
     # Load the Sampling Mediums
+    from basin3d.models import SamplingMedium
     for sm in SamplingMedium.SAMPLING_MEDIUMS:
         try:
             obj = SamplingMedium(name=sm)
             obj.save()
+            print("Created SamplingMedium {}".format(sm))
         except IntegrityError:
             # This object has already been loaded
             pass
         except Exception as e:
-            print("Error Registering SamplingMedium '{}': {}".format(obj.name, str(e)), file=sys.stderr)
-
-    plugins = Plugin.objects.all()
-    MeasurementVariable.objects.all().delete()
-    for plugin in plugins:
-        plugin_path = plugin.pythonpath
-        idx = plugin_path.index('plugins')
-        module_name = plugin_path[0:idx+len('plugins')]
-        app_plugins = importlib.import_module(module_name)
-
-        # Find the directory where the plugs live.
-        #  There should be a CSV file with this broker's m
-        #  measurement variables in it.
-        plugin_file_path = os.path.dirname(inspect.getfile(app_plugins))
-        variables_file = os.path.join(plugin_file_path,
-                                      "measurement_variables.csv")
-        if os.path.exists(plugin_file_path) and os.path.exists(variables_file):
-
-            # Open the CSV from reading
-            with open(variables_file, 'r') as csvfile:
-                # Create a dictionary reader where the header
-                # row becomes the dict keys for each entry.
-                reader = csv.DictReader(csvfile)
-
-                # Now iterate over the mapping file and yield
-                # each row to the caller
-                for row in reader:
-                    try:
-                        # Create a new Measurement Variable
-                        p = MeasurementVariable()
-                        p.id = row['broker_id']
-                        p.full_name = row['description']
-                        p.categories = row['categories']
-                        p.save()
-
-                    except IntegrityError:
-
-                        # This object has already been loaded
-                        pass
-
-                    except Exception as e:
-
-                        print("Error Registering MeasurementVariable '{}': {}".format(row['broker_id'], str(e)))
-
-                # If Measurement Variables were loaded quit out of the loop
-                break
-        else:
-            print("There are no measurement variables to load to load - {} is missing".format(variables_file))
-
-
-def load_datasource_parameters(sender,**kwargs):
-    """
-        Map the datasource parameters with broker parameters
-
-        :param sender:
-        :param kwargs:
-        :return:
-    """
-    from basin3d.models import MeasurementVariable, DataSource, DataSourceMeasurementVariable
-
-    for datasource in DataSource.objects.all():
-
-        for variable_mapping in __iterate_measurement_mapping(datasource.plugin.get_plugin()):
-            try:
-                broker_id = MeasurementVariable.objects.get(id=variable_mapping['broker_id'])
-                datasource_parameter = DataSourceMeasurementVariable()
-                datasource_parameter.measure_variable = broker_id
-                datasource_parameter.datasource = datasource
-                datasource_parameter.name = variable_mapping['datasource_name']
-                datasource_parameter.save()
-
-            except IntegrityError:
-                # This object has already been loaded
-                pass
-
-            except MeasurementVariable.DoesNotExist as e:
-               print("Not Found Measurement Variable '{}' for Data Source '{}': {}".format(variable_mapping['broker_id'],
-                                                                                         datasource.name, str(e)), file=sys.stderr)
+            print("Error Registering SamplingMedium '{}': {}".format(sm, str(e)), file=sys.stderr)
 
 
 def __iterate_measurement_mapping(plugin):
@@ -208,10 +190,10 @@ def __iterate_measurement_mapping(plugin):
                 for row in reader:
                     yield row
         else:
-            raise Exception("There are no measurement variables ({}) mapped for this plugin {}".format(mapping_file, plugin.pythonpath))
+            raise Exception("There are no measurement variables ({}) mapped for this plugin {}.{}".format(mapping_file, plugin.plugin_module,plugin.plugin_class))
 
     else:
-        raise Exception("File path does not exist for plugin {}".format(plugin.pythonpath))
+        raise Exception("File path does not exist for plugin {}.{}".format(plugin.plugin_module, plugin.plugin_class))
 
 
 class Basin3DConfig(AppConfig):
@@ -220,8 +202,5 @@ class Basin3DConfig(AppConfig):
     def ready(self):
 
         # Execute the post migration scripts
-        post_migrate.connect(load_measurment_objects, sender=self)
         post_migrate.connect(load_data_sources, sender=self)
-        post_migrate.connect(load_datasource_parameters, sender=self)
-
 

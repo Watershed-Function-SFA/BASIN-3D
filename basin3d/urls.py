@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-import djangoplugins
 from basin3d.models import DataSource
 from basin3d.synthesis.viewsets import RegionViewSet, \
     DataPointGroupViewSet, DataPointViewSet, SiteViewSet, PlotViewSet, \
@@ -23,7 +22,6 @@ from basin3d.viewsets import DataSourceViewSet, DirectAPIViewSet, MeasurementVar
     MeasurementViewSet
 from django.conf import settings
 from django.conf.urls import url, include
-from django.db import OperationalError
 from rest_framework import routers
 
 
@@ -45,11 +43,11 @@ def get_synthesis_router():
             # for those models that are defined.
             for datasource in DataSource.objects.all():
                 viewset_models = []
-                plugin_model = datasource.plugin  # Get the plugin model
+                plugin = datasource.get_plugin()  # Get the plugin model
 
-                if plugin_model.status == djangoplugins.models.ENABLED:
+                if datasource.enabled:
 
-                    plugin_views = plugin_model.get_plugin().get_plugin_views()
+                    plugin_views = plugin.get_plugin_views()
                     for model_name in plugin_views.keys():
                         viewset_models.append(model_name.__name__)
 
@@ -85,12 +83,11 @@ urlpatterns = [
     url(r'^$', broker_api_root, name='broker-api-root' )
 ]
 
+router = get_synthesis_router()
 if settings.BASIN3D["SYNTHESIS"]:
-    router = get_synthesis_router()
     urlpatterns.append(url(r'^synthesis/', include(router.urls)))
 
 if settings.BASIN3D["DIRECT_API"]:
-    router = get_synthesis_router()
     urlpatterns.append(url(r'^direct/$',DirectAPIViewSet.as_view({'get':'list'}),name='direct-api-list'))
     urlpatterns.append(url(r'^direct/(?P<id_prefix>[a-zA-Z0-9]+)/(?P<direct_path>[a-zA-Z/_\-?&0-9]*)$',
         DirectAPIViewSet.as_view({'get': 'retrieve', 'post':'retrieve'}),

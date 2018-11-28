@@ -15,13 +15,12 @@
 import json
 import logging
 
-import djangoplugins
 from basin3d import get_url
 from basin3d.models import MeasurementVariable, DataSource, DataSourceMeasurementVariable, \
     Measurement
 from basin3d.serializers import DataSourceSerializer, MeasurementVariableSerializer, \
     MeasurementSerializer
-from rest_framework import filters
+import django_filters
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
@@ -29,7 +28,6 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 logger = logging.getLogger(__name__)
-
 
 class DirectAPIViewSet(viewsets.GenericViewSet):
     """
@@ -65,14 +63,12 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
 
         datasource = self.get_object()
 
-        plugin_model = datasource.plugin  # Get the plugin model
-
-        if plugin_model.status == djangoplugins.models.ENABLED:
+        if datasource.enabled:
             direct_path = ""
             if "direct_path" in kwargs.keys():
                 direct_path = kwargs["direct_path"]
 
-            plugin = plugin_model.get_plugin()
+            plugin = datasource.get_plugin()
             response = plugin.direct(request, direct_path)
             if response:
                 try:
@@ -120,9 +116,8 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
         """
 
         datasource = self.get_object()
-        plugin_model = datasource.plugin  # Get the plugin model
-        if plugin_model.status == djangoplugins.models.ENABLED:
-            plugin = plugin_model.get_plugin()
+        if datasource.enabled:
+            plugin = datasource.get_plugin()
 
             if hasattr(plugin.get_meta(), "connection_class"):
                 http_auth = plugin.get_meta().connection_class(datasource)
@@ -158,7 +153,7 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
                     return Response(data={"message": str(e), "success":False},
                                             status=status.HTTP_200_OK)
 
-    @detail_route()  # Custom Route for an association
+    @detail_route() # Custom Route for an association
     def variables(self, request, pk=None):
         """
         Retrieve the DataSource Parameters for a broker parameter.
@@ -199,7 +194,7 @@ class MeasurementVariableViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = MeasurementVariable.objects.all()
     serializer_class = MeasurementVariableSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
     @detail_route()  # Custom Route for an association
     def datasources(self, request, pk=None):
@@ -234,4 +229,4 @@ class MeasurementViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Measurement.objects.all()
     serializer_class = MeasurementSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)

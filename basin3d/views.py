@@ -13,11 +13,13 @@
     :backlinks: top
 """
 from collections import OrderedDict
+
+import sys
+
 from django.conf import settings
-from django.core.urlresolvers import NoReverseMatch
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
+from rest_framework.reverse import reverse, NoReverseMatch
 
 
 BASIN3D_DIRECT_VIEWS = [('direct-apis', 'direct-api-list')]\
@@ -47,11 +49,10 @@ def broker_api_root(request, format=None):
     if settings.BASIN3D["DIRECT_API"]:
         views.extend(BASIN3D_DIRECT_VIEWS)
     for k, v in views:
-
         try:
             root_dict[k] = reverse(v, request=request, format=format)
         except NoReverseMatch:
             # If there is no match just don't show it
-            pass
+            print("NoReversMatch for {}".format(k), file=sys.stderr)
 
     return Response(root_dict)
