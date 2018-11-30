@@ -37,6 +37,9 @@ if os.path.exists(version_py):
 if sys.version_info.major == 2 and sys.version_info.minor < 7:
     sys.exit('Sorry, Python < 2.7 is not supported')
 
+if sys.version_info.major == 3 and sys.version_info.minor < 4:
+    sys.exit('Sorry, Python < 3.4 is not supported')
+
 setup(name='BASIN-3D',
       version=__release__,
       description='Broker for Assimilation, Synthesis and Integration of eNvironmental Diverse, Distributed Datasets',
@@ -47,7 +50,7 @@ setup(name='BASIN-3D',
       py_modules=['manage'],
       include_package_data=True,
       install_requires=[
-          "django",
+          "django==2.0.0",
           "djangorestframework",
           "django-filter",
           "django-extensions",

@@ -1,4 +1,4 @@
-django
+django==2.0.0
 djangorestframework
 django-filter
 django-extensions
