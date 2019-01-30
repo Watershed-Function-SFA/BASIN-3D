@@ -28,7 +28,8 @@ from basin3d.plugins import InvalidOrMissingCredentials
 from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation
 from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint, TimeSeriesDataPoint
 from basin3d.synthesis.query import extract_id, extract_query_param_ids, QUERY_PARAM_MEASURE_VARIABLES, \
-    QUERY_PARAM_TEMPORAL_RESOLUTION, QUERY_PARAM_LOCATIONS, QUERY_PARAM_REGIONS, QUERY_PARAM_SITES
+    QUERY_PARAM_TEMPORAL_RESOLUTION, QUERY_PARAM_LOCATIONS, QUERY_PARAM_REGIONS, QUERY_PARAM_SITES, \
+    QUERY_PARAM_QUALITY_CHECKED
 from basin3d.synthesis.serializers import RegionSerializer, \
     DataPointGroupSerializer, DataPointSerializer, SiteSerializer, \
     PlotSerializer, PointLocationSerializer
@@ -345,6 +346,7 @@ class DataPointGroupViewSet(DataSourcePluginViewSet):
     * *start_date (required)*
     * *end_date*
     * *temporal_resolution (default:day):*  options (year|month|day|hour|minute|second)
+    * *quality_checked* if 'True' then filter by quality checked data. Otherwise, there is no filtering.
 
     ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
 
@@ -361,6 +363,7 @@ class DataPointGroupViewSet(DataSourcePluginViewSet):
           + locations
           + measure_variables
           + temporal_resolution (default: day)
+          + quality_checked
 
         :param request: the request to synthesize
         :param plugin_view: The plugin view to synthesize query params for
@@ -388,6 +391,10 @@ class DataPointGroupViewSet(DataSourcePluginViewSet):
         if QUERY_PARAM_TEMPORAL_RESOLUTION not in request.query_params:
             query_params[
                 QUERY_PARAM_TEMPORAL_RESOLUTION] = TimeSeriesDataPoint.TEMPORAL_RESOLUTION_DAY
+
+        if QUERY_PARAM_QUALITY_CHECKED in request.query_params:
+            query_params[
+                QUERY_PARAM_QUALITY_CHECKED] = request.query_params[QUERY_PARAM_QUALITY_CHECKED] in ["true", "True"]
 
         return query_params
 
@@ -459,6 +466,7 @@ class DataPointViewSet(DataSourcePluginViewSet):
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
     * *end_date*
     * *temporal_resolution (default:day):*  options (year|month|day|hour|minute|second)
+    * *quality_checked* if 'True' then filter by quality checked data. Otherwise, there is no filtering.
 
     ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
 
@@ -503,6 +511,10 @@ class DataPointViewSet(DataSourcePluginViewSet):
         if QUERY_PARAM_TEMPORAL_RESOLUTION not in request.query_params:
             query_params[
                 QUERY_PARAM_TEMPORAL_RESOLUTION] = TimeSeriesDataPoint.TEMPORAL_RESOLUTION_DAY
+
+        if QUERY_PARAM_QUALITY_CHECKED in request.query_params:
+            query_params[
+                QUERY_PARAM_QUALITY_CHECKED] = request.query_params[QUERY_PARAM_QUALITY_CHECKED] in ["true", "True"]
 
         return query_params
 

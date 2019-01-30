@@ -5,6 +5,7 @@ QUERY_PARAM_START_DATE = "start_date"
 QUERY_PARAM_END_DATE = "end_date"
 QUERY_PARAM_SITES = "sites"
 QUERY_PARAM_REGIONS = "regions"
+QUERY_PARAM_QUALITY_CHECKED = "quality_checked"
 
 
 def extract_id(identifer):

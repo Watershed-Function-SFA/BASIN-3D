@@ -95,7 +95,7 @@ class DataPoint(Base):
         - *geographical_group_type* en um (sampling_feature, site, plot, region)
         - *units:* Unit
         - *measurement_position:* The position at which the measurement was taken
-        - *qualifier:s* list of quality codes
+        - *qaqc:* Has this data been quality checked?
     """
     def __init__(self, datasource, **kwargs):
         self.id = None
@@ -105,7 +105,7 @@ class DataPoint(Base):
         self.units = None
         self.measurement_position = None  # For now,
         self.measurement = None
-        self.qualifiers = None
+        self.quality_checked = None
 
         if "measure_variable" in kwargs:
 

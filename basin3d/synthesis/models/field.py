@@ -20,7 +20,7 @@
 * :class:`VerticalCoordinate` - The reference frame or system from which vertical distances (altitudes or depths) are measured.
 
 """
-from basin3d.plugins import get_datasource_variable, get_datasource_variables
+from basin3d.plugins import get_datasource_variables
 from basin3d.synthesis.models import Base
 
 

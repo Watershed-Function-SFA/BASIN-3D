@@ -587,7 +587,7 @@ class DataPointSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
     measurement_position = ReadOnlySynthesisModelField(
         serializer_class=MeasurementPositionSerializer)
     measurement = ReadOnlySynthesisModelField(serializer_class=MeasurementSerializer)
-    qualifiers = serializers.ListField()
+    quality_checked = serializers.BooleanField()
 
     # Time Series
     timestamp = TimestampField()
@@ -642,8 +642,6 @@ class DataPointSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
                 field_to_remove -= self.FIELDS_TIME_SERIES
                 if not hasattr(instance, "measurement_position") or not instance.measurement_position:
                     field_to_remove.update(("measurement_position",))
-                if not instance.qualifiers:
-                    field_to_remove.update(("qualifiers",))
             elif isinstance(instance, ImageDataPoint):
                 field_to_remove -= self.FIELDS_IMAGE
 
