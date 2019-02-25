@@ -50,7 +50,7 @@ setup(name='BASIN-3D',
       py_modules=['manage'],
       include_package_data=True,
       install_requires=[
-          "django==2.0.0",
+          "django>=2.0,<2.1",
           "djangorestframework",
           "django-filter",
           "django-extensions",

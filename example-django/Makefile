@@ -6,7 +6,7 @@ all: bin/python keyset db.sqlite3
 
 bin/python:
 	$(PYTHON) -m venv .
-	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt pytest-django pytest-cov $(CURDIR)/..
+	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt pytest-django pytest-cfmov $(CURDIR)/..
 
 db.sqlite3:
 	$(CURDIR)/bin/python manage.py migrate

@@ -29,13 +29,59 @@ development and testing purposes.
     $ cd basin-3d
     
 
+## Develop
+Setup virtualenv for development and testing purposes. All basin-3d tests
+are in `basin3d.tests`. They can be
+
+### Example Django Project
+There is an example project for testing in directory `example-django`. 
+   
+Create an Anaconda environment
+
+    conda create -y -n basin3d python=3.6.5
+	
+Activate the new environment and prepare it for development
+
+	source activate basin3d
+	conda develop -npf -n basin3d .
+
+Install  BASIN-3D and its dependencies
+
+	python setup.py develop 
+	pip install $(cat requirements.txt ) pytest-django pytest-cov
+
+BASIN-3D stores datasource credentials.  This requires an encryption secrect key.
+
+    cd example-django
+	mkdir -p .keyset
+	keyczart create --location=.keyset --purpose=crypt --name=basin3d
+	keyczart addkey --location=.keyset --status=primary
+	
+Migrate the database
+
+	./manage.py migrate
+	
+Run the tests
+
+    pytest -v --cov basin3d  tests 
+
+
+Run  the server
+
+    ./manage.py runserver
+
+    
+Create a superuser
+
+    ./manage.py createsuperuser
+    
+
 ## Documentation
 Sphinx is used to generate documentation. You first need
 to create a virtual environment for generating the docs.
 
-    $ source .venv/bin/activate
+    $ source activate basin3d
     $ pip install sphinx
-    $ python setup.py develop
     
 Generate the documentation
    
@@ -45,46 +91,6 @@ Generate the documentation
 Review the generated documentation
 
     $ open _build/html/index.html
-
-## Develop
-Setup virtualenv for development and testing purposes. All basin-3d tests
-are in `basin3d.tests`. They can be
-
-### Example Django Project
-There is an example project for testing in directory `example-django`. 
-   
-Build the example Django project
-
-    $ cd example-django
-    $ make
-    ...
-    Registered  Parameter 'Ag' for Data Source 'Alpha'
-    Registered  Parameter 'Al' for Data Source 'Alpha'
-    Registered  Parameter 'As' for Data Source 'Alpha'
-    
-Create a superuser
-
-    $ bin/python manage.py createsuperuser
-    
-Test the basin-3d framework. The basin-3d test reside in `basin3d.tests`. Tests
-for new features should be added to this Python package.  They will be
-automatically picked up by the test command.
-
-    $ make test
-    
-Run the example application
-
-    $ make run
-    bin/python manage.py runserver
-    DJango BASEDIR: /Users/val/workspace/basin-3d/example-django
-    DJango BASEDIR: /Users/val/workspace/basin-3d/example-django
-    Performing system checks...
-    
-    System check identified no issues (0 silenced).
-    November 02, 2016 - 23:36:17
-    Django version 1.9, using settings 'mybroker.settings'
-    Starting development server at http://127.0.0.1:8000/
-    Quit the server with CONTROL-C.
 
 # Install
  
