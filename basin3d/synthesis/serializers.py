@@ -60,8 +60,9 @@ class TimestampField(serializers.DateTimeField):
         elif isinstance(value, Number):
             timestamp = value
 
+        # ToDo: add additional time formats
         if timestamp:
-            value = datetime.fromtimestamp(timestamp).strftime('%m/%d/%y %H:%M:%S.%f')
+            value = datetime.fromtimestamp(timestamp).isoformat()
 
         return value
 
@@ -450,6 +451,132 @@ class MeasurementPositionSerializer(serializers.Serializer):
                                                         instance.depth_height_units)
 
         return instance
+
+
+class ObservationSerializerMixin(object):
+    """
+    Serializes a :class:`basin3d.synthesis.models.measurement.Observation`
+    """
+    def __init__(self, *args, **kwargs):
+        super(ObservationSerializerMixin, self).__init__(*args, **kwargs)
+
+        self.fields["id"] = serializers.CharField()
+        self.fields["type"] = serializers.CharField()
+        self.fields["utc_offset"] = serializers.IntegerField()
+        self.fields["phenomenon_time"] = TimestampField()
+        self.fields["observed_property"] = serializers.SerializerMethodField()
+        self.fields["result_quality"] = serializers.CharField()
+        self.fields["geographical_group_id"] = serializers.SerializerMethodField()
+        self.fields["geographical_group_type"] = serializers.SerializerMethodField()
+        self.fields["measurement_position"] = ReadOnlySynthesisModelField(
+            serializer_class=MeasurementPositionSerializer)
+
+    def get_observed_property(self, obj):
+        if "request" in self.context and self.context["request"]:
+            return reverse(viewname='observedproperty-detail',
+                           kwargs={'pk': obj.observed_property},
+                           request=self.context["request"], )
+        else:
+            return obj.observed_property
+
+    def get_geographical_group_type(self, obj):
+        """
+        Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
+        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
+        :return: Display value for the :class:`basin3d.models.GeographicalGroup` type
+        """
+        return GeographicalGroup.TYPES[obj.geographical_group_type]
+
+    def get_geographical_group_id(self, obj):
+        """
+        Resolve the URL to the Geographical group
+
+        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
+        :return: an URL to the Geographical group
+        """
+
+        if obj.geographical_group_type in GeographicalGroup.TYPES.keys():
+            if "request" in self.context and self.context["request"]:
+                return reverse(
+                    viewname='{}-detail'.format(GeographicalGroup.TYPES[obj.geographical_group_type].lower()),
+                    kwargs={'pk': obj.geographical_group_id},
+                    request=self.context["request"], )
+            else:
+                return obj.geographical_group_id
+
+
+class MeasurementTimeseriesTVPObservationSerializer(ObservationSerializerMixin, serializers.Serializer):
+    """
+    Serializes a :class:`basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPObservation`
+
+    """
+    aggregation_duration = serializers.CharField()
+    time_reference_position = serializers.CharField()
+    statistic = serializers.CharField()
+    result_points = serializers.SerializerMethodField()
+    unit_of_measurement = serializers.CharField()
+
+    FIELDS_OPTIONAL = {'aggregation_duration', 'time_reference_position', 'utc_offset', 'statistic'}
+
+    def __init__(self, *args, **kwargs):
+        """
+        Override ``BaseSerializer.__init__`` to modify the fields outputted. Remove id if it doesn't exist
+
+        :param args:
+        :param kwargs:
+        """
+        # Don't pass the 'fields' arg up to the superclass
+        kwargs.pop('fields', None)
+
+        super(MeasurementTimeseriesTVPObservationSerializer, self).__init__(*args, **kwargs)
+
+        field_to_remove = set()
+
+        instance = None
+        if "instance" in kwargs:
+            instance = kwargs["instance"]
+        elif len(args) >= 1:
+            if args[0] and isinstance(args[0], (list, tuple)) and not isinstance(args[0], str):
+                instance = args[0][0]
+            else:
+                instance = args[0]
+
+        if instance:
+            # Remove optional fields.  We don't want them crowding the json
+            if not instance.id:
+                field_to_remove.update(["id", "url"])
+            if not instance.measurement_position:
+                field_to_remove.update(["measurement_position"])
+            for field in self.FIELDS_OPTIONAL:
+                if not instance.__getattribute__(field):
+                    field_to_remove.update([field])
+
+        # remove unneeded fields
+        for field in field_to_remove:
+            if field in self.fields:
+                self.fields.pop(field)
+
+    def get_result_points(self, obj):
+        """
+        Get the result points (i.e., the timeseries data)
+        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
+        :return:
+        """
+        return obj.result_points
+
+    def get_url(self, obj):
+        """
+        Get the  url based on the current context
+        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
+        :return: An URL to the current object instance
+        """
+        if obj.id and "request" in self.context and self.context["request"]:
+            return reverse(viewname='measurementtvptimeseries-detail',
+                           kwargs={'pk': obj.id},
+                           request=self.context["request"], )
+
+    def create(self, validated_data):
+        return MeasurementTimeseriesTVPObservationSerializer(**validated_data)
 
 
 class DataPointGroupSerializer(serializers.Serializer):

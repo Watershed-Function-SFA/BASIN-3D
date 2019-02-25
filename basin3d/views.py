@@ -27,11 +27,14 @@ BASIN3D_DIRECT_VIEWS = [('direct-apis', 'direct-api-list')]\
 BASIN3D_SYNTHESIS_VIEWS = [('synthesis-datasources', 'datasource-list'),
                            ('synthesis-variables', 'measurementvariable-list'),
                            ('synthesis-measurements', 'measurement-list'),
+                           ('synthesis-observedpropertyvariables', 'observedpropertyvariable-list'),
+                           ('synthesis-observedproperty', 'observedproperty-list'),
                            ('synthesis-regions', 'region-list'),
                            ('synthesis-sites', 'site-list'),
                            ('synthesis-plots', 'plot-list'),
                            ('synthesis-pointlocations', 'pointlocation-list'),
                            ('synthesis-datapointgroups', 'datapointgroup-list'),
+                           ('synthesis-measurementtvptimeseries', 'measurementtvptimeseries-list'),
                            ('synthesis-datapoints', 'datapoint-list'),
                            ]
 
@@ -43,7 +46,7 @@ def broker_api_root(request, format=None):
     root_dict = OrderedDict()
     # Iterate over the possible views. If they are enabled add them to the
     # root api.
-    views =[]
+    views = []
     if settings.BASIN3D["SYNTHESIS"]:
         views.extend(BASIN3D_SYNTHESIS_VIEWS)
     if settings.BASIN3D["DIRECT_API"]:

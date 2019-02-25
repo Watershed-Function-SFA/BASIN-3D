@@ -16,10 +16,13 @@ import json
 import logging
 
 from basin3d import get_url
-from basin3d.models import MeasurementVariable, DataSource, DataSourceMeasurementVariable, \
-    Measurement
-from basin3d.serializers import DataSourceSerializer, MeasurementVariableSerializer, \
-    MeasurementSerializer
+from basin3d.models import DataSource, ObservedProperty, ObservedPropertyVariable, \
+    DataSourceObservedPropertyVariable, \
+    Measurement, MeasurementVariable, DataSourceMeasurementVariable
+
+from basin3d.serializers import DataSourceSerializer, \
+    ObservedPropertySerializer, ObservedPropertyVariableSerializer, \
+    MeasurementSerializer, MeasurementVariableSerializer
 import django_filters
 from rest_framework import status
 from rest_framework import viewsets
@@ -100,6 +103,7 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
         * *url* - for detail on a single Model Domain
         * *direct_path* - a direct call to the data source itself
         * *variables* - returns the measurement variables for the current data source
+        * *observed_property_variables* - returns the observed property variables for the current data source
         * *check* - validate the datasource connection
 
     """
@@ -153,6 +157,31 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
                     return Response(data={"message": str(e), "success":False},
                                             status=status.HTTP_200_OK)
 
+    @detail_route()  # Custom Route for an association
+    def observed_property_variables(self, request, pk=None):
+        """
+        Retrieve the DataSource Parameters for a broker parameter.
+
+        Maps to  /datasources/{pk}/observedpropertyvariables/
+
+        :param request:
+        :param pk:
+        :return:
+        """
+        params = DataSourceObservedPropertyVariable.objects.filter(datasource=pk)
+        v = []
+        for dsmv in params:
+            v.append(dsmv.observed_property_variable)
+
+        # `HyperlinkedRelatedField` requires the request in the
+        # serializer context. Add `context={'request': request}`
+        # when instantiating the serializer.
+
+        # Then just serialize and return it!
+        serializer = ObservedPropertyVariableSerializer(v, many=True,
+                                                        context={'request': request})
+        return Response(serializer.data)
+
     @detail_route() # Custom Route for an association
     def variables(self, request, pk=None):
         """
@@ -177,6 +206,59 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = MeasurementVariableSerializer(v, many=True,
                                                    context={'request': request})
         return Response(serializer.data)
+
+
+class ObservedPropertyVariableViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+        Returns a list of available Observed Property Variables. A observed property variable defines what is
+        being measured. See http://vocabulary.odm2.org/variablename/ for controlled vocabulary.
+
+        **Properties**
+
+        * *id* - unique measurement variable identifier
+        * *full_name* - descriptive name
+        * *categories* - categories listed in hierarchical order
+        * *datasources* - retrieves the datasources that define the current variable
+
+    """
+    queryset = ObservedPropertyVariable.objects.all()
+    serializer_class = ObservedPropertyVariableSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+
+    @detail_route()  # Custom Route for an association
+    def datasources(self, request, pk=None):
+        """
+        Retrieve the DataSource Parameters for a broker parameter.
+
+        Maps to  /measure_variables/{pk}/datasources/
+
+        :param request:
+        :param pk: measure_variables primary key
+        :return:
+        """
+        params = DataSourceObservedPropertyVariable.objects.filter(observed_property_variable=pk)
+        ds = []
+        for dsmv in params:
+            ds.append(dsmv.datasource)
+
+        # `HyperlinkedRelatedField` requires the request in the
+        # serializer context. Add `context={'request': request}`
+        # when instantiating the serializer.
+
+        # Then just serialize and return it!
+        serializer = DataSourceSerializer(ds, many=True,
+                                          context={'request': request})
+        return Response(serializer.data)
+
+
+class ObservedPropertyViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+        Returns a list of available Observation Properties
+
+    """
+    queryset = ObservedProperty.objects.all()
+    serializer_class = ObservedPropertySerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
 
 class MeasurementVariableViewSet(viewsets.ReadOnlyModelViewSet):

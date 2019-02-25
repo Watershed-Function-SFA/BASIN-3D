@@ -1,11 +1,14 @@
 QUERY_PARAM_LOCATIONS = "locations"
 QUERY_PARAM_MEASURE_VARIABLES = "measure_variables"
+QUERY_PARAM_OBSERVED_PROPERTY_VARIABLES = "observed_property_variables"
 QUERY_PARAM_TEMPORAL_RESOLUTION = "temporal_resolution"
+QUERY_PARAM_AGGREGATION_DURATION = "aggregation_duration"
 QUERY_PARAM_START_DATE = "start_date"
 QUERY_PARAM_END_DATE = "end_date"
 QUERY_PARAM_SITES = "sites"
 QUERY_PARAM_REGIONS = "regions"
 QUERY_PARAM_QUALITY_CHECKED = "quality_checked"
+QUERY_PARAM_RESULT_QUALITY = "result_quality"
 
 
 def extract_id(identifer):
@@ -18,11 +21,11 @@ def extract_id(identifer):
     if identifer:
         site_list = identifer.split("-")
         identifer = identifer.replace("{}-".format(site_list[0]),
-                          "", 1)  # The datasource id prefix needs to be removed
+                                      "", 1)  # The datasource id prefix needs to be removed
     return identifer
 
 
-def filter_query_param_values(request,param_name, id_prefix, query_params):
+def filter_query_param_values(request, param_name, id_prefix, query_params):
     """
     Filter query param values for those with the specified id_prefix
 
@@ -59,5 +62,5 @@ def extract_query_param_ids(request, param_name, id_prefix, query_params):
 
         if values:
             query_params[param_name] = [extract_id(x) for x in
-                                               values.split(",")
-                                               if x.startswith("{}-".format(id_prefix))]
+                                        values.split(",")
+                                        if x.startswith("{}-".format(id_prefix))]
