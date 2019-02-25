@@ -1,4 +1,3 @@
-import basin3d.synthesis.models.field
 from basin3d.synthesis.models import Person
 
 import json
@@ -7,44 +6,71 @@ from django.test import TestCase
 from rest_framework.renderers import JSONRenderer
 
 from basin3d.synthesis import models
+from basin3d.serializers import ObservedPropertySerializer, ObservedPropertyVariableSerializer, \
+    DataSourceObservedPropertyVariableSerializer
+from basin3d.models import DataSource, GeographicalGroup, ObservedProperty, \
+    ObservedPropertyVariable, DataSourceObservedPropertyVariable, SamplingMedium
+from basin3d.synthesis.serializers import RegionSerializer, SiteSerializer, \
+    MeasurementTimeseriesTVPObservationSerializer
+from rest_framework.test import APIRequestFactory
 
-from basin3d.models import DataSource
-from basin3d.synthesis.serializers import RegionSerializer, SiteSerializer
+
+class Basin3DSerializerTests(TestCase):
+    def setUp(self):
+        self.datasource = DataSource.objects.get(name='Alpha')
+        self.observed_property_var = ObservedPropertyVariable(
+            id="ACT", full_name="Acetate (CH3COO)",
+            categories="Hydrology,Subsurface")
+        self.sampling_medium = SamplingMedium(name="water")
+
+    def test_observed_property_serializer(self):
+        """ Test Observed Property Serialization"""
+
+        obj = ObservedProperty(description="Acetate (CH3COO)",
+                               observed_property_variable=self.observed_property_var,
+                               sampling_medium=self.sampling_medium,
+                               datasource=self.datasource)
+
+        # important if the serializer uses any query_params this won't work
+        #   b/c the django test request does not return a django request
+        s = ObservedPropertySerializer(obj, context={'request': None})
+
+        json_obj = JSONRenderer().render(s.data)
+        self.assertEqual(json.loads(json_obj.decode('utf-8')),
+                         {"url": None,
+                          "sampling_medium": "water",
+                          "datasource": "Alpha",
+                          "observed_property_variable": "ACT",
+                          "description": "Acetate (CH3COO)"})
 
 
-class RegionSerializerTests(TestCase):
+
+class SynthesisSerializerTests(TestCase):
     def setUp(self):
         self.datasource = DataSource.objects.get(name='Alpha')
 
-    def test_serializer(self):
-        """ Test Regions Serialization"""
+    def test_region_serializer(self):
+        """ Test Region Serialization"""
 
-        a_region = basin3d.synthesis.models.field.Region(self.datasource, name="a region",
-                                                         id="SI123",
-                                                         description="US",
-                                                         geom={})
+        obj = models.field.Region(self.datasource, name="a region",
+                                  id="SI123", description="US", geom={})
 
-        s = RegionSerializer(a_region)
+        s = RegionSerializer(obj)
 
         json_obj = JSONRenderer().render(s.data)
         self.assertEqual(json.loads(json_obj.decode('utf-8')),
                          {"id": "A-SI123", "description": "US", "geom": {}, 'name': 'a region',
                           "url": None})
 
-
-class SiteSerializerTests(TestCase):
-    def setUp(self):
-        self.datasource = DataSource.objects.get(name='Alpha')
-
-    def test_serializer(self):
-        """ Test  Serialization"""
+    def test_site_serializer(self):
+        """ Test Site Serialization"""
 
         obj = models.field.Site(self.datasource, id=1, name="Foo",
                                 description="Foo Bar Site",
                                 country="US",
                                 state_province="California",
                                 utc_offset=-6,
-                                center_coordinates=basin3d.synthesis.models.field.GeographicCoordinate(
+                                center_coordinates=models.field.GeographicCoordinate(
                                     x=90.0,
                                     y=90.0,
                                     datum=models.field.GeographicCoordinate.DATUM_WGS84,
@@ -82,3 +108,42 @@ class SiteSerializerTests(TestCase):
                           "urls": ["http://foo.bar"],
                           "url": None}
                          )
+
+    def test_measurement_timeseries_tvp_observation_serializer(self):
+        """ Test MeasurementTimeseriesTVPObservation Serializer """
+
+        obj = models.measurement.MeasurementTimeseriesTVPObservation(
+            self.datasource,
+            id="timeseries01",
+            utc_offset="9",
+            phenomenon_time="2018-11-07T15:28:20",
+            result_quality=models.measurement.ResultQuality.RESULT_QUALITY_CHECKED,
+            geographical_group_id=1,
+            geographical_group_type=GeographicalGroup.POINT_LOCATION,
+            aggregation_duration="daily",
+            time_reference_position="start",
+            observed_property_variable="Acetate",
+            statistic="mean",
+            result_points=[models.measurement.TimeValuePair("2018-11-07T15:28:20", "5.32")],
+            unit_of_measurement="m"
+        )
+
+        s = MeasurementTimeseriesTVPObservationSerializer(obj)
+
+        json_obj = JSONRenderer().render(s.data)
+        self.assertEqual(json.loads(json_obj.decode('utf-8')),
+                         {
+                             "id": "A-timeseries01",
+                             "type": "measurement_tvp_timeseries",
+                             "utc_offset": 9,
+                             "phenomenon_time": "2018-11-07T15:28:20",
+                             "result_quality": "checked",
+                             "geographical_group_id": "A-1",
+                             "geographical_group_type": "pointlocation",
+                             "aggregation_duration": "daily",
+                             "time_reference_position": "start",
+                             "observed_property": 1,
+                             "statistic": "mean",
+                             "result_points": [["2018-11-07T15:28:20", "5.32"]],
+                             "unit_of_measurement": "m"
+                         })

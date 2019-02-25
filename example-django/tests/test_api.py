@@ -64,13 +64,16 @@ class TestAPIRoot(TestCase):
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {
                              "synthesis-datasources": "http://testserver/synthesis/datasources/",
-                             "synthesis-variables": "http://testserver/synthesis/variables/",
-                             "synthesis-measurements": "http://testserver/synthesis/measurements/",
+                             "synthesis-variables": "http://testserver/synthesis/variables/",  # delete
+                             "synthesis-observedpropertyvariables": "http://testserver/synthesis/observedpropertyvariables/",
+                             "synthesis-measurements": "http://testserver/synthesis/measurements/",  # delete
+                             "synthesis-observedproperty": "http://testserver/synthesis/observedproperty/",
                              "synthesis-regions": "http://testserver/synthesis/regions/",
                              "synthesis-sites": "http://testserver/synthesis/sites/",
                              "synthesis-plots": "http://testserver/synthesis/plots/",
                              "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
-                             "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",
+                             "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",  # delete
+                             "synthesis-measurementtvptimeseries": "http://testserver/synthesis/measurement_tvp_timeseries/",
                              "synthesis-datapoints": "http://testserver/synthesis/data_points/",
                              "direct-apis": "http://testserver/direct/"
                          })
@@ -89,13 +92,16 @@ class TestAPIRoot(TestCase):
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {
                              "synthesis-datasources": "http://testserver/synthesis/datasources/",
-                             "synthesis-variables": "http://testserver/synthesis/variables/",
-                             "synthesis-measurements": "http://testserver/synthesis/measurements/",
+                             "synthesis-variables": "http://testserver/synthesis/variables/",  # delete
+                             "synthesis-measurements": "http://testserver/synthesis/measurements/",  # delete
+                             "synthesis-observedpropertyvariables": "http://testserver/synthesis/observedpropertyvariables/",
+                             "synthesis-observedproperty": "http://testserver/synthesis/observedproperty/",
                              "synthesis-regions": "http://testserver/synthesis/regions/",
                              "synthesis-sites": "http://testserver/synthesis/sites/",
                              "synthesis-plots": "http://testserver/synthesis/plots/",
                              "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
-                             "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",
+                             "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",  # delete
+                             "synthesis-measurementtvptimeseries": "http://testserver/synthesis/measurement_tvp_timeseries/",
                              "synthesis-datapoints": "http://testserver/synthesis/data_points/"})
 
 
@@ -473,453 +479,111 @@ class TestPointLocationAPI(TestCase):
                          })
 
 
-class TestDataPointGroupAPI(TestCase):
+class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
     """
-    Test /synthesis/data_point_groups api
+    Test /synthesis/measurement_tvp_timeseries api
     """
 
     def setUp(self):
         self.client = APIClient()
 
     def test_get_detail(self):
-        response = self.client.get('/synthesis/data_point_groups/A-2/', format='json')
+        response = self.client.get('/synthesis/measurement_tvp_timeseries/A-1/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {
-                             "id": "A-2",
-                             "units": None,
-                             "measurement": "http://testserver/synthesis/measurements/1/",
-                             "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                             "geographical_group_type": "site",
-                             "utc_offset": -8,
-                             "data_points": "http://testserver/synthesis/data_point_groups/A-2/datapoints/"
+                             "id": "A-1",
+                             "unit_of_measurement": "nm",
+                             "observed_property": "http://testserver/synthesis/observedproperty/1/",
+                             "geographical_group_id": "http://testserver/synthesis/point_locations/A-1/",
+                             "geographical_group_type": "pointlocation",
+                             "utc_offset": -9,
+                             "result_points": [["2016-02-01", 0.3454],
+                                               ["2016-02-02", 0.6908],
+                                               ["2016-02-03", 1.0362],
+                                               ["2016-02-04", 1.3816],
+                                               ["2016-02-05", 1.7269999999999999],
+                                               ["2016-02-06", 2.0724],
+                                               ["2016-02-07", 2.4177999999999997],
+                                               ["2016-02-08", 2.7632],
+                                               ["2016-02-09", 3.1086]],
+                             "result_quality": "checked",
+                             "statistic": "mean",
+                             "type": "measurement_tvp_timeseries",
+                             "aggregation_duration": "daily",
+                             "measurement_position": {
+                                 "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                                 "type": "measurementposition",
+                                 "vertical_position": {"datum": "LS",
+                                                       "distance_units": "meters",
+                                                       "resolution": None,
+                                                       "type": 'depth',
+                                                       "value": 0.5}},
+                             "phenomenon_time": None
                          })
 
     def test_get(self):
-        response = self.client.get('/synthesis/data_point_groups/', format='json')
+        response = self.client.get('/synthesis/measurement_tvp_timeseries/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')), [
+        expected_output = [
             {
                 "id": "A-1",
-                "units": None,
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                "geographical_group_type": "site",
-                "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-1/datapoints/"
+                "unit_of_measurement": "nm",
+                "observed_property": "http://testserver/synthesis/observedproperty/1/",
+                "geographical_group_id": "http://testserver/synthesis/point_locations/A-1/",
+                "geographical_group_type": "pointlocation",
+                "utc_offset": -9,
+                "result_points": [["2016-02-01", 0.3454],
+                                  ["2016-02-02", 0.6908],
+                                  ["2016-02-03", 1.0362],
+                                  ["2016-02-04", 1.3816],
+                                  ["2016-02-05", 1.7269999999999999],
+                                  ["2016-02-06", 2.0724],
+                                  ["2016-02-07", 2.4177999999999997],
+                                  ["2016-02-08", 2.7632],
+                                  ["2016-02-09", 3.1086]],
+                "result_quality": "checked",
+                "statistic": "mean",
+                "type": "measurement_tvp_timeseries",
+                "aggregation_duration": "daily",
+                "measurement_position": {
+                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
+                    "type": "measurementposition",
+                    "vertical_position": {"datum": "LS",
+                                          "distance_units": "meters",
+                                          "resolution": None,
+                                          "type": 'depth',
+                                          "value": 0.5}},
+                "phenomenon_time": None
             },
             {
                 "id": "A-2",
-                "units": None,
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                "geographical_group_type": "site",
-                "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-2/datapoints/"
-            },
-            {
-                "id": "A-3",
-                "units": None,
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                "geographical_group_type": "site",
-                "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-3/datapoints/"
-            },
-            {
-                "id": "A-4",
-                "units": None,
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                "geographical_group_type": "site",
-                "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-4/datapoints/"
-            },
-            {
-                "id": "A-5",
-                "units": None,
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                "geographical_group_type": "site",
-                "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-5/datapoints/"
-            },
-            {
-                "id": "A-6",
-                "units": None,
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                "geographical_group_type": "site",
-                "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-6/datapoints/"
-            },
-            {
-                "id": "A-7",
-                "units": None,
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                "geographical_group_type": "site",
-                "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-7/datapoints/"
-            },
-            {
-                "id": "A-8",
-                "units": None,
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                "geographical_group_type": "site",
-                "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-8/datapoints/"
-            },
-            {
-                "id": "A-9",
-                "units": None,
-                "measurement": "http://testserver/synthesis/measurements/1/",
-                "geographical_group": "http://testserver/synthesis/sites/A-1/",
-                "geographical_group_type": "site",
-                "utc_offset": -8,
-                "data_points": "http://testserver/synthesis/data_point_groups/A-9/datapoints/"
-            }
-        ])
-
-
-class TestDataPointAPI(TestCase):
-    """
-    Test /synthesis/data_points api
-    """
-
-    def setUp(self):
-        self.client = APIClient()
-
-    def test_get_detail(self):
-        self.maxDiff = None
-        response = self.client.get('/synthesis/data_points/A-2/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {
-                             "url": "http://testserver/synthesis/data_points/A-2/",
-                             "id": "A-2",
-                             "type": "time_series",
-                             "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                             "geographical_group_type": "pointlocation",
-                             "units": "nm",
-                             "measurement_position": {
-                                 "type": "measurementposition",
-                                 "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                                 "vertical_position": {
-                                     "value": 0.7069,
-                                     "resolution": None,
-                                     "distance_units": "meters",
-                                     "datum": "LS",
-                                     "type": "depth"
-                                 }
-                             },
-                             "measurement": {
-                                 "url": "http://testserver/synthesis/measurements/1/",
-                                 "sampling_medium": "water",
-                                 "datasource": "Alpha",
-                                 "variable": "ACT",
-                                 "description": ""
-                             },
-                             "timestamp": "2016-02-01",
-                             "value": 0.6906906,
-                             "temporal_resolution": "month",
-                             "quality_checked": None,
-                             "reference": None,
-                             "utc_offset": -8
-                         }
-                         )
-
-    def test_get(self):
-        response = self.client.get('/synthesis/data_points/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')), [
-            {
-                "url": "http://testserver/synthesis/data_points/A-1/",
-                "id": "A-1",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
+                "observed_property": "http://testserver/synthesis/observedproperty/1/",
+                "geographical_group_id": "http://testserver/synthesis/point_locations/A-1/",
                 "geographical_group_type": "pointlocation",
-                "units": "nm",
+                "utc_offset": -10,
+                "unit_of_measurement": "nm",
+                "result_points": [["2016-02-01", 0.3454],
+                                  ["2016-02-02", 0.6908],
+                                  ["2016-02-03", 1.0362],
+                                  ["2016-02-04", 1.3816],
+                                  ["2016-02-05", 1.7269999999999999],
+                                  ["2016-02-06", 2.0724],
+                                  ["2016-02-07", 2.4177999999999997],
+                                  ["2016-02-08", 2.7632],
+                                  ["2016-02-09", 3.1086]],
+                "result_quality": "checked",
+                "statistic": "mean",
+                "type": "measurement_tvp_timeseries",
+                "aggregation_duration": "daily",
                 "measurement_position": {
-                    "type": "measurementposition",
                     "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 0.35345,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "water",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": ""
-                },
-                "timestamp": "2016-01-01",
-                "value": 0.3453453,
-                "temporal_resolution": "month",
-                "quality_checked": None,
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-2/",
-                "id": "A-2",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
                     "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 0.7069,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "water",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": ""
-                },
-                "timestamp": "2016-02-01",
-                "value": 0.6906906,
-                "temporal_resolution": "month",
-                "quality_checked": None,
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-3/",
-                "id": "A-3",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 1.06035,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "water",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": ""
-                },
-                "timestamp": "2016-03-01",
-                "value": 1.0360359000000001,
-                "temporal_resolution": "month",
-                "quality_checked": None,
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-4/",
-                "id": "A-4",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 1.4138,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "water",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": ""
-                },
-                "timestamp": "2016-04-01",
-                "value": 1.3813812,
-                "temporal_resolution": "month",
-                "quality_checked": None,
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-5/",
-                "id": "A-5",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 1.76725,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "water",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": ""
-                },
-                "timestamp": "2016-05-01",
-                "value": 1.7267265,
-                "temporal_resolution": "month",
-                "quality_checked": None,
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-6/",
-                "id": "A-6",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 2.1207,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "water",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": ""
-                },
-                "timestamp": "2016-06-01",
-                "value": 2.0720718000000002,
-                "temporal_resolution": "month",
-                "quality_checked": None,
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-7/",
-                "id": "A-7",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 2.47415,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "water",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": ""
-                },
-                "timestamp": "2016-07-01",
-                "value": 2.4174171,
-                "temporal_resolution": "month",
-                "quality_checked": None,
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-8/",
-                "id": "A-8",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 2.8276,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "water",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": ""
-                },
-                "timestamp": "2016-08-01",
-                "value": 2.7627624,
-                "temporal_resolution": "month",
-                "quality_checked": None,
-                "reference": None,
-                "utc_offset": -8
-            },
-            {
-                "url": "http://testserver/synthesis/data_points/A-9/",
-                "id": "A-9",
-                "type": "time_series",
-                "geographical_group": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
-                "units": "nm",
-                "measurement_position": {
-                    "type": "measurementposition",
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "vertical_position": {
-                        "value": 3.18105,
-                        "resolution": None,
-                        "distance_units": "meters",
-                        "datum": "LS",
-                        "type": "depth"
-                    }
-                },
-                "measurement": {
-                    "url": "http://testserver/synthesis/measurements/1/",
-                    "sampling_medium": "water",
-                    "datasource": "Alpha",
-                    "variable": "ACT",
-                    "description": ""
-                },
-                "timestamp": "2016-09-01",
-                "value": 3.1081077,
-                "temporal_resolution": "month",
-                "quality_checked": None,
-                "reference": None,
-                "utc_offset": -8
-            }
-        ])
+                    "vertical_position": {"datum": "LS",
+                                          "distance_units": "meters",
+                                          "resolution": None,
+                                          "type": 'depth',
+                                          "value": 0.5}},
+                "phenomenon_time": None
+            }]
+        self.assertEqual(json.loads(response.content.decode('utf-8')), expected_output)

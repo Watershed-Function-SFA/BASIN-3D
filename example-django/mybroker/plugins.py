@@ -1,11 +1,11 @@
 import logging
 
-from basin3d.models import SamplingMedium, GeographicalGroup, Measurement
+from basin3d.models import SamplingMedium, GeographicalGroup, Measurement, ObservedProperty
 from basin3d.plugins import DataSourcePluginPoint, DataSourcePluginViewMeta
 from basin3d.synthesis.models import measurement, Person
 from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation, \
     GeographicCoordinate, MeasurementPosition, DepthCoordinate
-from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint
+from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint, MeasurementTimeseriesTVPObservation
 from django.utils.six import with_metaclass
 
 logger = logging.getLogger(__name__)
@@ -146,6 +146,60 @@ class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
         return None
 
 
+class AlphaDataMeasurementTimeseriesTVPObservationView(with_metaclass(DataSourcePluginViewMeta)):
+    synthesis_model_class = MeasurementTimeseriesTVPObservation
+
+    def list(self, request, **kwargs):
+        """ Generate the MeasurementTimeseriesTVPObservation
+
+          Attributes:
+            - *id:* string, Cs137 MR survey ID
+            - *observed_property:* string, Cs137MID
+            - *utc_offset:* float (offset in hours), +9
+            - *geographical_group_id:* string, River system ID (Region ID).
+            - *geographical_group_type* enum (sampling_feature, site, plot, region)
+            - *results_points:* Array of DataPoint objects
+
+        """
+        data = []
+        from datetime import date
+        for num in range(1, 10):
+            data.append((date(2016, 2, num), num * 0.3454))
+
+        for num in range(1, 3):
+            yield measurement.MeasurementTimeseriesTVPObservation(
+                self.datasource,
+                id=num,
+                observed_property=1,
+                utc_offset=-8-num,
+                geographical_group_id=1,
+                geographical_group_type=GeographicalGroup.POINT_LOCATION,
+                measurement_position=MeasurementPosition(
+                    self.datasource,
+                    point_location_id=1,
+                    vertical_position=DepthCoordinate(
+                        value=0.5,
+                        distance_units=DepthCoordinate.DISTANCE_UNITS_METERS,
+                        datum=DepthCoordinate.DATUM_LOCAL_SURFACE)),
+                unit_of_measurement="nm",
+                aggregation_duration="daily",
+                result_quality="checked",
+                time_reference_position=None,
+                statistic="mean",
+                result_points=data
+            )
+
+    def get(self, request, pk=None):
+        """
+            Get a MeasurementTimeseriesTVPObservation
+            :param pk: primary key
+        """
+        for s in self.list(request):
+            if s.id.endswith(pk):
+                return s
+        return None
+
+
 class AlphaDataPointGroupView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = DataPointGroup
 
@@ -234,7 +288,7 @@ class AlphaSourcePlugin(DataSourcePluginPoint):
     name = 'alpha-source-plugin'
     title = 'Alpha Source Plugin'
     plugin_view_classes = (AlphaRegionView,
-                           AlphaDataPointGroupView,
+                           AlphaDataPointGroupView, AlphaDataMeasurementTimeseriesTVPObservationView,
                            AlphaDataPointView, AlphaSiteView, AlphaPlotView,
                            AlphaPointLocationView)
 

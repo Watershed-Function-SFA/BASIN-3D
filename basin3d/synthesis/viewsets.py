@@ -26,12 +26,16 @@ from basin3d.models import DataSource
 from basin3d.plugins import InvalidOrMissingCredentials
 
 from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation
-from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint, TimeSeriesDataPoint
-from basin3d.synthesis.query import extract_id, extract_query_param_ids, QUERY_PARAM_MEASURE_VARIABLES, \
-    QUERY_PARAM_TEMPORAL_RESOLUTION, QUERY_PARAM_LOCATIONS, QUERY_PARAM_REGIONS, QUERY_PARAM_SITES, \
-    QUERY_PARAM_QUALITY_CHECKED
-from basin3d.synthesis.serializers import RegionSerializer, \
-    DataPointGroupSerializer, DataPointSerializer, SiteSerializer, \
+from basin3d.synthesis.models.measurement import MeasurementTimeseriesTVPObservation, TimeMetadataMixin, \
+    DataPointGroup, DataPoint, TimeSeriesDataPoint
+from basin3d.synthesis.query import extract_id, extract_query_param_ids, \
+    QUERY_PARAM_OBSERVED_PROPERTY_VARIABLES, QUERY_PARAM_AGGREGATION_DURATION, QUERY_PARAM_QUALITY_CHECKED, \
+    QUERY_PARAM_MEASURE_VARIABLES, QUERY_PARAM_TEMPORAL_RESOLUTION, \
+    QUERY_PARAM_LOCATIONS, QUERY_PARAM_REGIONS, QUERY_PARAM_SITES, \
+    QUERY_PARAM_RESULT_QUALITY
+
+from basin3d.synthesis.serializers import RegionSerializer, SiteSerializer, \
+    MeasurementTimeseriesTVPObservationSerializer, DataPointGroupSerializer, DataPointSerializer, \
     PlotSerializer, PointLocationSerializer
 from rest_framework import status
 from rest_framework import versioning
@@ -323,6 +327,80 @@ class PointLocationViewSet(DataSourcePluginViewSet):
         return query_params
 
 
+class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
+    """
+    Retrieve MeasurementTimeseriesTVPObservation Groups
+
+    ** Properties **
+
+    * *observation_property:* string, (optional)
+    * *start_time:* datetime,  survey start time
+    * *end_time:* datetime, units: survey end time
+    * *utc_offset:* float (offset in hours), +9
+    * *geographical_group_id:* identifier for the geographical group
+    * *geographical_group_type* enum (sampling_feature, site, plot,
+            region, point_location, measurement position)
+    * *result_points* -- for the list of data_points associated with this Data Point Group
+
+    ** Filter results** by the following attributes:
+
+    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
+    * *locations (required)* comma separated list of locations ids
+    * *observed_property_variables (required)* comma separated list of observed property variable ids
+    * *start_date (required)*
+    * *end_date*
+    * *aggregation_duration (default:day):*  options (year|month|day|hour|minute|second)
+    * *result_quality* if 'True' then filter by quality checked data. Otherwise, there is no filtering.
+
+    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
+
+
+    """
+    serializer_class = MeasurementTimeseriesTVPObservationSerializer
+    synthesis_model = MeasurementTimeseriesTVPObservation
+
+    def synthesize_query_params(self, request, plugin_view):
+        """
+        Synthesizes query parameters, if necessary
+
+        Parameters Synthesized:
+          + locations
+          + observed_property_variables
+          + temporal_resolution (default: day)
+          + quality_checked
+
+        :param request: the request to synthesize
+        :param plugin_view: The plugin view to synthesize query params for
+        :return:
+        """
+
+        id_prefix = plugin_view.datasource.id_prefix
+        query_params = {}
+        for key, value in request.query_params.items():
+            query_params[key] = value
+
+        extract_query_param_ids(request=request,
+                                param_name=QUERY_PARAM_LOCATIONS,
+                                id_prefix=id_prefix,
+                                query_params=query_params)
+
+        # Synthesize ObservedPropertyVariable (from BASIN-3D to DataSource variable name)
+        if QUERY_PARAM_OBSERVED_PROPERTY_VARIABLES in request.query_params:
+            observed_property_variables = request.query_params.get(QUERY_PARAM_OBSERVED_PROPERTY_VARIABLES, '').split(",")
+            query_params[QUERY_PARAM_OBSERVED_PROPERTY_VARIABLES] = plugin_view.get_observed_property_variables(
+                observed_property_variables, from_basin3d=True)
+        # Set the default Aggregation Duration
+        if QUERY_PARAM_AGGREGATION_DURATION not in request.query_params:
+            query_params[
+                QUERY_PARAM_AGGREGATION_DURATION] = TimeMetadataMixin.AGGREGATION_DURATION_DAY
+
+        if QUERY_PARAM_RESULT_QUALITY in request.query_params:
+            query_params[
+                QUERY_PARAM_RESULT_QUALITY] = request.query_params[QUERY_PARAM_RESULT_QUALITY] in ["true", "True"]
+
+        return query_params
+
+
 class DataPointGroupViewSet(DataSourcePluginViewSet):
     """
     Retrieve  Data Point Groups
@@ -437,6 +515,84 @@ class DataPointGroupViewSet(DataSourcePluginViewSet):
                                              "The datasource id '{}' is invalid.".format(pk,
                                                                                          id_prefix)},
                 status=status.HTTP_404_NOT_FOUND, )
+
+
+class ViewSet(DataSourcePluginViewSet):
+    """
+    Search for Data Points
+
+    **Filter results** by datasource (e.g ?datasource=<datasource.id_prefix>)
+
+    **Fields**
+
+    * *measurement:*
+    * *geographical_group_id:*
+    * *geographical_group_type* enum (sampling_feature, site, plot, region)
+    * *units:* Unit
+    * *measurement_position:* The position at which the measurement was taken
+    * *timestamp:* the time that the measurement was taken
+    * *value:* the measurement value
+    * *temporal_resolution*
+    * *utc_offset*
+    * *reference*
+
+     ** Filter results** by the following attributes:
+
+    * *locations (required)* comma separated list of locations ids
+    * *measure_variables (required)* comma separated list of variable ids
+    * *start_date (required)*
+    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
+    * *end_date*
+    * *temporal_resolution (default:day):*  options (year|month|day|hour|minute|second)
+    * *quality_checked* if 'True' then filter by quality checked data. Otherwise, there is no filtering.
+
+    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
+
+
+    """
+
+    serializer_class = DataPointSerializer
+    synthesis_model = DataPoint
+
+    def synthesize_query_params(self, request, plugin_view):
+        """
+        Synthesizes query parameters, if necessary
+
+        Parameters Synthesized:
+          + locations
+          + measure_variables
+          + temporal_resolution (default: day)
+
+        :param request: the request to synthesize
+        :param plugin_view: The plugin view to synthesize query params for
+        :return:
+        """
+
+        id_prefix = plugin_view.datasource.id_prefix
+        query_params = {}
+        for key, value in request.query_params.items():
+            query_params[key] = value
+
+        extract_query_param_ids(request=request,
+                                param_name=QUERY_PARAM_LOCATIONS,
+                                id_prefix=id_prefix,
+                                query_params=query_params)
+
+        # Synthesize MeasurementVariable (from BASIN-3D to DataSource variable name)
+        if QUERY_PARAM_MEASURE_VARIABLES in request.query_params:
+            measure_variables = request.query_params.get(QUERY_PARAM_MEASURE_VARIABLES, '').split(",")
+            query_params[QUERY_PARAM_MEASURE_VARIABLES] = plugin_view.get_variables(
+                measure_variables, from_basin3d=True)
+        # Set the default Temporal Resolution
+        if QUERY_PARAM_TEMPORAL_RESOLUTION not in request.query_params:
+            query_params[
+                QUERY_PARAM_TEMPORAL_RESOLUTION] = TimeSeriesDataPoint.TEMPORAL_RESOLUTION_DAY
+
+        if QUERY_PARAM_QUALITY_CHECKED in request.query_params:
+            query_params[
+                QUERY_PARAM_QUALITY_CHECKED] = request.query_params[QUERY_PARAM_QUALITY_CHECKED] in ["true", "True"]
+
+        return query_params
 
 
 class DataPointViewSet(DataSourcePluginViewSet):

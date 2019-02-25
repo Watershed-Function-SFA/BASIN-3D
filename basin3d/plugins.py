@@ -51,6 +51,106 @@ __all__ = ['get_url']
 logger = logging.getLogger(__name__)
 
 
+def get_datasource_observed_properties(datasource, variable_names):
+    """
+    Get the measurement to the specified variable_name
+
+    :param datasource: The DataSource object to act on
+    :type datasource: :class: `~basin3d.models.DataSource`
+    :param variable_names: the variable names to get the :class:`~basin3d.models.Measurment` for
+    :type variable_names: list
+    :return: :class:`~basin3d.models.Measurment`
+    """
+    from basin3d.models import ObservedProperty
+    try:
+        return ObservedProperty.filter.get(datasource__name=datasource.name,
+                                           observed_property_variable_id__in=variable_names)
+    except ObservedProperty.DoesNotExist:
+        return None
+
+
+def get_datasource_observed_property(datasource, variable_name):
+    """
+    Get the measurement to the specified variable_name
+
+    :param datasource: The DataSource object to act on
+    :type datasource: :class: `~basin3d.models.DataSource`
+    :param variable_name: the variable name to get the :class:`~basin3d.models.Measurment` for
+    :return: :class:`~basin3d.models.Measurment`
+    """
+    from basin3d.models import ObservedProperty
+    try:
+        return ObservedProperty.objects.get(datasource__name=datasource.name,
+                                            observed_property_variable_id=variable_name)
+    except ObservedProperty.DoesNotExist:
+        return None
+
+
+def get_datasource_observed_property_variable(datasource, variable_name, from_basin3d=False):
+    """
+    Convert the given name to either BASIN-3D from :class:`~basin3d.models.DataSource`
+    variable name or the other way around.
+
+    :param datasource: The DataSource object to act on
+    :type datasource: :class: `~basin3d.models.DataSource`
+    :param variable_name:  The :class:`~basin3d.models.MeasurmentVariable`
+         name to convert
+    :param: from_basin3d: boolean that says whether the variable name is a
+        BASIN-3D variable. If not, then this a datasource variable name.
+    :type from_basin3d: boolean
+    :return: A variable name
+    :rtype: str
+    """
+
+    from basin3d.models import DataSourceObservedPropertyVariable
+    try:
+        if from_basin3d:
+            # Convert from BASIN-3D to DataSource variable name
+            return DataSourceObservedPropertyVariable.objects.get(
+                datasource__name=datasource.name,
+                observed_property_variable_id=variable_name)
+        else:
+            # Convert from DataSource variable name to BASIN-3D
+            return DataSourceObservedPropertyVariable.objects.get(
+                datasource__name=datasource.name,
+                name=variable_name)
+    except DataSourceObservedPropertyVariable.DoesNotExist:
+        return None
+
+
+def get_datasource_observed_property_variables(datasource, variable_names=None, from_basin3d=False):
+    """
+    Convert the given list of names to either BASIN-3D from :class:`~basin3d.models.DataSource`
+    variable name or the other way around.
+
+    :param datasource: The DataSource object to act on
+    :type datasource: :class: `~basin3d.models.DataSource`
+    :param variable_names:  The :class:`~basin3d.models.MeasurmentVariable`
+         names to convert
+    :type variable_names: iterable
+    :param: from_basin3d: boolean that says whether the variable name is a
+        BASIN-3D variable. If not, then this a datasource variable names.
+    :type from_basin3d: boolean
+    :return: list of variables
+    :rtype: iterable
+    """
+    from basin3d.models import DataSourceObservedPropertyVariable
+    if from_basin3d and variable_names:
+        # Convert from BASIN-3D to DataSource variable name
+        return DataSourceObservedPropertyVariable.objects.filter(
+            datasource__name=datasource.name,
+            observed_property_variable_id__in=set(variable_names))
+    elif variable_names:
+        # Convert from DataSource variable name to BASIN-3D
+        return DataSourceObservedPropertyVariable.objects.filter(
+            datasource__name=datasource.name,
+            name__in=set(variable_names))
+    else:
+        # Return all available variables
+        return DataSourceObservedPropertyVariable.objects.filter(
+            datasource__name=datasource.name)
+
+
 def get_datasource_measurements(datasource, variable_names):
     """
     Get the measurement to the specified variable_name
@@ -165,6 +265,57 @@ class DataSourcePluginViewMeta(type):
         if "__init__" in dct:
             old_init = dct["__init__"]
 
+        def get_observed_properties(self, variable_names):
+            """
+            Get the measurement to the specified variable_name
+
+            :param variable_names: the variable names to get the :class:`~basin3d.models.ObservedProperty` for
+            :type variable_names: list
+            :return: :class:`~basin3d.models.ObservedProperty`
+            """
+            return get_datasource_observed_properties(self.datasource, variable_names)
+
+        def get_observed_property(self, variable_name):
+            """
+            Get the measurement to the specified variable_name
+
+            :param variable_name: the variable name to get the :class:`~basin3d.models.ObservedProperty` for
+            :return: :class:`~basin3d.models.ObservedProperty`
+            """
+            return get_datasource_observed_property(self.datasource, variable_name)
+
+        def get_observed_property_variable(self, variable_name, from_basin3d=False):
+            """
+            Convert the given name to either BASIN-3D from :class:`~basin3d.models.DataSource`
+            variable name or the other way around.
+
+            :param variable_name:  The :class:`~basin3d.models.ObservedPropertyVariable`
+                 name to convert
+            :param: from_basin3d: boolean that says whether the variable name is a
+                BASIN-3D variable. If not, then this a datasource variable name.
+            :type from_basin3d: boolean
+            :return: A variable name
+            :rtype: str
+            """
+
+            return get_datasource_observed_property_variable(self.datasource, variable_name, from_basin3d)
+
+        def get_observed_property_variables(self, variable_names=None, from_basin3d=False):
+            """
+            Convert the given list of names to either BASIN-3D from :class:`~basin3d.models.DataSource`
+            variable name or the other way around.
+
+            :param variable_names:  The :class:`~basin3d.models.ObservedPropertyVariable`
+                 names to convert
+            :type variable_names: iterable
+            :param: from_basin3d: boolean that says whether the variable name is a
+                BASIN-3D variable. If not, then this a datasource variable names.
+            :type from_basin3d: boolean
+            :return: list of variable names
+            :rtype: iterable
+            """
+            return get_datasource_observed_property_variables(self.datasource, variable_names, from_basin3d)
+
         def get_measurements(self, variable_names):
             """
             Get the measurement to the specified variable_name
@@ -231,6 +382,10 @@ class DataSourcePluginViewMeta(type):
 
         # Add methods
         dct["__init__"] = new_init # replace the original init
+        dct["get_observed_property_variables"] = get_observed_property_variables  # add get variables
+        dct["get_observed_property_variable"] = get_observed_property_variable
+        dct["get_observed_property"] = get_observed_property
+        dct["get_observed_properties"] = get_observed_properties
         dct["get_variables"] = get_variables  # add get variables
         dct["get_variable"] = get_variable
         dct["get_measurement"] = get_measurement

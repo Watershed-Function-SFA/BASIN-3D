@@ -14,12 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from basin3d.models import DataSource
-from basin3d.synthesis.viewsets import RegionViewSet, \
-    DataPointGroupViewSet, DataPointViewSet, SiteViewSet, PlotViewSet, \
-    PointLocationViewSet
+from basin3d.synthesis.viewsets import  MeasurementTimeseriesTVPObservationViewSet, \
+    DataPointGroupViewSet, DataPointViewSet, \
+    RegionViewSet, SiteViewSet, PlotViewSet, PointLocationViewSet
 from basin3d.views import broker_api_root
-from basin3d.viewsets import DataSourceViewSet, DirectAPIViewSet, MeasurementVariableViewSet, \
-    MeasurementViewSet
+from basin3d.viewsets import DataSourceViewSet, DirectAPIViewSet, \
+    ObservedPropertyViewSet, ObservedPropertyVariableViewSet, \
+    MeasurementVariableViewSet, MeasurementViewSet
 from django.conf import settings
 from django.conf.urls import url, include
 from rest_framework import routers
@@ -36,6 +37,8 @@ def get_synthesis_router():
     if settings.BASIN3D["SYNTHESIS"]:
 
         router.register(r'datasources', DataSourceViewSet, base_name='datasource')
+        router.register(r'observedpropertyvariables', ObservedPropertyVariableViewSet, base_name='observedpropertyvariable')
+        router.register(r'observedproperty', ObservedPropertyViewSet, base_name='observedproperty')
         router.register(r'variables', MeasurementVariableViewSet, base_name='measurementvariable')
         router.register(r'measurements', MeasurementViewSet, base_name='measurement')
         try:
@@ -66,6 +69,9 @@ def get_synthesis_router():
                     if 'DataPointGroup' in viewset_models:
                         router.register(r'data_point_groups', DataPointGroupViewSet,
                                         base_name='datapointgroup')
+                    if 'MeasurementTimeseriesTVPObservation' in viewset_models:
+                        router.register(r'measurement_tvp_timeseries', MeasurementTimeseriesTVPObservationViewSet,
+                                        base_name='measurementtvptimeseries')
                     if 'DataPoint' in viewset_models:
                         router.register(r'data_points', DataPointViewSet, base_name='datapoint')
         except Exception:
