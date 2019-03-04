@@ -1,13 +1,10 @@
 QUERY_PARAM_LOCATIONS = "locations"
-QUERY_PARAM_MEASURE_VARIABLES = "measure_variables"
 QUERY_PARAM_OBSERVED_PROPERTY_VARIABLES = "observed_property_variables"
-QUERY_PARAM_TEMPORAL_RESOLUTION = "temporal_resolution"
 QUERY_PARAM_AGGREGATION_DURATION = "aggregation_duration"
 QUERY_PARAM_START_DATE = "start_date"
 QUERY_PARAM_END_DATE = "end_date"
 QUERY_PARAM_SITES = "sites"
 QUERY_PARAM_REGIONS = "regions"
-QUERY_PARAM_QUALITY_CHECKED = "quality_checked"
 QUERY_PARAM_RESULT_QUALITY = "result_quality"
 
 

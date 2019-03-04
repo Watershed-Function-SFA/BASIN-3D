@@ -25,17 +25,13 @@ from rest_framework.reverse import reverse, NoReverseMatch
 BASIN3D_DIRECT_VIEWS = [('direct-apis', 'direct-api-list')]\
 
 BASIN3D_SYNTHESIS_VIEWS = [('synthesis-datasources', 'datasource-list'),
-                           ('synthesis-variables', 'measurementvariable-list'),
-                           ('synthesis-measurements', 'measurement-list'),
                            ('synthesis-observedpropertyvariables', 'observedpropertyvariable-list'),
                            ('synthesis-observedproperty', 'observedproperty-list'),
                            ('synthesis-regions', 'region-list'),
                            ('synthesis-sites', 'site-list'),
                            ('synthesis-plots', 'plot-list'),
                            ('synthesis-pointlocations', 'pointlocation-list'),
-                           ('synthesis-datapointgroups', 'datapointgroup-list'),
                            ('synthesis-measurementtvptimeseries', 'measurementtvptimeseries-list'),
-                           ('synthesis-datapoints', 'datapoint-list'),
                            ]
 
 

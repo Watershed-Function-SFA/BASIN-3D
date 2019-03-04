@@ -22,9 +22,8 @@ About Django Serializers:
 
 
 """
-from basin3d.models import ObservedProperty, ObservedPropertyVariable, \
-    DataSourceObservedPropertyVariable, \
-    MeasurementVariable, DataSourceMeasurementVariable, DataSource, Measurement
+from basin3d.models import DataSource, ObservedProperty, ObservedPropertyVariable, \
+    DataSourceObservedPropertyVariable
 from rest_framework import reverse
 from rest_framework import serializers
 
@@ -50,7 +49,7 @@ class ChooseFieldsSerializerMixin(object):
         """
         if request:
             fields = request.query_params.get('fields')
-            if fields and len(fields) >0:
+            if fields and len(fields) > 0:
                 field_set = set(fields.split(","))
 
                 # Remove the fields not in the intersection
@@ -86,7 +85,6 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
     """
 
     direct_path = serializers.SerializerMethodField()
-    variables = serializers.SerializerMethodField()
     observed_property_variables = serializers.SerializerMethodField()
     check = serializers.SerializerMethodField()
 
@@ -102,27 +100,12 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
         url_kwargs = {
             "pk": obj.id,
         }
-        return reverse.reverse("{}-observedpropertyvariables".format(obj.__class__.__name__.lower()), kwargs=url_kwargs,
-                               request=self.context["request"], format=format)
-
-    def get_variables(self, obj):
-        """
-        Return the url for the variables associated with the current datasource
-        :param obj:
-        :return:
-        """
-        format = None
-        if "format" in self.context["request"].query_params:
-            format = self.context["request"].query_params["format"]
-        url_kwargs = {
-            'pk': obj.id,
-        }
-        return reverse.reverse('{}-variables'.format(obj.__class__.__name__.lower()), kwargs=url_kwargs,
+        return reverse.reverse("{}-observed-property-variables".format(obj.__class__.__name__.lower()), kwargs=url_kwargs,
                                request=self.context["request"], format=format)
 
     def get_check(self, obj):
         """
-        Check the datat source
+        Check the data source
         :param obj:
         :return:
         """
@@ -152,8 +135,8 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
         model = DataSource
         depth = 1
         fields = ('url', 'direct_path', 'name', 'location', 'id_prefix',
-                  'variables', 'observed_property_variables', 'check')
-        read_only_fields = ('name', 'location', 'id_prefix', 'variables',
+                  'observed_property_variables', 'check')
+        read_only_fields = ('name', 'location', 'id_prefix',
                             'observed_property_variables', 'check')
         lookup_field = 'name'
 
@@ -222,73 +205,5 @@ class ObservedPropertySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = ObservedProperty
-        depth = 2
-        fields = '__all__'
-
-
-class DataSourceMeasurementVariableSerializer(serializers.HyperlinkedModelSerializer):
-    """
-    Model that Serializes Mapped Data Source Parameters
-
-    """
-    class Meta:
-        model = DataSourceMeasurementVariable
-        fields = ('id', 'name', 'datasource', 'measure_variable')
-
-
-class MeasurementVariableSerializer(serializers.HyperlinkedModelSerializer):
-    """
-
-    Measurement Variable serializer
-
-    """
-
-    categories = DelimitedListField()
-    datasources = serializers.SerializerMethodField()
-
-    def get_datasources(self, obj):
-        """
-        Return the url for the data sources associated with the current variable
-        :param obj:
-        :return:
-        """
-        format = None
-        if "format" in self.context["request"].query_params:
-            format = self.context["request"].query_params["format"]
-        url_kwargs = {
-            'pk': obj.id,
-        }
-        return reverse.reverse('{}-datasources'.format(obj.__class__.__name__.lower()), kwargs=url_kwargs,
-                               request=self.context["request"], format=format)
-
-
-    class Meta:
-        model = MeasurementVariable
-        depth = 2
-        fields = ('url', 'id', 'full_name', 'categories','datasources')
-
-
-class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
-    """
-
-    Measurement Serializer
-
-    """
-
-    sampling_medium = serializers.SerializerMethodField()
-    datasource = serializers.SerializerMethodField()
-    variable = serializers.SerializerMethodField()
-
-    def get_sampling_medium(self, obj):
-        return obj.sampling_medium.name
-
-    def get_datasource(self, obj):
-        return obj.datasource.name
-
-    def get_variable(self, obj):
-        return obj.variable.id
-
-    class Meta:
-        model = Measurement
         depth = 2
         fields = '__all__'

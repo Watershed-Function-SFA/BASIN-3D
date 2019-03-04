@@ -78,7 +78,7 @@ class StringListField(models.TextField):
 
 class DataSource(models.Model):
     """
-    Data Source  definition
+    Data Source definition
     """
     name = models.CharField(max_length=20, unique=True, blank=False)
     id_prefix = models.CharField(max_length=5, unique=True, blank=False)
@@ -108,8 +108,39 @@ class DataSource(models.Model):
         """
 
         module = import_module(self.plugin_module)
-        plugin_class = getattr(module,self.plugin_class)
+        plugin_class = getattr(module, self.plugin_class)
         return plugin_class()
+
+
+class ObservedProperty(models.Model):
+    """
+    Defining the attributes for a single/multiple Observed Properties
+
+    Attributes:
+        - *id:* string, (Cs137 MID)
+        - *description:* id, Cs 137 air dose rate car survey campaigns
+        - *observed_property_variable_id:* string, Cs137MVID
+        - *sampling_medium:* enum (water, gas, solid phase, other, not applicable)
+        - *owner:* Person (optional), NotImplemented
+        - *contact:* Person (optional), NotImplemented
+    """
+
+    description = models.TextField(null=True, blank=True)
+    observed_property_variable = models.ForeignKey('ObservedPropertyVariable', null=False, on_delete=models.CASCADE)
+    sampling_medium = models.ForeignKey('SamplingMedium', null=False, on_delete=models.CASCADE)
+    datasource = models.ForeignKey('DataSource', null=False, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('observed_property_variable', 'datasource')
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def __unicode__(self):
+        return self.description
+
+    def __repr__(self):
+        return '<ObservedProperty %r>' % (self.description)
 
 
 class ObservedPropertyVariable(models.Model):
@@ -149,43 +180,6 @@ class ObservedPropertyVariable(models.Model):
         return "<ObservedPropertyVariable {}>".format(self.id)
 
 
-class MeasurementVariable(models.Model):
-    """
-    Defining what is being measured. See http://vocabulary.odm2.org/variablename/ for controlled vocabulary
-
-        Attributes:
-            - *id:* string,
-            - *full_name:* string,
-            - *symbol:* string,
-            - *categories:* Array of strings (in order of priority).
-
-    See http://vocabulary.odm2.org/variabletype/ for options, although I think we should have our own list (theirs is a bit funky).
-
-
-    """
-
-    # Unique string Identifier for the Measurement Variable
-    id = models.CharField(max_length=50, unique=True, blank=False, primary_key=True)
-
-    # Long name of the Measurement Variable
-    full_name = models.CharField(max_length=255)
-
-    # Ordered list of categories
-    categories = StringListField(blank=True, null=True)
-
-    class Meta:
-        ordering = ('id',)
-
-    def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return self.full_name
-
-    def __repr__(self):
-        return "<MeasurementVariable {}>".format(self.id)
-
-
 class DataSourceObservedPropertyVariable(models.Model):
     """
     Synthesis of Data Source Parameters with Broker parameters
@@ -209,32 +203,9 @@ class DataSourceObservedPropertyVariable(models.Model):
         return '<DataSourceObservedPropertyVariable %r>' % (self.name)
 
 
-class DataSourceMeasurementVariable(models.Model):
-    """
-    Synthesis of Data Source Parameters with Broker parameters
-    """
-    # datasource = models.ForeignKey(DataSource, related_name='basin3d_datasource', on_delete=models.CASCADE)
-    datasource = models.TextField()
-    measure_variable = models.ForeignKey(MeasurementVariable,
-                                         related_name='basin3d_measurementvariable', on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, blank=False)
-
-    class Meta:
-        unique_together = (("datasource", "measure_variable"),)
-
-    def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return self.name
-
-    def __repr__(self):
-        return '<DataSourceMeasurementVariable %r>' % (self.name)
-
-
 class SamplingMedium(models.Model):
     """
-    Types of sampling mediums for Measurements
+    Types of sampling mediums for Observed Properties
     """
 
     SOLID_PHASE = "solid phase"
@@ -255,85 +226,3 @@ class SamplingMedium(models.Model):
 
     def __repr__(self):
         return '<SamplingMedium %r>' % (self.name)
-
-
-class ObservedProperty(models.Model):
-    """
-    Defining the attributes for a single/multiple measurements
-
-    Attributes:
-        - *id:* string, (Cs137 MID)
-        - *description:* id, Cs 137 air dose rate car survey campaigns
-        - *observed_property_variable_id:* string, Cs137MVID
-        - *sampling_medium:* enum (water, gas, solid phase, other, not applicable)
-        - *owner:* Person (optional), NotImplemented
-        - *contact:* Person (optional), NotImplemented
-    """
-
-    description = models.TextField(null=True, blank=True)
-    observed_property_variable = models.ForeignKey('ObservedPropertyVariable', null=False, on_delete=models.CASCADE)
-    sampling_medium = models.ForeignKey('SamplingMedium', null=False, on_delete=models.CASCADE)
-    datasource = models.ForeignKey('DataSource', null=False, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('observed_property_variable', 'datasource')
-
-    def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return self.description
-
-    def __repr__(self):
-        return '<ObservedProperty %r>' % (self.description)
-
-
-class Measurement(models.Model):
-    """
-    Defining the attributes for a single/multiple measurements
-
-    Attributes:
-        - *id:* string, (Cs137 MID)
-        - *description:* id, Cs 137 air dose rate car survey campaigns
-        - *measurement_variable_id:* string, Cs137MVID
-        - *sampling_medium:* enum (water, gas, solid phase, other, not applicable)
-        - *owner:* Person (optional), NotImplemented
-        - *contact:* Person (optional), NotImplemented
-    """
-
-    description = models.TextField(null=True, blank=True)
-    variable = models.ForeignKey('MeasurementVariable', null=False, on_delete=models.CASCADE)
-    sampling_medium = models.ForeignKey('SamplingMedium', null=False, on_delete=models.CASCADE)
-    datasource = models.ForeignKey('DataSource', null=False, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('variable', 'datasource')
-
-    def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return self.description
-
-    def __repr__(self):
-        return '<Measurement %r>' % (self.description)
-
-
-class Unit(models.Model):
-    """
-    Class to define a unit and specify conversion methods to other units
-    Attributes: id: string, (Cs137 UID)
-    full_name: string, ???
-    abbreviation: string, type: enum???
-    """
-    abbreviation = models.CharField(max_length=20, null=False, blank=False, primary_key=True)
-    full_name = models.CharField(max_length=50, null=False, blank=False)
-
-    def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return self.abbreviation
-
-    def __repr__(self):
-        return '<Measurement %r>' % (self.abbreviation)

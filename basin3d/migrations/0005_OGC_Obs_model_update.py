@@ -67,4 +67,40 @@ class Migration(migrations.Migration):
             name='datasourceobservedpropertyvariable',
             unique_together={('datasource', 'observed_property_variable')},
         ),
+        migrations.AlterUniqueTogether(
+            name='datasourcemeasurementvariable',
+            unique_together=set(),
+        ),
+        migrations.RemoveField(
+            model_name='datasourcemeasurementvariable',
+            name='measure_variable',
+        ),
+        migrations.AlterUniqueTogether(
+            name='measurement',
+            unique_together=set(),
+        ),
+        migrations.RemoveField(
+            model_name='measurement',
+            name='datasource',
+        ),
+        migrations.RemoveField(
+            model_name='measurement',
+            name='sampling_medium',
+        ),
+        migrations.RemoveField(
+            model_name='measurement',
+            name='variable',
+        ),
+        migrations.DeleteModel(
+            name='Unit',
+        ),
+        migrations.DeleteModel(
+            name='DataSourceMeasurementVariable',
+        ),
+        migrations.DeleteModel(
+            name='Measurement',
+        ),
+        migrations.DeleteModel(
+            name='MeasurementVariable',
+        ),
     ]
