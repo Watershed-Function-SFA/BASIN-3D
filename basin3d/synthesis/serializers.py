@@ -10,8 +10,6 @@
 Serializers that render :mod:`basin.synthesis.models` from Python objects to `JSON` and back again.
 
 
-* :class:`DataPointGroupSerializer`
-* :class:`DataPointSerializer`
 * :class:`FloatField` -  A Float field that can handle empty strings
 * :class:`HorizontalCoordinateSerializer`
 * :class:`IdUrlSerializerMixin` - Serializer Mixin to support Hypermedia as the Engine of Application State (HATEOAS).
@@ -24,16 +22,16 @@ Serializers that render :mod:`basin.synthesis.models` from Python objects to `JS
 * :class:`SiteSerializer`
 * :class:`TimestampSerializer` - Extends :class:`rest_framework.serializers.DateTimeField` to handle
     numeric epoch times.
+* :class:`ObservationSerializerMixin`
+* :class:`MeasurementTimeseriesTVPObservationSerializer`
 
 """
 from numbers import Number
 
 from basin3d.models import GeographicalGroup
-from basin3d.serializers import MeasurementSerializer, ChooseFieldsSerializerMixin
+from basin3d.serializers import ChooseFieldsSerializerMixin
 from basin3d.synthesis.models.field import Region
-from basin3d.synthesis.query import QUERY_PARAM_LOCATIONS, filter_query_param_values
 from django.utils.datetime_safe import datetime
-from django.utils.http import urlencode
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
@@ -360,7 +358,7 @@ class PointLocationSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin,
         serializer_class=HorizonatalCoordinateSerializer)
     vertical_extent = ReadOnlySynthesisModelField(
         serializer_class=VerticalCoordinateSerializer)
-    measure_variables = serializers.ListField()
+    observed_property_variables = serializers.ListField()
 
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
@@ -577,258 +575,3 @@ class MeasurementTimeseriesTVPObservationSerializer(ObservationSerializerMixin, 
 
     def create(self, validated_data):
         return MeasurementTimeseriesTVPObservationSerializer(**validated_data)
-
-
-class DataPointGroupSerializer(serializers.Serializer):
-    """
-        Serializes a :class:`basin3d.synthesis.models.measurement.DataPointGroup`
-
-    """
-
-    id = serializers.CharField()
-    units = serializers.CharField()
-    measurement = serializers.SerializerMethodField()
-    geographical_group = serializers.SerializerMethodField()
-    geographical_group_type = serializers.SerializerMethodField()
-    utc_offset = serializers.IntegerField()
-    data_points = serializers.SerializerMethodField()
-    measurement_position = ReadOnlySynthesisModelField(
-        serializer_class=MeasurementPositionSerializer)
-    qualifiers = serializers.ListField
-
-    def __init__(self, *args, **kwargs):
-        """
-        Override ``BaseSerializer.__init__`` to modify the fields outputted. Remove id if it doesn't exist
-
-
-        :param args:
-        :param kwargs:
-        """
-        # Don't pass the 'fields' arg up to the superclass
-        kwargs.pop('fields', None)
-
-        super(DataPointGroupSerializer, self).__init__(*args, **kwargs)
-
-        field_to_remove = set()
-
-        instance = None
-        if "instance" in kwargs:
-            instance = kwargs["instance"]
-        elif len(args) >= 1:
-            if args[0] and isinstance(args[0], (list, tuple)) and not isinstance(args[0], str):
-                instance = args[0][0]
-            else:
-                instance = args[0]
-
-        if instance:
-            #  Remove optional fields.  We don't want them crowding
-            # the json
-            if not instance.id:
-                field_to_remove.update(["id", "url"])
-            if not instance.measurement_position:
-                field_to_remove.update(["measurement_position"])
-
-        # remove unneeded fields
-        for field in field_to_remove:
-            if field in self.fields:
-                self.fields.pop(field)
-
-    def get_measurement(self, obj):
-        if "request" in self.context and self.context["request"]:
-            return reverse(viewname='measurement-detail',
-                           kwargs={'pk': obj.measurement_id},
-                           request=self.context["request"], )
-
-    def get_geographical_group_type(self, obj):
-        """
-        Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
-        :param obj: ``DataPoint`` object instance
-        :return: Display value for the :class:`basin3d.models.GeographicalGroup` type
-        """
-        return GeographicalGroup.TYPES[obj.geographical_group_type]
-
-    def get_geographical_group(self, obj):
-        """
-        Resolve the URL to the Geographical group
-
-        :param obj: ``DataPoint`` object instance
-        :return: an URL to the Geographical group
-        """
-
-        if obj.geographical_group_type in GeographicalGroup.TYPES.keys():
-            if "request" in self.context and self.context["request"]:
-                return reverse(
-                    viewname='{}-detail'.format(GeographicalGroup.TYPES[obj.geographical_group_type].lower()),
-                    kwargs={'pk': obj.geographical_group_id},
-                    request=self.context["request"], )
-
-    def get_data_points(self, obj):
-        """
-        Get the Site url based on the current context
-        :param obj:
-        :return:
-        """
-        if not obj.data_points is None:
-            return obj.data_points
-        elif "request" in self.context and self.context["request"]:
-            request = self.context["request"]
-            query_params = {}
-            for key, value in request.query_params.items():
-                query_params[key] = value
-
-            filter_query_param_values(request, QUERY_PARAM_LOCATIONS, obj.datasource.id_prefix, query_params)
-
-            return "{}".format(reverse(viewname='{}-datapoints'.format(obj.__class__.__name__.lower()),
-                           kwargs={'pk': obj.id},
-                           request=self.context["request"]), urlencode(query_params))
-
-    def get_url(self, obj):
-        """
-        Get the  url based on the current context
-        :param obj: ``DataPoint`` object instance
-        :return: An URL to the current object instance
-        """
-        if obj.id and "request" in self.context and self.context["request"]:
-            return reverse(viewname='datapointgroup-detail',
-                           kwargs={'pk': obj.id},
-                           request=self.context["request"], )
-
-    def create(self, validated_data):
-        return DataPointGroupSerializer(**validated_data)
-
-
-class DataPointSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
-    """
-        Serializes  :class:`basin3d.synthesis.models.measurement.DataPoint` objects and its
-        subclasses.
-
-    """
-
-    # Base attributes
-    url = serializers.SerializerMethodField()
-    id = serializers.CharField()
-    type = serializers.SerializerMethodField()
-    geographical_group = serializers.SerializerMethodField()
-    geographical_group_type = serializers.SerializerMethodField()
-    units = serializers.CharField()
-    measurement_position = ReadOnlySynthesisModelField(
-        serializer_class=MeasurementPositionSerializer)
-    measurement = ReadOnlySynthesisModelField(serializer_class=MeasurementSerializer)
-    quality_checked = serializers.BooleanField()
-
-    # Time Series
-    timestamp = TimestampField()
-    value = serializers.FloatField()
-    temporal_resolution = serializers.CharField()
-    reference = serializers.CharField()
-    utc_offset = serializers.IntegerField()
-
-    # Image
-    size = serializers.FloatField()
-    resolution = serializers.FloatField()
-    image = serializers.URLField()
-
-    FIELDS_IMAGE = {'size', 'resolution', 'image'}
-    FIELDS_TIME_SERIES = {'timestamp', 'temporal_resolution', 'reference', 'utc_offset'}
-
-    def __init__(self, *args, **kwargs):
-        """
-        Override ``BaseSerializer.__init__`` to modify the fields outputted. This depends on the
-        type of :class:`basin3d.synthesis.models.measurement.DataPoint`
-
-        See the synthesis classes for a list of attributes:
-            * :class:`basin3d.synthesis.models.measurement.DataPoint`
-            * :class:`basin3d.synthesis.models.measurement.ImageDataPoint`
-            * :class:`basin3d.synthesis.models.measurement.TimeSeriesDataPoint`
-
-
-        :param args:
-        :param kwargs:
-        """
-        # Don't pass the 'fields' arg up to the superclass
-        kwargs.pop('fields', None)
-
-        super(DataPointSerializer, self).__init__(*args, **kwargs)
-
-        field_to_remove = set()
-        field_to_remove.update(self.FIELDS_IMAGE)
-        field_to_remove.update(self.FIELDS_TIME_SERIES)
-        instance = None
-        if "instance" in kwargs:
-            instance = kwargs["instance"]
-        elif len(args) >= 1:
-            if args[0] and isinstance(args[0], (list, tuple)) and not isinstance(args[0], str):
-                instance = args[0][0]
-            else:
-                instance = args[0]
-
-        if instance:
-
-            from basin3d.synthesis.models.measurement import TimeSeriesDataPoint, ImageDataPoint
-            if isinstance(instance, TimeSeriesDataPoint):
-                field_to_remove -= self.FIELDS_TIME_SERIES
-                if not hasattr(instance, "measurement_position") or not instance.measurement_position:
-                    field_to_remove.update(("measurement_position",))
-            elif isinstance(instance, ImageDataPoint):
-                field_to_remove -= self.FIELDS_IMAGE
-
-            # Remove optional fields.  We don't want them crowding
-            # the json
-            if not instance.id:
-                field_to_remove.update(["id", "url"])
-
-        # remove unneeded fields
-        for field in field_to_remove:
-            if field in self.fields:
-                self.fields.pop(field)
-
-    def get_type(self, obj):
-        """
-        Determine the datapoint Type
-
-        :param obj: ``DataPoint`` object instance
-        :return: a string representation of the type
-        """
-        from basin3d.synthesis.models.measurement import TimeSeriesDataPoint, ImageDataPoint
-        if isinstance(obj, TimeSeriesDataPoint):
-            return "time_series"
-        elif isinstance(obj, ImageDataPoint):
-            return "image"
-        else:
-            return "?"
-
-    def get_geographical_group_type(self, obj):
-        """
-        Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
-        :param obj: ``DataPoint`` object instance
-        :return: Display value for the :class:`basin3d.models.GeographicalGroup` type
-        """
-        return GeographicalGroup.TYPES[obj.geographical_group_type]
-
-    def get_geographical_group(self, obj):
-        """
-        Resolve the URL to the Geographical group
-
-        :param obj: ``DataPoint`` object instance
-        :return: an URL to the Geographical group
-        """
-        if obj.geographical_group_type in GeographicalGroup.TYPES.keys():
-            if "request" in self.context and self.context["request"]:
-                return reverse(
-                    viewname='{}-detail'.format(GeographicalGroup.TYPES[obj.geographical_group_type].lower()),
-                    kwargs={'pk': obj.geographical_group_id},
-                    request=self.context["request"], )
-
-    def get_url(self, obj):
-        """
-        Get the  url based on the current context
-        :param obj: ``DataPoint`` object instance
-        :return: An URL to the current object instance
-        """
-        if "request" in self.context and self.context["request"]:
-            return reverse(viewname='datapoint-detail',
-                           kwargs={'pk': obj.id},
-                           request=self.context["request"], )
-
-    def create(self, validated_data):
-        return DataPointSerializer(**validated_data)

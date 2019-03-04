@@ -1,11 +1,11 @@
 import logging
 
-from basin3d.models import SamplingMedium, GeographicalGroup, Measurement, ObservedProperty
+from basin3d.models import GeographicalGroup, ObservedProperty
 from basin3d.plugins import DataSourcePluginPoint, DataSourcePluginViewMeta
 from basin3d.synthesis.models import measurement, Person
 from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation, \
     GeographicCoordinate, MeasurementPosition, DepthCoordinate
-from basin3d.synthesis.models.measurement import DataPointGroup, DataPoint, MeasurementTimeseriesTVPObservation
+from basin3d.synthesis.models.measurement import MeasurementTimeseriesTVPObservation
 from django.utils.six import with_metaclass
 
 logger = logging.getLogger(__name__)
@@ -200,97 +200,11 @@ class AlphaDataMeasurementTimeseriesTVPObservationView(with_metaclass(DataSource
         return None
 
 
-class AlphaDataPointGroupView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = DataPointGroup
-
-    def list(self, request, **kwargs):
-        """ Generate the Data Point Group
-
-          Attributes:
-            - *id:* string, Cs137 MR survey ID
-            - *measurement_id:* string, Cs137MID
-            - *start_time:* datetime,  survey start time (month/year)
-            - *end_time:* datetime, units: survey end time (month/year)
-            - *utc_offset:* float (offset in hours), +9
-            - *geographical_group_id:* string, River system ID (Region ID).
-            - *geographical_group_type* enum (sampling_feature, site, plot, region)
-            - *results:* Array of DataPoint objects
-
-        """
-        for num in range(1, 10):
-            yield measurement.DataPointGroup(self.datasource, id=num, measurement_id=1,
-                                             utc_offset=-8,
-                                             geographical_group_id=1,
-                                             geographical_group_type=GeographicalGroup.SITE)
-
-    def get(self, request, pk=None):
-        """
-            Get a DataPointGroup
-            :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
-class AlphaDataPointView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = DataPoint
-
-    def list(self, request, **kwargs):
-        """ Generate the Data Point
-
-        Attributes:
-            - *id:* string,
-            - *measurement_id:* string,
-            - *geographical_group_id:* string (sampling feature can be site/plot/measurement location),
-            - *geographical_group_type* enum (sampling_feature, site, plot, region)
-            - *unit:* Unit
-            - *timestamp: datetime,
-            - *value: float,
-            - *units: Unit  Cs137UID
-            - *resolution: enum(year, month, day, hour, minute, second, millisecond),
-            - *reference: string (start, middle, end),
-            - *utc_offset: float (offset in hours) - optional
-        """
-        for num in range(1, 10):
-            from datetime import date
-
-            yield measurement.TimeSeriesDataPoint(self.datasource, id=num,
-                                                  measurement=Measurement.objects.get(id=1),
-                                                  measurement_position=MeasurementPosition(
-                                                      self.datasource,
-                                                      point_location_id=1,
-                                                      vertical_position=DepthCoordinate(
-                                                          value=num * .35345,
-                                                          distance_units=DepthCoordinate.DISTANCE_UNITS_METERS,
-                                                          datum=DepthCoordinate.DATUM_LOCAL_SURFACE)),
-                                                  geographical_group_id=1,
-                                                  geographical_group_type=GeographicalGroup.POINT_LOCATION,
-                                                  timestamp=date(2016, num, 1),
-                                                  value=num * .3453453,
-                                                  units="nm", temporal_resolution="month",
-                                                  reference=None,
-                                                  utc_offset=-8, )
-
-    def get(self, request, pk=None):
-        """
-            Get a DataPoint
-            :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
 class AlphaSourcePlugin(DataSourcePluginPoint):
     name = 'alpha-source-plugin'
     title = 'Alpha Source Plugin'
-    plugin_view_classes = (AlphaRegionView,
-                           AlphaDataPointGroupView, AlphaDataMeasurementTimeseriesTVPObservationView,
-                           AlphaDataPointView, AlphaSiteView, AlphaPlotView,
-                           AlphaPointLocationView)
+    plugin_view_classes = (AlphaRegionView, AlphaSiteView, AlphaPlotView, AlphaPointLocationView, \
+                           AlphaDataMeasurementTimeseriesTVPObservationView)
 
     class DataSourceMeta:
         """

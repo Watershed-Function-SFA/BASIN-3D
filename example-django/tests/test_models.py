@@ -1,7 +1,7 @@
 
 from django.test import TestCase
 
-from basin3d.models import DataSource, SamplingMedium, MeasurementVariable, \
+from basin3d.models import DataSource, SamplingMedium, \
     ObservedPropertyVariable, ObservedProperty, DataSourceObservedPropertyVariable
 
 
@@ -61,22 +61,3 @@ class ObservedPropertyTestCase(TestCase):
         assert obj.datasource == self.datasource
         assert obj.observed_property_variable == self.observed_property_var
         assert obj.name == "Alpha"
-
-
-class ParameterTestCase(TestCase):  # Delete
-    """
-    Assert that the parameters are created
-    """
-    def setUp(self):
-        """
-        Load some fake data to use in the tests
-        """
-        MeasurementVariable.objects.create(id="FOO",
-                                           full_name="Groundwater Flux",
-                                           categories="Hydrology,Subsurface")
-
-    def test_get(self):
-        """ Was the object created correctly? """
-        obj = MeasurementVariable.objects.get(id="FOO")
-        self.assertEqual(obj.full_name, "Groundwater Flux")
-        self.assertEqual(obj.categories, "Hydrology,Subsurface")

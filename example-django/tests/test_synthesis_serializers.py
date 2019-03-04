@@ -6,13 +6,11 @@ from django.test import TestCase
 from rest_framework.renderers import JSONRenderer
 
 from basin3d.synthesis import models
-from basin3d.serializers import ObservedPropertySerializer, ObservedPropertyVariableSerializer, \
-    DataSourceObservedPropertyVariableSerializer
+from basin3d.serializers import ObservedPropertySerializer
 from basin3d.models import DataSource, GeographicalGroup, ObservedProperty, \
-    ObservedPropertyVariable, DataSourceObservedPropertyVariable, SamplingMedium
+    ObservedPropertyVariable, SamplingMedium
 from basin3d.synthesis.serializers import RegionSerializer, SiteSerializer, \
     MeasurementTimeseriesTVPObservationSerializer
-from rest_framework.test import APIRequestFactory
 
 
 class Basin3DSerializerTests(TestCase):

@@ -71,22 +71,21 @@ observations - e.g. a watershed, a city
   + model_domains -- to list all river systems for a city
 
 
-Measurements and Results
+Observed Properties and Results
 ------------------------
 
-Measurements
+Observed Properties
 ++++++++++++
-Defining the attributes for a single/multiple measurements
+Defining the attributes for a single/multiple Observed Properties
 
 **Attributes:**
     - *id:* string,
     - *description:* id
-    - *variable:* string
+    - *observed_property_variable:* string
     - *sampling_medium:* enum (atmosphere, surface water, soil/sediment, soil gas, groundwater), atmosphere
-    - *measurement_approach:* enum (sensor, manual), sensor
 
 **URLs**
-  + url -- for detail on a single measurement
+  + url -- for detail on a single observed property
 
 
 Data Point Groups

@@ -28,8 +28,7 @@ def load_data_sources(sender, **kwargs):
     load_sampling_mediums()
 
     from basin3d.models import SamplingMedium, \
-        ObservedProperty, ObservedPropertyVariable, DataSourceObservedPropertyVariable, \
-        Measurement, MeasurementVariable, DataSourceMeasurementVariable
+        ObservedProperty, ObservedPropertyVariable, DataSourceObservedPropertyVariable
 
     from basin3d.plugins import PluginMount
     from basin3d.models import DataSource
@@ -57,7 +56,7 @@ def load_data_sources(sender, **kwargs):
 
         load_observed_property_variables(datasource.get_plugin())
 
-        for variable_mapping in __iterate_measurement_mapping(datasource.get_plugin()):
+        for variable_mapping in __iterate_observed_property_mapping(datasource.get_plugin()):
 
                 sm = SamplingMedium.objects.get(name=variable_mapping["sampling_medium"])
                 v = None
@@ -84,32 +83,6 @@ def load_data_sources(sender, **kwargs):
 
                     print("Error Registering Measurement '{} {}': {}".format(variable_mapping['broker_id'],
                                                                              variable_mapping['description'], str(e)))
-                """
-                v = None
-                try:
-                    v = MeasurementVariable.objects.get(id=variable_mapping['broker_id'])
-                    m = Measurement.objects.get(variable=v, datasource=datasource)
-                    m.sampling_medium = sm
-                    m.description = variable_mapping['description']
-                    m.save()
-
-                except Measurement.DoesNotExist:
-
-                    m = Measurement(sampling_medium=sm,
-                                    description=variable_mapping["description"],
-                                    datasource=datasource,
-                                    variable=v)
-                    m.save()
-                    print("Created Measurement {} for {}".format(v,datasource))
-                except IntegrityError as ie:
-                    # Its OK that is has already been created
-                    print(str(ie), file=sys.stderr)
-
-                except Exception as e:
-
-                    print("Error Registering Measurement '{} {}': {}".format(variable_mapping['broker_id'],
-                                                                             variable_mapping['description'], str(e)))
-                """
                 try:
                     datasource_parameter = DataSourceObservedPropertyVariable()
                     datasource_parameter.observed_property_variable = v
@@ -124,22 +97,6 @@ def load_data_sources(sender, **kwargs):
                 except Exception as e:
                     print("Error Registering DataSource Observed Property Variable '{}' for Data Source '{}': {}".
                           format(variable_mapping['broker_id'], datasource.name, str(e)), file=sys.stderr)
-                """
-                try:
-                    datasource_parameter = DataSourceMeasurementVariable()
-                    datasource_parameter.measure_variable = v
-                    datasource_parameter.datasource = datasource
-                    datasource_parameter.name = variable_mapping['datasource_name']
-                    datasource_parameter.save()
-
-                except IntegrityError:
-                    # This object has already been loaded
-                    pass
-
-                except Exception as e:
-                    print("Error Registering  DataSource Meaturement Variable '{}' for Data Source '{}': {}".format(variable_mapping['broker_id'],
-                                                                                            datasource.name, str(e)),file=sys.stderr)
-                """
 
 
 def load_observed_property_variables(plugin):
@@ -187,51 +144,6 @@ def load_observed_property_variables(plugin):
         print("There are no observed property variables to load to load - {} is missing".format(variables_file))
 
 
-def load_measurment_variables(plugin):
-    """
-        Load all measurement objects into the database
-
-        :param sender:
-        :param kwargs:
-        :return:
-    """
-    from basin3d.models import MeasurementVariable
-
-    plugin_file_path = os.path.dirname(inspect.getfile(plugin.__class__))
-    variables_file = os.path.join(plugin_file_path,
-                                  "measurement_variables.csv")
-    if os.path.exists(plugin_file_path) and os.path.exists(variables_file):
-
-        # Open the CSV from reading
-        with open(variables_file, 'r') as csvfile:
-            # Create a dictionary reader where the header
-            # row becomes the dict keys for each entry.
-            reader = csv.DictReader(csvfile)
-
-            # Now iterate over the mapping file and yield
-            # each row to the caller
-            for row in reader:
-                try:
-                    # Create a new Measurement Variable
-                    p = MeasurementVariable()
-                    p.id = row['broker_id']
-                    p.full_name = row['description']
-                    p.categories = row['categories']
-                    p.save()
-
-                except IntegrityError:
-
-                    # This object has already been loaded
-                    pass
-
-                except Exception as e:
-
-                    print("Error Registering MeasurementVariable '{}': {}".format(row['broker_id'], str(e)))
-
-    else:
-        print("There are no measurement variables to load to load - {} is missing".format(variables_file))
-
-
 def load_sampling_mediums():
     """
     Load the predefined sampling mediums in the database
@@ -253,7 +165,7 @@ def load_sampling_mediums():
             print("Error Registering SamplingMedium '{}': {}".format(sm, str(e)), file=sys.stderr)
 
 
-def __iterate_measurement_mapping(plugin):  #ToDo: change this to __iterate_observed_property_mapping
+def __iterate_observed_property_mapping(plugin):  #ToDo: change this to __iterate_observed_property_mapping
     """
     Generator for iterating over the measurement mapping
     :param plugin: the plugin to find the mapping for

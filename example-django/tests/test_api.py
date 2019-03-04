@@ -64,17 +64,13 @@ class TestAPIRoot(TestCase):
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {
                              "synthesis-datasources": "http://testserver/synthesis/datasources/",
-                             "synthesis-variables": "http://testserver/synthesis/variables/",  # delete
                              "synthesis-observedpropertyvariables": "http://testserver/synthesis/observedpropertyvariables/",
-                             "synthesis-measurements": "http://testserver/synthesis/measurements/",  # delete
                              "synthesis-observedproperty": "http://testserver/synthesis/observedproperty/",
                              "synthesis-regions": "http://testserver/synthesis/regions/",
                              "synthesis-sites": "http://testserver/synthesis/sites/",
                              "synthesis-plots": "http://testserver/synthesis/plots/",
                              "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
-                             "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",  # delete
                              "synthesis-measurementtvptimeseries": "http://testserver/synthesis/measurement_tvp_timeseries/",
-                             "synthesis-datapoints": "http://testserver/synthesis/data_points/",
                              "direct-apis": "http://testserver/direct/"
                          })
 
@@ -92,17 +88,14 @@ class TestAPIRoot(TestCase):
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {
                              "synthesis-datasources": "http://testserver/synthesis/datasources/",
-                             "synthesis-variables": "http://testserver/synthesis/variables/",  # delete
-                             "synthesis-measurements": "http://testserver/synthesis/measurements/",  # delete
                              "synthesis-observedpropertyvariables": "http://testserver/synthesis/observedpropertyvariables/",
                              "synthesis-observedproperty": "http://testserver/synthesis/observedproperty/",
                              "synthesis-regions": "http://testserver/synthesis/regions/",
                              "synthesis-sites": "http://testserver/synthesis/sites/",
                              "synthesis-plots": "http://testserver/synthesis/plots/",
                              "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
-                             "synthesis-datapointgroups": "http://testserver/synthesis/data_point_groups/",  # delete
-                             "synthesis-measurementtvptimeseries": "http://testserver/synthesis/measurement_tvp_timeseries/",
-                             "synthesis-datapoints": "http://testserver/synthesis/data_points/"})
+                             "synthesis-measurementtvptimeseries": "http://testserver/synthesis/measurement_tvp_timeseries/"
+                         })
 
 
 class TestDirectAPIRoot(TestCase):
@@ -276,7 +269,7 @@ class TestPointLocationAPI(TestCase):
                                      "units": "DD"
                                  },
                                  "vertical_extent": None,
-                                 "measure_variables": None,
+                                 "observed_property_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-0/"
                              },
                              {
@@ -295,7 +288,7 @@ class TestPointLocationAPI(TestCase):
                                      "units": "DD"
                                  },
                                  "vertical_extent": None,
-                                 "measure_variables": None,
+                                 "observed_property_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-1/"
                              },
                              {
@@ -314,7 +307,7 @@ class TestPointLocationAPI(TestCase):
                                      "units": "DD"
                                  },
                                  "vertical_extent": None,
-                                 "measure_variables": None,
+                                 "observed_property_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-2/"
                              },
                              {
@@ -333,7 +326,7 @@ class TestPointLocationAPI(TestCase):
                                      "units": "DD"
                                  },
                                  "vertical_extent": None,
-                                 "measure_variables": None,
+                                 "observed_property_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-3/"
                              },
                              {
@@ -352,7 +345,7 @@ class TestPointLocationAPI(TestCase):
                                      "units": "DD"
                                  },
                                  "vertical_extent": None,
-                                 "measure_variables": None,
+                                 "observed_property_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-4/"
                              },
                              {
@@ -371,7 +364,7 @@ class TestPointLocationAPI(TestCase):
                                      "units": "DD"
                                  },
                                  "vertical_extent": None,
-                                 "measure_variables": None,
+                                 "observed_property_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-5/"
                              },
                              {
@@ -390,7 +383,7 @@ class TestPointLocationAPI(TestCase):
                                      "units": "DD"
                                  },
                                  "vertical_extent": None,
-                                 "measure_variables": None,
+                                 "observed_property_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-6/"
                              },
                              {
@@ -409,7 +402,7 @@ class TestPointLocationAPI(TestCase):
                                      "units": "DD"
                                  },
                                  "vertical_extent": None,
-                                 "measure_variables": None,
+                                 "observed_property_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-7/"
                              },
                              {
@@ -428,7 +421,7 @@ class TestPointLocationAPI(TestCase):
                                      "units": "DD"
                                  },
                                  "vertical_extent": None,
-                                 "measure_variables": None,
+                                 "observed_property_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-8/"
                              },
                              {
@@ -447,7 +440,7 @@ class TestPointLocationAPI(TestCase):
                                      "units": "DD"
                                  },
                                  "vertical_extent": None,
-                                 "measure_variables": None,
+                                 "observed_property_variables": None,
                                  "url": "http://testserver/synthesis/point_locations/A-9/"
                              }
                          ]
@@ -474,7 +467,7 @@ class TestPointLocationAPI(TestCase):
                                  "units": "DD"
                              },
                              "vertical_extent": None,
-                             "measure_variables": None,
+                             "observed_property_variables": None,
                              "url": "http://testserver/synthesis/point_locations/A-0/"
                          })
 
