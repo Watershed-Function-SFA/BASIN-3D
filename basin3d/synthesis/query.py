@@ -1,9 +1,9 @@
-QUERY_PARAM_LOCATIONS = "locations"
+QUERY_PARAM_MONITORING_FEATURES = "monitoring_features"
 QUERY_PARAM_OBSERVED_PROPERTY_VARIABLES = "observed_property_variables"
 QUERY_PARAM_AGGREGATION_DURATION = "aggregation_duration"
 QUERY_PARAM_START_DATE = "start_date"
 QUERY_PARAM_END_DATE = "end_date"
-QUERY_PARAM_SITES = "sites"
+QUERY_PARAM_SUBBASINS = "subbasins"
 QUERY_PARAM_REGIONS = "regions"
 QUERY_PARAM_RESULT_QUALITY = "result_quality"
 

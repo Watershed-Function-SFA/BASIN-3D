@@ -66,12 +66,9 @@ class TestAPIRoot(TestCase):
                              "synthesis-datasources": "http://testserver/synthesis/datasources/",
                              "synthesis-observedpropertyvariables": "http://testserver/synthesis/observedpropertyvariables/",
                              "synthesis-observedproperty": "http://testserver/synthesis/observedproperty/",
-                             "synthesis-regions": "http://testserver/synthesis/regions/",
-                             "synthesis-sites": "http://testserver/synthesis/sites/",
-                             "synthesis-plots": "http://testserver/synthesis/plots/",
-                             "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
                              "synthesis-measurementtvptimeseries": "http://testserver/synthesis/measurement_tvp_timeseries/",
-                             "direct-apis": "http://testserver/direct/"
+                             "direct-apis": "http://testserver/direct/",
+                             "synthesis-monitoringfeatures": "http://testserver/synthesis/monitoringfeatures/"
                          })
 
     @override_settings(BASIN3D={'SYNTHESIS': False, 'DIRECT_API': True})
@@ -90,11 +87,8 @@ class TestAPIRoot(TestCase):
                              "synthesis-datasources": "http://testserver/synthesis/datasources/",
                              "synthesis-observedpropertyvariables": "http://testserver/synthesis/observedpropertyvariables/",
                              "synthesis-observedproperty": "http://testserver/synthesis/observedproperty/",
-                             "synthesis-regions": "http://testserver/synthesis/regions/",
-                             "synthesis-sites": "http://testserver/synthesis/sites/",
-                             "synthesis-plots": "http://testserver/synthesis/plots/",
-                             "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
-                             "synthesis-measurementtvptimeseries": "http://testserver/synthesis/measurement_tvp_timeseries/"
+                             "synthesis-measurementtvptimeseries": "http://testserver/synthesis/measurement_tvp_timeseries/",
+                             "synthesis-monitoringfeatures": "http://testserver/synthesis/monitoringfeatures/"
                          })
 
 
@@ -127,6 +121,9 @@ class TestSiteAPI(TestCase):
     def setUp(self):
         self.client = APIClient()
 
+    """
+    # KEEP until replacement test is built
+    
     def test_get(self):
         self.maxDiff = None
         response = self.client.get('/synthesis/sites/', format='json')
@@ -153,14 +150,16 @@ class TestSiteAPI(TestCase):
                                          "first_name": "Barry",
                                          "last_name": "Allen",
                                          "email": "ballen@foo.bar",
-                                         "institution": "DC Comics"
+                                         "institution": "DC Comics",
+                                         "role": None
                                      }
                                  ],
                                  "pi": {
                                      "first_name": "Jessica",
                                      "last_name": "Jones",
                                      "email": "jjones@foo.bar",
-                                     "institution": "DC Comics"
+                                     "institution": "DC Comics",
+                                     "role": None
                                  },
                                  "urls": [
                                      "http://foo.bar"
@@ -194,282 +193,7 @@ class TestSiteAPI(TestCase):
                              'detail': 'There is no detail for datasource object B-FOO. The datasource id '
                                        "'B' is invalid.",
                              'success': False})
-
-
-class TestRegionAPI(TestCase):
     """
-    Test /synthesis/regions api
-    """
-
-    def setUp(self):
-        self.client = APIClient()
-
-    def test_get(self):
-        response = self.client.get('/synthesis/regions/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         [{"id": "A-SI123", "geom": None,
-                           "description": "This is for my site description",
-                           'name': 'a site',
-                           "url": "http://testserver/synthesis/regions/A-SI123/"}]
-
-                         )
-
-    def test_get_detail(self):
-        response = self.client.get('/synthesis/regions/A-SI123/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {"id": "A-SI123", "geom": None,
-                          "description": "This is for my site description",
-                          'name': 'a site',
-                          "url": "http://testserver/synthesis/regions/A-SI123/"})
-
-    def test_get_detail_missing(self):
-        response = self.client.get('/synthesis/regions/A-FOO/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {'content': 'There is no detail for A-FOO', 'success': False})
-
-    def test_get_bad_id_prefix(self):
-        response = self.client.get('/synthesis/regions/B-FOO/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {
-                             'detail': 'There is no detail for datasource object B-FOO. The datasource id '
-                                       "'B' is invalid.",
-                             'success': False})
-
-
-class TestPointLocationAPI(TestCase):
-    """
-    Test /synthesis/point_locations api
-    """
-
-    def setUp(self):
-        self.client = APIClient()
-
-    def test_get(self):
-        response = self.client.get('/synthesis/point_locations/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         [
-                             {
-                                 "id": "A-0",
-                                 "name": "Point Location 0",
-                                 "description": None,
-                                 "type": "pointlocation",
-                                 "site": "http://testserver/synthesis/sites/A-1/",
-                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
-                                 "geographical_group_type": "plot",
-                                 "horizontal_position": {
-                                     "datum": "WGS84",
-                                     "type": "geographic",
-                                     "latitude": 90.0,
-                                     "longitude": 90.0,
-                                     "units": "DD"
-                                 },
-                                 "vertical_extent": None,
-                                 "observed_property_variables": None,
-                                 "url": "http://testserver/synthesis/point_locations/A-0/"
-                             },
-                             {
-                                 "id": "A-1",
-                                 "name": "Point Location 1",
-                                 "description": None,
-                                 "type": "pointlocation",
-                                 "site": "http://testserver/synthesis/sites/A-1/",
-                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
-                                 "geographical_group_type": "plot",
-                                 "horizontal_position": {
-                                     "datum": "WGS84",
-                                     "type": "geographic",
-                                     "latitude": 90.0,
-                                     "longitude": 90.0,
-                                     "units": "DD"
-                                 },
-                                 "vertical_extent": None,
-                                 "observed_property_variables": None,
-                                 "url": "http://testserver/synthesis/point_locations/A-1/"
-                             },
-                             {
-                                 "id": "A-2",
-                                 "name": "Point Location 2",
-                                 "description": None,
-                                 "type": "pointlocation",
-                                 "site": "http://testserver/synthesis/sites/A-1/",
-                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
-                                 "geographical_group_type": "plot",
-                                 "horizontal_position": {
-                                     "datum": "WGS84",
-                                     "type": "geographic",
-                                     "latitude": 90.0,
-                                     "longitude": 90.0,
-                                     "units": "DD"
-                                 },
-                                 "vertical_extent": None,
-                                 "observed_property_variables": None,
-                                 "url": "http://testserver/synthesis/point_locations/A-2/"
-                             },
-                             {
-                                 "id": "A-3",
-                                 "name": "Point Location 3",
-                                 "description": None,
-                                 "type": "pointlocation",
-                                 "site": "http://testserver/synthesis/sites/A-1/",
-                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
-                                 "geographical_group_type": "plot",
-                                 "horizontal_position": {
-                                     "datum": "WGS84",
-                                     "type": "geographic",
-                                     "latitude": 90.0,
-                                     "longitude": 90.0,
-                                     "units": "DD"
-                                 },
-                                 "vertical_extent": None,
-                                 "observed_property_variables": None,
-                                 "url": "http://testserver/synthesis/point_locations/A-3/"
-                             },
-                             {
-                                 "id": "A-4",
-                                 "name": "Point Location 4",
-                                 "description": None,
-                                 "type": "pointlocation",
-                                 "site": "http://testserver/synthesis/sites/A-1/",
-                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
-                                 "geographical_group_type": "plot",
-                                 "horizontal_position": {
-                                     "datum": "WGS84",
-                                     "type": "geographic",
-                                     "latitude": 90.0,
-                                     "longitude": 90.0,
-                                     "units": "DD"
-                                 },
-                                 "vertical_extent": None,
-                                 "observed_property_variables": None,
-                                 "url": "http://testserver/synthesis/point_locations/A-4/"
-                             },
-                             {
-                                 "id": "A-5",
-                                 "name": "Point Location 5",
-                                 "description": None,
-                                 "type": "pointlocation",
-                                 "site": "http://testserver/synthesis/sites/A-1/",
-                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
-                                 "geographical_group_type": "plot",
-                                 "horizontal_position": {
-                                     "datum": "WGS84",
-                                     "type": "geographic",
-                                     "latitude": 90.0,
-                                     "longitude": 90.0,
-                                     "units": "DD"
-                                 },
-                                 "vertical_extent": None,
-                                 "observed_property_variables": None,
-                                 "url": "http://testserver/synthesis/point_locations/A-5/"
-                             },
-                             {
-                                 "id": "A-6",
-                                 "name": "Point Location 6",
-                                 "description": None,
-                                 "type": "pointlocation",
-                                 "site": "http://testserver/synthesis/sites/A-1/",
-                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
-                                 "geographical_group_type": "plot",
-                                 "horizontal_position": {
-                                     "datum": "WGS84",
-                                     "type": "geographic",
-                                     "latitude": 90.0,
-                                     "longitude": 90.0,
-                                     "units": "DD"
-                                 },
-                                 "vertical_extent": None,
-                                 "observed_property_variables": None,
-                                 "url": "http://testserver/synthesis/point_locations/A-6/"
-                             },
-                             {
-                                 "id": "A-7",
-                                 "name": "Point Location 7",
-                                 "description": None,
-                                 "type": "pointlocation",
-                                 "site": "http://testserver/synthesis/sites/A-1/",
-                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
-                                 "geographical_group_type": "plot",
-                                 "horizontal_position": {
-                                     "datum": "WGS84",
-                                     "type": "geographic",
-                                     "latitude": 90.0,
-                                     "longitude": 90.0,
-                                     "units": "DD"
-                                 },
-                                 "vertical_extent": None,
-                                 "observed_property_variables": None,
-                                 "url": "http://testserver/synthesis/point_locations/A-7/"
-                             },
-                             {
-                                 "id": "A-8",
-                                 "name": "Point Location 8",
-                                 "description": None,
-                                 "type": "pointlocation",
-                                 "site": "http://testserver/synthesis/sites/A-1/",
-                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
-                                 "geographical_group_type": "plot",
-                                 "horizontal_position": {
-                                     "datum": "WGS84",
-                                     "type": "geographic",
-                                     "latitude": 90.0,
-                                     "longitude": 90.0,
-                                     "units": "DD"
-                                 },
-                                 "vertical_extent": None,
-                                 "observed_property_variables": None,
-                                 "url": "http://testserver/synthesis/point_locations/A-8/"
-                             },
-                             {
-                                 "id": "A-9",
-                                 "name": "Point Location 9",
-                                 "description": None,
-                                 "type": "pointlocation",
-                                 "site": "http://testserver/synthesis/sites/A-1/",
-                                 "geographical_group": "http://testserver/synthesis/plots/A-1/",
-                                 "geographical_group_type": "plot",
-                                 "horizontal_position": {
-                                     "datum": "WGS84",
-                                     "type": "geographic",
-                                     "latitude": 90.0,
-                                     "longitude": 90.0,
-                                     "units": "DD"
-                                 },
-                                 "vertical_extent": None,
-                                 "observed_property_variables": None,
-                                 "url": "http://testserver/synthesis/point_locations/A-9/"
-                             }
-                         ]
-
-                         )
-
-    def test_get_detail(self):
-        response = self.client.get('/synthesis/point_locations/A-0/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {
-                             "id": "A-0",
-                             "name": "Point Location 0",
-                             "description": None,
-                             "type": "pointlocation",
-                             "site": "http://testserver/synthesis/sites/A-1/",
-                             "geographical_group": "http://testserver/synthesis/plots/A-1/",
-                             "geographical_group_type": "plot",
-                             "horizontal_position": {
-                                 "datum": "WGS84",
-                                 "type": "geographic",
-                                 "latitude": 90.0,
-                                 "longitude": 90.0,
-                                 "units": "DD"
-                             },
-                             "vertical_extent": None,
-                             "observed_property_variables": None,
-                             "url": "http://testserver/synthesis/point_locations/A-0/"
-                         })
 
 
 class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
@@ -488,8 +212,40 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                              "id": "A-1",
                              "unit_of_measurement": "nm",
                              "observed_property": "http://testserver/synthesis/observedproperty/1/",
-                             "geographical_group_id": "http://testserver/synthesis/point_locations/A-1/",
-                             "geographical_group_type": "pointlocation",
+                             "feature_of_interest": {
+                                 "id": "A-1", "name": "Point Location 1",
+                                 "description": "The point.",
+                                 "feature_type": "POINT", "shape": "POINT",
+                                 "coordinates": {
+                                     "absolute": {
+                                         "horizontal_position": [{
+                                             "units": "DD", "latitude": 70.4657, "y": 70.4657, "x": -20.4567,
+                                             "longitude": -20.4567, "datum": None, "type": "GEOGRAPHIC"
+                                         }],
+                                         "vertical_extent": [{
+                                             "datum": "NAVD88", "value": 1500.0,
+                                             "distance_units": "feet", "resolution": None, "type": "ALTITUDE"
+                                         }]
+                                     },
+                                     "representative": {
+                                         "representative_point_type": None, "representative_point": None,
+                                         "vertical_position": {
+                                              "datum": "LS", "value": -0.6, "distance_units": "meters",
+                                              "type": "DEPTH", "resolution": None
+                                         }
+                                     }
+                                 },
+                                 "description_reference": None,
+                                 "observed_property_variables": ["ACT", "Ag"],
+                                 "related_party": [],
+                                 "url": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
+                                 "utc_offset": None,
+                                 "related_sampling_feature_complex": [{"related_sampling_feature": "A-Region1",
+                                                                       "related_sampling_feature_type": "REGION",
+                                                                       "role": "PARENT",
+                                                                       "url": "http://testserver/synthesis/monitoringfeatures/regions/A-Region1/"}],
+                                 },
+                             "feature_of_interest_type": "POINT",
                              "utc_offset": -9,
                              "result_points": [["2016-02-01", 0.3454],
                                                ["2016-02-02", 0.6908],
@@ -500,22 +256,15 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                                                ["2016-02-07", 2.4177999999999997],
                                                ["2016-02-08", 2.7632],
                                                ["2016-02-09", 3.1086]],
-                             "result_quality": "checked",
-                             "statistic": "mean",
-                             "type": "measurement_tvp_timeseries",
-                             "aggregation_duration": "daily",
-                             "measurement_position": {
-                                 "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                                 "type": "measurementposition",
-                                 "vertical_position": {"datum": "LS",
-                                                       "distance_units": "meters",
-                                                       "resolution": None,
-                                                       "type": 'depth',
-                                                       "value": 0.5}},
+                             "result_quality": "CHECKED",
+                             "statistic": "MEAN",
+                             "type": "MEASUREMENT_TVP_TIMESERIES",
+                             "aggregation_duration": "DAILY",
                              "phenomenon_time": None
                          })
 
     def test_get(self):
+        self.maxDiff = None
         response = self.client.get('/synthesis/measurement_tvp_timeseries/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_output = [
@@ -523,8 +272,40 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                 "id": "A-1",
                 "unit_of_measurement": "nm",
                 "observed_property": "http://testserver/synthesis/observedproperty/1/",
-                "geographical_group_id": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
+                "feature_of_interest": {
+                     "id": "A-1", "name": "Point Location 1",
+                     "description": "The point.",
+                     "feature_type": "POINT", "shape": "POINT",
+                     "coordinates": {
+                         "absolute": {
+                             "horizontal_position": [{
+                                 "units": "DD", "latitude": 70.4657, "y": 70.4657, "x": -20.4567,
+                                 "longitude": -20.4567, "datum": None, "type": "GEOGRAPHIC"
+                             }],
+                             "vertical_extent": [{
+                                 "datum": "NAVD88", "value": 1500.0,
+                                 "distance_units": "feet", "resolution": None, "type": "ALTITUDE"
+                             }]
+                         },
+                         "representative": {
+                             "representative_point_type": None, "representative_point": None,
+                             "vertical_position": {
+                                  "datum": "LS", "value": -0.6, "distance_units": "meters",
+                                  "type": "DEPTH", "resolution": None
+                             }
+                         }
+                     },
+                     "description_reference": None,
+                     "observed_property_variables": ["ACT", "Ag"],
+                     "related_party": [],
+                     "url": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
+                     "utc_offset": None,
+                     "related_sampling_feature_complex": [{"related_sampling_feature": "A-Region1",
+                                                           "related_sampling_feature_type": "REGION",
+                                                           "role": "PARENT",
+                                                           "url": "http://testserver/synthesis/monitoringfeatures/regions/A-Region1/"}],
+                },
+                "feature_of_interest_type": "POINT",
                 "utc_offset": -9,
                 "result_points": [["2016-02-01", 0.3454],
                                   ["2016-02-02", 0.6908],
@@ -535,25 +316,49 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                                   ["2016-02-07", 2.4177999999999997],
                                   ["2016-02-08", 2.7632],
                                   ["2016-02-09", 3.1086]],
-                "result_quality": "checked",
-                "statistic": "mean",
-                "type": "measurement_tvp_timeseries",
-                "aggregation_duration": "daily",
-                "measurement_position": {
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "type": "measurementposition",
-                    "vertical_position": {"datum": "LS",
-                                          "distance_units": "meters",
-                                          "resolution": None,
-                                          "type": 'depth',
-                                          "value": 0.5}},
+                "result_quality": "CHECKED",
+                "statistic": "MEAN",
+                "type": "MEASUREMENT_TVP_TIMESERIES",
+                "aggregation_duration": "DAILY",
                 "phenomenon_time": None
             },
             {
                 "id": "A-2",
                 "observed_property": "http://testserver/synthesis/observedproperty/1/",
-                "geographical_group_id": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
+                "feature_of_interest": {
+                     "id": "A-2", "name": "Point Location 2",
+                     "description": "The point.",
+                     "feature_type": "POINT", "shape": "POINT",
+                     "coordinates": {
+                         "absolute": {
+                             "horizontal_position": [{
+                                 "units": "DD", "latitude": 70.4657, "y": 70.4657, "x": -20.4567,
+                                 "longitude": -20.4567, "datum": None, "type": "GEOGRAPHIC"
+                             }],
+                             "vertical_extent": [{
+                                 "datum": "NAVD88", "value": 1500.0,
+                                 "distance_units": "feet", "resolution": None, "type": "ALTITUDE"
+                             }]
+                         },
+                         "representative": {
+                             "representative_point_type": None, "representative_point": None,
+                             "vertical_position": {
+                                  "datum": "LS", "value": -0.7, "distance_units": "meters",
+                                  "type": "DEPTH", "resolution": None
+                             }
+                         }
+                     },
+                     "description_reference": None,
+                     "observed_property_variables": ["ACT", "Ag"],
+                     "related_party": [],
+                     "url": "http://testserver/synthesis/monitoringfeatures/points/A-2/",
+                     "utc_offset": None,
+                     "related_sampling_feature_complex": [{"related_sampling_feature": "A-Region1",
+                                                           "related_sampling_feature_type": "REGION",
+                                                           "role": "PARENT",
+                                                           "url": "http://testserver/synthesis/monitoringfeatures/regions/A-Region1/"}],
+                },
+                "feature_of_interest_type": "POINT",
                 "utc_offset": -10,
                 "unit_of_measurement": "nm",
                 "result_points": [["2016-02-01", 0.3454],
@@ -565,18 +370,10 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                                   ["2016-02-07", 2.4177999999999997],
                                   ["2016-02-08", 2.7632],
                                   ["2016-02-09", 3.1086]],
-                "result_quality": "checked",
-                "statistic": "mean",
-                "type": "measurement_tvp_timeseries",
-                "aggregation_duration": "daily",
-                "measurement_position": {
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "type": "measurementposition",
-                    "vertical_position": {"datum": "LS",
-                                          "distance_units": "meters",
-                                          "resolution": None,
-                                          "type": 'depth',
-                                          "value": 0.5}},
+                "result_quality": "CHECKED",
+                "statistic": "MEAN",
+                "type": "MEASUREMENT_TVP_TIMESERIES",
+                "aggregation_duration": "DAILY",
                 "phenomenon_time": None
             }]
         self.assertEqual(json.loads(response.content.decode('utf-8')), expected_output)
