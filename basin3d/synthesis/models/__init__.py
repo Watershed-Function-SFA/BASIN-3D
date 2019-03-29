@@ -40,6 +40,7 @@ class Base(object):
                     kwargs[id] = "{}-{}".format(self.datasource.id_prefix, kwargs[id])
 
         if "id" in kwargs and datasource:
+            kwargs["original_id"] = kwargs["id"]
             kwargs["id"] = "{}-{}".format(self.datasource.id_prefix, kwargs["id"])
 
         self.__dict__.update(kwargs)
@@ -83,9 +84,10 @@ class Person(Base):
         self.last_name = None
         self.email = None
         self.institution = None
+        self.role = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
 
 
-__all__ = ['field', 'simulations', 'measurement', 'Base']
+__all__ = ['field', 'measurement', 'Base']

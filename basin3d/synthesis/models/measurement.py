@@ -19,6 +19,7 @@
 from collections import namedtuple
 from numbers import Number
 
+from basin3d.models import FeatureTypes
 from basin3d.plugins import get_datasource_observed_property, \
     get_datasource_observed_property_variable
 from basin3d.synthesis.models import Base
@@ -49,8 +50,8 @@ class ResultQuality(object):
     """
     Controlled Vocabulary for result quality
     """
-    RESULT_QUALITY_CHECKED = "checked"
-    RESULT_QUALITY_UNCHECKED = "unchecked"
+    RESULT_QUALITY_CHECKED = "CHECKED"
+    RESULT_QUALITY_UNCHECKED = "UNCHECKED"
 
 
 class Observation(Base):
@@ -68,14 +69,13 @@ class Observation(Base):
         - *utc_offset:*, float (offset in hours referenced to UTC), +9
         - *phenomenon_time:* datetime (required OGC attribute timePhenomenon),
         - *observed_property:* string,
+        - *feature_of_interest:* string,
+        - *feature_of_interest_type:* enum (see FeatureType object)
         - *result_quality:*, string,
-        - *geographical_group_id:* string, River system ID (Region ID)
-        - *geographical_group_type:* enum (sampling_feature, site, plot, region, point_location, measurement position)
-        - *measurement_position:* float, height or depth of observation
 
     """
-    TYPE_MEASUREMENT_TVP_TIMESERIES = "measurement_tvp_timeseries"
-    TYPE_MEASUREMENT = "measurement"
+    TYPE_MEASUREMENT_TVP_TIMESERIES = "MEASUREMENT_TVP_TIMESERIES"
+    TYPE_MEASUREMENT = "MEASUREMENT"
 
     def __init__(self, datasource, **kwargs):
         self.id = None
@@ -83,16 +83,25 @@ class Observation(Base):
         self.utc_offset = None
         self.phenomenon_time = None
         self.observed_property = None
-        self.geographical_group_id = None  # For now
-        self.geographical_group_type = None  # For now
-        self.measurement_position = None  # For now
+        self.feature_of_interest = None
+        self.feature_of_interest_type = None
         self.result_quality = ResultQuality()
 
         # Initialize after the attributes have been set
-        super().__init__(datasource, datasource_ids=['geographical_group_id'], **kwargs)
+        super().__init__(datasource, **kwargs)
+        self.__validate__()
 
     def __eq__(self, other):
         return self.id == other.id
+
+    def __validate__(self):
+        """
+        Validate attributes
+        """
+
+        # Validate feature of interest type if present is class FeatureTypes
+        if self.feature_of_interest_type and self.feature_of_interest_type not in FeatureTypes.TYPES.keys():
+            raise AttributeError("feature_of_interest_type must be FeatureType")
 
 
 class TimeMetadataMixin(object):
@@ -103,16 +112,16 @@ class TimeMetadataMixin(object):
         - *aggregation_duration:* string with controlled vocab (CV follows OGC TM_PeriodDuration)
         - *time_reference_position:* string with controlled vocab (part of OGC interpolationType)
     """
-    AGGREGATION_DURATION_YEAR = "year"
-    AGGREGATION_DURATION_MONTH = "month"
-    AGGREGATION_DURATION_DAY = "day"
-    AGGREGATION_DURATION_HOUR = "hour"
-    AGGREGATION_DURATION_MINUTE = "minute"
-    AGGREGATION_DURATION_SECOND = "second"
+    AGGREGATION_DURATION_YEAR = "YEAR"
+    AGGREGATION_DURATION_MONTH = "MONTH"
+    AGGREGATION_DURATION_DAY = "DAY"
+    AGGREGATION_DURATION_HOUR = "HOUR"
+    AGGREGATION_DURATION_MINUTE = "MINUTE"
+    AGGREGATION_DURATION_SECOND = "SECOND"
 
-    TIME_REFERENCE_START = "start"
-    TIME_REFERENCE_MIDDLE = "middle"
-    TIME_REFERENCE_END = "end"
+    TIME_REFERENCE_START = "START"
+    TIME_REFERENCE_MIDDLE = "MIDDLE"
+    TIME_REFERENCE_END = "END"
 
     def __init__(self, *args, **kwargs):
         self.aggregation_duration = None
@@ -131,10 +140,10 @@ class MeasurementMetadataMixin(object):
         - *statistic:* string with controlled vocab (part of OGC interpolationType)
     """
 
-    STATISTIC_MEAN = "mean"
-    STATISTIC_MIN = "min"
-    STATISTIC_MAX = "max"
-    STATISTIC_TOTAL = "total"
+    STATISTIC_MEAN = "MEAN"
+    STATISTIC_MIN = "MIN"
+    STATISTIC_MAX = "MAX"
+    STATISTIC_TOTAL = "TOTAL"
 
     def __init__(self, *args, **kwargs):
         self.observed_property_variable = None
@@ -193,10 +202,9 @@ class MeasurementTimeseriesTVPObservation(TimeMetadataMixin, MeasurementMetadata
         - *utc_offset:*, float (offset in hours referenced to UTC), +9
         - *phenomenon_time:* datetime (required OGC attribute timePhenomenon),
         - *observed_property:* string,
+        - *feature_of_interest:* object Feature
+        - *feature_of_interest_type:* enum (FeatureTypes)
         - *result_quality:*, string,
-        - *geographical_group_id:* string, River system ID (Region ID)
-        - *geographical_group_type:* enum (sampling_feature, site, plot, region, point_location, measurement position)
-        - *measurement_position:* float, height or depth of observation
 
     Inherited attributes (:class:`TimeMetadataMixin`):
         - *aggregation_duration:* string with controlled vocab (CV follows OGC TM_PeriodDuration)

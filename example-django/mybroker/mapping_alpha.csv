@@ -1,5 +1,5 @@
 broker_id,datasource_name,sampling_medium,description
-ACT,Acetate,water,
-Ag,Ag,water,
-Al,Al,water,
-As,As,water,
+ACT,Acetate,WATER,
+Ag,Ag,WATER,
+Al,Al,WATER,
+As,As,WATER,

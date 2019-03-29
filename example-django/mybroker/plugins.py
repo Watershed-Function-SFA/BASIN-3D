@@ -1,143 +1,83 @@
 import logging
 
-from basin3d.models import GeographicalGroup, ObservedProperty
+from basin3d.models import FeatureTypes, SpatialSamplingShapes
 from basin3d.plugins import DataSourcePluginPoint, DataSourcePluginViewMeta
 from basin3d.synthesis.models import measurement, Person
-from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation, \
-    GeographicCoordinate, MeasurementPosition, DepthCoordinate
+from basin3d.synthesis.models.field import MonitoringFeature, RelatedSamplingFeature, \
+    GeographicCoordinate, DepthCoordinate, AltitudeCoordinate, \
+    Coordinate, RepresentativeCoordinate, AbsoluteCoordinate, VerticalCoordinate
 from basin3d.synthesis.models.measurement import MeasurementTimeseriesTVPObservation
 from django.utils.six import with_metaclass
 
 logger = logging.getLogger(__name__)
 
 
-class AlphaSiteView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = Site
+class AlphaMonitoringFeatureView(with_metaclass(DataSourcePluginViewMeta)):
+    synthesis_model_class = MonitoringFeature
 
     def list(self, request, **kwargs):
         """
-        Get the Site information
-
-
+        Get Monitoring Feature Info
         """
-        obj = self.synthesis_model_class(self.datasource, id=1, name="Foo",
-                                         description="Foo Bar Site",
-                                         country="US",
-                                         state_province="California",
-                                         utc_offset=-6,
-                                         center_coordinates=GeographicCoordinate(
-                                             latitude=90.0,
-                                             longitude=90.0,
-                                             datum=GeographicCoordinate.DATUM_WGS84,
-                                             units=GeographicCoordinate.UNITS_DEC_SECONDS
-                                         ),
-                                         pi=Person(first_name="Jessica",
-                                                   last_name="Jones",
-                                                   email="jjones@foo.bar",
-                                                   institution="DC Comics"),
-                                         contacts=[Person(first_name="Barry",
-                                                          last_name="Allen",
-                                                          email="ballen@foo.bar",
-                                                          institution="DC Comics")],
-                                         urls=["http://foo.bar"])
 
-        yield obj
+        obj_region = self.synthesis_model_class(
+            datasource=self.datasource,
+            id="Region1",
+            name="AwesomeRegion",
+            description="This region is really awesome.",
+            feature_type =FeatureTypes.REGION,
+            shape=SpatialSamplingShapes.SHAPE_SURFACE,
+            coordinates=Coordinate(representative=RepresentativeCoordinate(
+                representative_point=AbsoluteCoordinate(
+                    horizontal_position=GeographicCoordinate(
+                        units=GeographicCoordinate.UNITS_DEC_DEGREES,
+                        latitude=70.4657, longitude=-20.4567),
+                    vertical_extent=AltitudeCoordinate(
+                        datum=AltitudeCoordinate.DATUM_NAVD88,
+                        value=1500,
+                        distance_units=VerticalCoordinate.DISTANCE_UNITS_FEET)),
+                representative_point_type=RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE)
+            )
+        )
+
+        yield obj_region
+
+        obj_point = self.synthesis_model_class(
+            datasource=self.datasource,
+            id="1",
+            name="Point Location 1",
+            description="The first point.",
+            feature_type=FeatureTypes.POINT,
+            shape=SpatialSamplingShapes.SHAPE_POINT,
+            coordinates=Coordinate(
+                absolute=AbsoluteCoordinate(
+                    horizontal_position=GeographicCoordinate(
+                        units=GeographicCoordinate.UNITS_DEC_DEGREES,
+                        latitude=70.4657, longitude=-20.4567),
+                    vertical_extent=AltitudeCoordinate(
+                        datum=AltitudeCoordinate.DATUM_NAVD88,
+                        value=1500,
+                        distance_units=VerticalCoordinate.DISTANCE_UNITS_FEET)),
+                representative=RepresentativeCoordinate(
+                    vertical_position=DepthCoordinate(
+                        datum=DepthCoordinate.DATUM_LOCAL_SURFACE,
+                        value=-0.5,
+                        distance_units=VerticalCoordinate.DISTANCE_UNITS_METERS)
+                )
+            ),
+            observed_property_variables=["Ag", "Acetate"],
+            related_sampling_feature_complex=[
+                RelatedSamplingFeature(datasource=self.datasource,
+                                       related_sampling_feature="Region1",
+                                       related_sampling_feature_type=FeatureTypes.REGION,
+                                       role=RelatedSamplingFeature.ROLE_PARENT)]
+        )
+
+        yield obj_point
 
     def get(self, request, pk=None):
         """
-        Get a Site
-        :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
-class AlphaPlotView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = Plot
-
-    def list(self, request, **kwargs):
-        """
-        Get the Site information
-
-
-        """
-        obj = self.synthesis_model_class(self.datasource, id=1, name="Plot 1",
-                                         site_id="1",
-                                         geom={},
-                                         pi=Person(first_name="Jessica",
-                                                   last_name="Jones",
-                                                   email="jjones@foo.bar",
-                                                   institution="DC Comics"),
-                                         )
-
-        yield obj
-
-    def get(self, request, pk=None):
-        """
-        Get a Site
-        :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
-class AlphaPointLocationView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = PointLocation
-
-    def list(self, request, **kwargs):
-        """
-        Get the Site information
-
-        """
-
-        for i in range(10):
-            obj = self.synthesis_model_class(self.datasource, id=i,
-                                             name="Point Location {}".format(i),
-                                             site_id="1",
-                                             type="well",
-                                             geographical_group_id=1,
-                                             geographical_group_type=GeographicalGroup.PLOT,
-                                             horizontal_position=GeographicCoordinate(
-                                                 latitude=90.0,
-                                                 longitude=90.0,
-                                                 datum=GeographicCoordinate.DATUM_WGS84,
-                                                 units=GeographicCoordinate.UNITS_DEC_DEGREES
-                                             )
-                                             )
-
-            yield obj
-
-    def get(self, request, pk=None):
-        """
-        Get a Site
-        :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
-class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = Region
-
-    def list(self, request, **kwargs):
-        """
-        Get the Region information
-        """
-        region = self.synthesis_model_class(self.datasource, name="a site",
-                                            id="SI123",
-                                            description="This is for my site description", )
-
-        yield region
-
-    def get(self, request, pk=None):
-        """
-        Get a Region
+        Get a MonitoringFeature
         :param pk: primary key
         """
         for s in self.list(request):
@@ -172,20 +112,42 @@ class AlphaDataMeasurementTimeseriesTVPObservationView(with_metaclass(DataSource
                 id=num,
                 observed_property=1,
                 utc_offset=-8-num,
-                geographical_group_id=1,
-                geographical_group_type=GeographicalGroup.POINT_LOCATION,
-                measurement_position=MeasurementPosition(
-                    self.datasource,
-                    point_location_id=1,
-                    vertical_position=DepthCoordinate(
-                        value=0.5,
-                        distance_units=DepthCoordinate.DISTANCE_UNITS_METERS,
-                        datum=DepthCoordinate.DATUM_LOCAL_SURFACE)),
+                feature_of_interest=MonitoringFeature(
+                    datasource=self.datasource,
+                    id=num,
+                    name="Point Location " + str(num),
+                    description="The point.",
+                    feature_type=FeatureTypes.POINT,
+                    shape=SpatialSamplingShapes.SHAPE_POINT,
+                    coordinates=Coordinate(
+                        absolute=AbsoluteCoordinate(
+                            horizontal_position=GeographicCoordinate(
+                                units=GeographicCoordinate.UNITS_DEC_DEGREES,
+                                latitude=70.4657, longitude=-20.4567),
+                            vertical_extent=AltitudeCoordinate(
+                                datum=AltitudeCoordinate.DATUM_NAVD88,
+                                value=1500,
+                                distance_units=VerticalCoordinate.DISTANCE_UNITS_FEET)),
+                        representative=RepresentativeCoordinate(
+                            vertical_position=DepthCoordinate(
+                                datum=DepthCoordinate.DATUM_LOCAL_SURFACE,
+                                value=-0.5-num*0.1,
+                                distance_units=VerticalCoordinate.DISTANCE_UNITS_METERS)
+                        )
+                    ),
+                    observed_property_variables=["Ag", "Acetate"],
+                    related_sampling_feature_complex=[
+                        RelatedSamplingFeature(datasource=self.datasource,
+                                               related_sampling_feature="Region1",
+                                               related_sampling_feature_type=FeatureTypes.REGION,
+                                               role=RelatedSamplingFeature.ROLE_PARENT)]
+                ),
+                feature_of_interest_type=FeatureTypes.POINT,
                 unit_of_measurement="nm",
-                aggregation_duration="daily",
-                result_quality="checked",
+                aggregation_duration="DAILY",
+                result_quality="CHECKED",
                 time_reference_position=None,
-                statistic="mean",
+                statistic="MEAN",
                 result_points=data
             )
 
@@ -203,8 +165,9 @@ class AlphaDataMeasurementTimeseriesTVPObservationView(with_metaclass(DataSource
 class AlphaSourcePlugin(DataSourcePluginPoint):
     name = 'alpha-source-plugin'
     title = 'Alpha Source Plugin'
-    plugin_view_classes = (AlphaRegionView, AlphaSiteView, AlphaPlotView, AlphaPointLocationView, \
-                           AlphaDataMeasurementTimeseriesTVPObservationView)
+    plugin_view_classes = (AlphaDataMeasurementTimeseriesTVPObservationView, AlphaMonitoringFeatureView)
+    # Question: should we use the FeatureTypes CV directly?
+    feature_types = ['REGION', 'POINT', 'TREE']
 
     class DataSourceMeta:
         """

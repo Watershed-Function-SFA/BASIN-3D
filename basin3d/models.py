@@ -14,29 +14,73 @@
 
 """
 from __future__ import unicode_literals
-
-from importlib import import_module
-
 from django.db import models
 from django_extensions.db.fields.encrypted import EncryptedTextField
+from importlib import import_module
 
 
-class GeographicalGroup(object):
+class SpatialSamplingShapes(object):
     """
-    Geographical groups where a datapoint can come from
+    GM_Shape defined in OGC O&M
     """
-    SAMPLING_FEATURE = 0  # Not sure how this is used
-    SITE = 1
-    PLOT = 2
-    REGION = 3
-    POINT_LOCATION = 4
+
+    SHAPE_SOLID = "SOLID"
+    SHAPE_SURFACE = "SURFACE"
+    SHAPE_CURVE = "CURVE"
+    SHAPE_POINT = "POINT"
+
+
+class FeatureTypes(object):
+    """
+    Feature Types where an Observation can be made.
+
+    This is a controlled CV list that we are maintaining. USGS Watershed Boundry Dataset is used.
+    We're trying to strike a balance between commonly used hierarchical levels and features
+    versus a runaway list of Feature types. OGC O&M suggests that Features should be
+    determined as needed.
+    """
+
+    REGION = 0
+    SUBREGION = 1
+    BASIN = 2
+    SUBBASIN = 3
+    WATERSHED = 4
+    SUBWATERSHED = 5
+    SITE = 6
+    PLOT = 7
+    HORIZONTAL_PATH = 8  # Rivers, Transects
+    VERTICAL_PATH = 9  # Towers, Boreholes, Trees, Pits
+    POINT = 10
 
     TYPES = {
-            REGION: "region",
-        SITE: "site",
-        PLOT: "plot",
-        POINT_LOCATION: "pointlocation"
+        REGION: "REGION",
+        SUBREGION: "SUBREGION",
+        BASIN: "BASIN",
+        SUBBASIN: "SUBBASIN",
+        WATERSHED: "WATERSHED",
+        SUBWATERSHED: "SUBWATERSHED",
+        SITE: "SITE",
+        PLOT: "PLOT",
+        HORIZONTAL_PATH: "HORIZONTAL PATH",
+        VERTICAL_PATH: "VERTICAL PATH",
+        POINT: "POINT"
     }
+
+    SHAPE_TYPES = {
+        SpatialSamplingShapes.SHAPE_POINT: [POINT],
+        SpatialSamplingShapes.SHAPE_CURVE: [HORIZONTAL_PATH, VERTICAL_PATH],
+        SpatialSamplingShapes.SHAPE_SURFACE: [REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED,
+                               SUBWATERSHED, SITE, PLOT],
+        SpatialSamplingShapes.SHAPE_SOLID: []
+    }
+
+
+def get_feature_types():
+    """
+    Helper function for FeatureTypes
+    :return list of feature_types as strings
+    """
+    return [x for x in FeatureTypes.TYPES.values()]
 
 
 class StringListField(models.TextField):
@@ -208,11 +252,11 @@ class SamplingMedium(models.Model):
     Types of sampling mediums for Observed Properties
     """
 
-    SOLID_PHASE = "solid phase"
-    WATER = "water"
-    GAS = "gas"
-    OTHER = 'other'
-    NOT_APPLICABLE = 'N/A'
+    SOLID_PHASE = "SOLID PHASE"
+    WATER = "WATER"
+    GAS = "GAS"
+    OTHER = "OTHER"
+    NOT_APPLICABLE = "N/A"
     SAMPLING_MEDIUMS = [WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE]
 
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
