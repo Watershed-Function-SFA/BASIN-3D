@@ -83,13 +83,14 @@ class Observation(Base):
         self.utc_offset = None
         self.phenomenon_time = None
         self.observed_property = None
-        self.geographical_group_id = None  # For now
-        self.geographical_group_type = None  # For now
-        self.measurement_position = None  # For now
+        self.feature_of_interest = None
+        # self.geographical_group_id = None  # Delete
+        # self.geographical_group_type = None  # Delete
+        # self.measurement_position = None  # Delete
         self.result_quality = ResultQuality()
 
         # Initialize after the attributes have been set
-        super().__init__(datasource, datasource_ids=['geographical_group_id'], **kwargs)
+        super().__init__(datasource, datasource_ids=['feature_of_interest'], **kwargs)
 
     def __eq__(self, other):
         return self.id == other.id
@@ -193,10 +194,8 @@ class MeasurementTimeseriesTVPObservation(TimeMetadataMixin, MeasurementMetadata
         - *utc_offset:*, float (offset in hours referenced to UTC), +9
         - *phenomenon_time:* datetime (required OGC attribute timePhenomenon),
         - *observed_property:* string,
+        - *feature_of_interest:* object Feature
         - *result_quality:*, string,
-        - *geographical_group_id:* string, River system ID (Region ID)
-        - *geographical_group_type:* enum (sampling_feature, site, plot, region, point_location, measurement position)
-        - *measurement_position:* float, height or depth of observation
 
     Inherited attributes (:class:`TimeMetadataMixin`):
         - *aggregation_duration:* string with controlled vocab (CV follows OGC TM_PeriodDuration)

@@ -22,6 +22,146 @@
 """
 from basin3d.plugins import get_datasource_observed_property_variables
 from basin3d.synthesis.models import Base
+from basin3d.models import FeatureTypes, SpatialSamplingShapes
+from collections import namedtuple
+
+
+class RelatedSamplingFeature(namedtuple('RelatedSamplingFeature',
+                                        ['related_sampling_feature', 'role'])):
+    """
+    Tuple that represents a related sampling feature and it's role relative to
+    the sampling feature to which it is related.
+
+    See OGC Observations and Measurements
+    """
+
+    ROLE_PARENT = "Parent"
+
+    def __new__(cls, related_sampling_feature, role):
+        return super().__new__(cls, related_sampling_feature, role)
+
+
+class Coordinate(Base):
+    """
+    Top level coordinate class that holds absolute or relative coordinates
+
+    Attributes:
+        *absolute:* obj AbsoluteCooradinate
+        *representative:* obj RepresentativeCoordinate
+    """
+
+    def __init__(self, **kwargs):
+        self.absolute = None
+        self.representative = None
+
+        # Initialize after the attributes have been set
+        super().__init__(None, **kwargs)
+        self.__validate__()
+
+    def __validate__(self):
+        """
+        Validate the attributes
+        """
+
+        # enforce absolute is class AbsoluteCoordinate
+        if self.absolute and not isinstance(self.absolute, AbsoluteCoordinate):
+            raise TypeError("Coordinate.absolute attribute must be AbsoluteCoordinate object")
+
+        # enforce representative class is RepresentativeCoordinate
+        if self.representative and not isinstance(self.representative, RepresentativeCoordinate):
+            raise TypeError("Coordinate.representative attribute must be RepresentativeCoordinate object")
+
+        # enforce required coordinates: if only representative, then representative.representative_point is required
+        if self.absolute is None:
+            if self.representative.representative_point is None:
+                raise AttributeError("Representative_point is required if only representative coordinates are provided.")
+
+
+class AbsoluteCoordinate(Base):
+    """
+    Absolute coordinate class.
+
+    Planned extension to better check point, curve, surface, solid shape-specific coordinates.
+    May want to include a type attribute akin to GeoJSON type
+    In future, reconsider the format of attributes to allow for more types of description (meshes, solids, etc)
+
+    Attributes:
+        *horizontal_position:* list of obj GeographicCoordinate
+        *vertical_extent:* list of obj AltitudeCoordinate
+        *shape:* str internally determined by coordinates (determination of solid not functional)
+    """
+
+    def __init__(self, **kwargs):
+        self.horizontal_position = []
+        self.vertical_extent = []
+
+        # Initialize after the attributes have been set
+        super().__init__(None, **kwargs)
+        self.__validate__()
+
+    def __validate__(self):
+        # ToDo: require horizontal position
+        if self.horizontal_position is None:
+            raise AttributeError("Horizontal position required for AbsoluteCoordinate instance")
+        elif not isinstance(self.horizontal_position, (list, tuple, set)):  # check for better not iterable
+            self.horizontal_position = [self.horizontal_position]
+
+        if not isinstance(self.vertical_extent, (list, tuple, set)):
+            self.vertical_extent = [self.vertical_extent]
+
+        # ToDo: validate obj types
+        for obj in self.horizontal_position:
+            if not isinstance(obj, GeographicCoordinate):
+                raise TypeError("Horizontal position must be instance of GeographicCoordinate")
+
+        if self.vertical_extent is not None:
+            for obj in self.vertical_extent:
+                if not isinstance(obj, AltitudeCoordinate):
+                    raise TypeError("Vertical extent must be instance of AltitudeCoordinate")
+
+        if len(self.horizontal_position) != len(self.vertical_extent):
+            raise AttributeError("Lengths of horizontal positions and vertical extent must be equal.")
+
+        # ToDo: add validation for shape coordinates.
+
+
+class RepresentativeCoordinate(Base):
+    """
+    Representative coordinates
+
+    Extendable to other forms of representing (e.g., diameter, area, side_length)
+    Representative point types are also expandable as use cases require.
+
+    Attributes:
+        *representative_point:* obj AbsoluteCoordinate for POINT
+        *representative_point_type:* string (CV assumes @ local surface)
+        *vertical_position:* obj DepthCoordinate
+    """
+
+    REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE = "Center local surface"
+    REPRESENTATIVE_POINT_TYPE_UPPER_LEFT_CORNER = "Upper Left Corner"
+    REPRESENTATIVE_POINT_TYPE_UPPER_RIGHT_CORNER = "Upper Right Corner"
+    REPRESENTATIVE_POINT_TYPE_LOWER_LEFT_CORNER = "Lower Left Corner"
+    REPRESENTATIVE_POINT_TYPE_LOWER_RIGHT_CORNER = "Lower Right Corner"
+
+    def __init__(self, **kwargs):
+        self.representative_point = None
+        self.representative_point_type = None
+        self.vertical_position = None
+
+        # Initialize after the attributes have been set
+        super().__init__(None, **kwargs)
+        self.__validate__()
+
+    def __validate__(self):
+        """
+        Validate attributes
+        """
+
+        # if representative point, require representative point type
+        if self.representative_point is not None:
+            if self.representative_point_type is None:
+                raise AttributeError("representative_point_type is required if representative_point provided.")
 
 
 class VerticalCoordinate(Base):
@@ -238,11 +378,189 @@ class GeographicCoordinate(HorizontalCoordinate):
 
     @property
     def latitude(self):
-        return self.x
+        return self.y
 
     @property
     def longitude(self):
-        return self.y
+        return self.x
+
+
+class Feature(Base):
+    """
+    A general feature upon which an observation can be made. Loosely after GF_Feature (ISO).
+
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
+    Attributes:
+        - *id:* string
+        - *name:* string
+        - *description:* string
+        - *type:* string
+        - *observed_property_variables:* list
+    """
+
+    def __init__(self, datasource, **kwargs):
+        self.id = None
+        self.name = None
+        self.description = None
+        self.type = None
+        self.observed_property_variables = None
+
+        # Initialize after the attributes have been set
+        super().__init__(datasource, **kwargs)
+
+        if self.observed_property_variables and isinstance(self.observed_property_variables, (tuple, list, enumerate)):
+            # synthesize measurement variables
+            synth_params = []
+            for synth_param in get_datasource_observed_property_variables(datasource, self.observed_property_variables):
+                synth_params.append(synth_param.observed_property_variable_id)
+
+            self.observed_property_variables = synth_params
+
+
+class SamplingFeature(Feature):
+    """
+    A feature where sampling is conducted. OGC Observation & Measurements SF_SamplingFeature.
+
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
+    Inherited attributes (:class:`Feature):
+        - *id:* string
+        - *name:* string
+        - *description:* string
+        - *type:* string
+        - *observed_property_variables:* list
+
+    Attributes:
+        - *sampled_feature:* list
+        - *related_sampling_feature:* list
+    """
+
+    def __init__(self, datasource, **kwargs):
+        self.sampled_feature = []
+        self.related_sampling_feature = []
+
+        # Initialize after the attributes have been set
+        super().__init__(datasource, **kwargs)
+
+
+class SpatialSamplingFeature(Feature):
+    """
+    A feature where sampling is conducted. OGC Observation & Measurements SF_SpatialSamplingFeature.
+
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
+    Inherited attributes (:class:`Feature`):
+        - *id:* string
+        - *name:* string
+        - *description:* string
+        - *type:* string
+        - *observed_property_variables:* list
+
+    Inherited attributes (:class:`SamplingFeature`):
+        - *sampled_feature:* list
+        - *related_sampling_feature:* list
+
+    Attributes:
+        - *shape:* string
+        - *coordinates:* dictionary
+    """
+
+    def __init__(self, datasource, **kwargs):
+        self.shape = None
+        self.coordinates = None
+
+        # Initialize after the attributes have been set
+        super().__init__(datasource, **kwargs)
+        self.__validate__()
+
+        # Set the shape dependent on type
+        for key, values in FeatureTypes.SHAPE_TYPES.items():
+            if self.type in values:
+                self.shape = key
+
+    def __validate__(self):
+        """
+        Require that type is set
+        """
+
+        if self.type is None:
+            raise AttributeError("Feature type must be indicated")
+
+        if self.coordinates and not isinstance(self.coordinates, Coordinate):
+            raise TypeError("coordinates must be Coordinate instance.")
+
+        self._verify_coordinates_match_shape()
+
+    def _verify_coordinates_match_shape(self):
+        # Consider: invert logic in so that the coordinates specify the shape.
+        error_msg = "Absolute coordinates do not match specified shape {}. ".format(self.shape)
+        if self.coordinates.absolute is not None:
+            if self.shape == SpatialSamplingShapes.SHAPE_POINT:
+                if len(self.coordinates.absolute.horizontal_position) != 1:
+                    raise AttributeError(error_msg + "Shape { } must have only one point.")
+                else:
+                    return
+            if self.shape == SpatialSamplingShapes.SHAPE_SURFACE:
+                if len(self.coordinates.absolute.horizontal_position) < 1 or \
+                        self.coordinates.absolute.horizontal_position[0] != \
+                        self.coordinates.absolute.horizontal_position[-1]:
+                    raise AttributeError(error_msg + "Shape { } must have more than one point. "
+                                                     "The first and last points in the list must "
+                                                     "be the same point.")
+                else:
+                    return
+            if self.shape == SpatialSamplingShapes.SHAPE_CURVE:
+                if len(self.coordinates.absolute.horizontal_position) < 1 or \
+                        self.coordinates.absolute.horizontal_position[0] == \
+                        self.coordinates.absolute.horizontal_position[-1]:
+                    raise AttributeError(error_msg + "Shape { } must have more than one point. "
+                                                     "The first and last points in the list must "
+                                                     "NOT be the same point.")
+                else:
+                    return
+            # ToDo: distinguish solid from curve when altitude is included
+
+
+class MonitoringFeature(SpatialSamplingFeature):
+    """
+    A feature where monitoring is happenin. OGC Timeseries Profile OM_MonitoringFeature.
+
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
+    Inherited attributes (:class:`Feature`):
+        - *id:* string
+        - *name:* string
+        - *description:* string
+        - *type:* string
+        - *observed_property_variables:* list
+
+    Inherited attributes (:class:`SamplingFeature`):
+        - *sampled_feature:* list
+        - *related_sampling_feature:* list
+
+    Inherited attributes (:class:`SpatialSamplingFeature`):
+        - *shape:* string
+        - *coordinates:* dictionary
+
+    Attributes:
+        - *description_reference:* string  # extra information about the Monitoring Feature
+        - *related_party:* list of obj Person  # extend in future to full OGC Responsible_Party
+        - *utc_offset:* int
+
+    """
+
+    def __init__(self, datasource, **kwargs):
+        self.description_reference = None
+        self.related_party = []
+        self.utc_offset = None
+
+        # Initialize after the attributes have been set
+        super().__init__(datasource, **kwargs)
 
 
 class Region(Base):
@@ -267,7 +585,7 @@ class Region(Base):
         super().__init__(datasource, **kwargs)
 
 
-class SamplingFeature(Base):
+class SamplingFeature1(Base):
     """
     A feature where sampling is conducted. These can be of many types- a Site, a plot, a transect,
     a point location etc.). Can be nested infinitely? Concept from ODM2/OGC
@@ -290,7 +608,7 @@ class SamplingFeature(Base):
         super().__init__(datasource, **kwargs)
 
 
-class Site(SamplingFeature):
+class Site(SamplingFeature1):
     """
     A demarcated, geographic area where measurements are being conducted. E.g. East River Site,
     K34-Manaus. Note: (Site differs from ODM 2 definition of a site, which is a point location.
@@ -329,7 +647,7 @@ class Site(SamplingFeature):
         self.type = str(self.__class__.__name__).lower()
 
 
-class Plot(SamplingFeature):
+class Plot(SamplingFeature1):
     """
     A group of related point measurements - such as in a plot or a set of wells
 
@@ -354,7 +672,7 @@ class Plot(SamplingFeature):
         self.type = str(self.__class__.__name__).lower()
 
 
-class PointLocation(SamplingFeature):
+class PointLocation(SamplingFeature1):
     """
     This is a point on the earth where something is being measured - e.g. a well,
     a stream gage, a tree, a tower. New Broker terminology..
@@ -396,7 +714,7 @@ class PointLocation(SamplingFeature):
             self.observed_property_variables = synth_params
 
 
-class MeasurementPosition(SamplingFeature):
+class MeasurementPosition(SamplingFeature1):
     """(MAYBE THIS SHOULD BE SPECIFIC TYPES OF MEASUREMENT POSITIONS.. WELL MEASUREMENT,
     TOWER SENSORS, TREE PROBES - NEED DIFFERENT INFO)
 

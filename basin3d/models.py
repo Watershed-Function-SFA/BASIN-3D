@@ -14,13 +14,68 @@
 
 """
 from __future__ import unicode_literals
-
-from importlib import import_module
-
 from django.db import models
 from django_extensions.db.fields.encrypted import EncryptedTextField
+from importlib import import_module
 
 
+class SpatialSamplingShapes(object):
+    """
+    GM_Shape defined in OGC O&M
+    """
+
+    SHAPE_SOLID = "Solid"
+    SHAPE_SURFACE = "Surface"
+    SHAPE_CURVE = "Curve"
+    SHAPE_POINT = "Point"
+
+
+class FeatureTypes(object):
+    """
+    Feature Types where an Observation can be made.
+
+    This is a controlled CV list that we are maintaining. USGS Watershed Boundry Dataset is used.
+    We're trying to strike a balance between commonly used hierarchical levels and features
+    versus a runaway list of Feature types. OGC O&M suggests that Features should be
+    determined as needed.
+    """
+
+    REGION = 0
+    SUBREGION = 1
+    BASIN = 2
+    SUBBASIN = 3
+    WATERSHED = 4
+    SUBWATERSHED = 5
+    SITE = 6
+    PLOT = 7
+    HORIZONTAL_PATH = 8  # Rivers, Transects
+    VERTICAL_PATH = 9  # Towers, Boreholes, Trees, Pits
+    POINT = 10
+
+    TYPES = {
+        REGION: "Region",
+        SUBREGION: "Subregion",
+        BASIN: "Basin",
+        SUBBASIN: "Subbasin",
+        WATERSHED: "Watershed",
+        SUBWATERSHED: "Subwatershed",
+        SITE: "Site",
+        PLOT: "Plot",
+        HORIZONTAL_PATH: "Horizontal Path",
+        VERTICAL_PATH: "Vertical Path",
+        POINT: "Point"
+    }
+
+    SHAPE_TYPES = {
+        SpatialSamplingShapes.SHAPE_POINT: [POINT],
+        SpatialSamplingShapes.SHAPE_CURVE: [HORIZONTAL_PATH, VERTICAL_PATH],
+        SpatialSamplingShapes.SHAPE_SURFACE: [REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED,
+                               SUBWATERSHED, SITE, PLOT],
+        SpatialSamplingShapes.SHAPE_SOLID: []
+    }
+
+
+# Delete
 class GeographicalGroup(object):
     """
     Geographical groups where a datapoint can come from
