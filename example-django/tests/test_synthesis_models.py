@@ -4,7 +4,7 @@ from django.test import TestCase
 from basin3d.models import DataSource, FeatureTypes, SpatialSamplingShapes
 from basin3d.synthesis.models.field import Region, MonitoringFeature, Coordinate, \
     AbsoluteCoordinate, RepresentativeCoordinate, GeographicCoordinate, AltitudeCoordinate, \
-    DepthCoordinate, VerticalCoordinate
+    DepthCoordinate, VerticalCoordinate, RelatedSamplingFeature
 from basin3d.synthesis.models.measurement import Observation, \
     MeasurementTimeseriesTVPObservation, ResultQuality, TimeValuePair
 
@@ -78,7 +78,12 @@ class ModelTests(TestCase):
                         value=-0.5, distance_units=VerticalCoordinate.DISTANCE_UNITS_METERS)
                 )
             ),
-            observed_property_variables=["Ag", "Acetate"]
+            observed_property_variables=["Ag", "Acetate"],
+            related_sampling_feature_complex=[
+                RelatedSamplingFeature(datasource=self.datasource,
+                                       related_sampling_feature="Region1",
+                                       related_sampling_feature_type=FeatureTypes.REGION,
+                                       role=RelatedSamplingFeature.ROLE_PARENT)]
         )
 
         assert a_point.datasource.name == "Alpha"
@@ -102,6 +107,8 @@ class ModelTests(TestCase):
         assert a_point.coordinates.representative.vertical_position.datum == \
             DepthCoordinate.DATUM_LOCAL_SURFACE
         assert a_point.observed_property_variables == ["ACT", "Ag"]
+        assert a_point.related_sampling_feature_complex[0].related_sampling_feature == "A-Region1"
+        assert a_point.related_sampling_feature_complex[0].role == "Parent"
 
     # ToDo: build tests for all MonitoringFeature / Coordinate Exceptions
     # ToDo: build tests for all coordinate type logic
@@ -155,6 +162,7 @@ class ModelTests(TestCase):
             phenomenon_time="20180201",
             result_quality=ResultQuality().RESULT_QUALITY_CHECKED,
             feature_of_interest="Point011",
+            feature_of_interest_type=FeatureTypes.POINT,
             # geographical_group_id="Point011",
             # geographical_group_type=GeographicalGroup.POINT_LOCATION,
             aggregation_duration="daily",
@@ -173,6 +181,7 @@ class ModelTests(TestCase):
         assert obs01.observed_property_variable is None
         assert obs01.result_quality == ResultQuality.RESULT_QUALITY_CHECKED
         assert obs01.feature_of_interest == "A-Point011"
+        assert obs01.feature_of_interest_type == FeatureTypes.POINT
         # assert obs01.geographical_group_id == "A-Point011"
         # assert obs01.geographical_group_type == GeographicalGroup.POINT_LOCATION
         assert obs01.aggregation_duration == "daily"

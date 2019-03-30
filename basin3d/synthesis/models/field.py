@@ -23,13 +23,11 @@
 from basin3d.plugins import get_datasource_observed_property_variables
 from basin3d.synthesis.models import Base
 from basin3d.models import FeatureTypes, SpatialSamplingShapes
-from collections import namedtuple
 
 
-class RelatedSamplingFeature(namedtuple('RelatedSamplingFeature',
-                                        ['related_sampling_feature', 'role'])):
+class RelatedSamplingFeature(Base):
     """
-    Tuple that represents a related sampling feature and it's role relative to
+    Class that represents a related sampling feature and it's role relative to
     the sampling feature to which it is related.
 
     See OGC Observations and Measurements
@@ -37,8 +35,32 @@ class RelatedSamplingFeature(namedtuple('RelatedSamplingFeature',
 
     ROLE_PARENT = "Parent"
 
-    def __new__(cls, related_sampling_feature, role):
-        return super().__new__(cls, related_sampling_feature, role)
+    ROLE_TYPES = [ROLE_PARENT]
+
+    def __init__(self, datasource, **kwargs):
+        self.related_sampling_feature = None
+        self.related_sampling_feature_type = None
+        self.role = None
+
+        # Initialize after the attributes have been set
+        super().__init__(datasource, datasource_ids=['related_sampling_feature'], **kwargs)
+        self.__validate__()
+
+    def __validate__(self):
+        """
+        Validate attributes
+        :return:
+        """
+
+        if self.related_sampling_feature_type is None:
+            raise AttributeError("RelatedSamplingFeature related_sampling_feature_type is required.")
+        elif self.related_sampling_feature_type not in FeatureTypes.TYPES.keys():
+            raise AttributeError("RelatedSamplingFeature related_sampling_feature_type must be one of predefined types.")
+
+        if self.role is None:
+            raise AttributeError("RelatedSamplingFeature role is required.")
+        elif self.role not in RelatedSamplingFeature.ROLE_TYPES:
+            raise AttributeError("RelatedSamplingFeature role must be one of predefined roles.")
 
 
 class Coordinate(Base):
@@ -138,7 +160,7 @@ class RepresentativeCoordinate(Base):
         *vertical_position:* obj DepthCoordinate
     """
 
-    REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE = "Center local surface"
+    REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE = "Center Local Surface"
     REPRESENTATIVE_POINT_TYPE_UPPER_LEFT_CORNER = "Upper Left Corner"
     REPRESENTATIVE_POINT_TYPE_UPPER_RIGHT_CORNER = "Upper Right Corner"
     REPRESENTATIVE_POINT_TYPE_LOWER_LEFT_CORNER = "Lower Left Corner"
@@ -434,19 +456,21 @@ class SamplingFeature(Feature):
         - *observed_property_variables:* list
 
     Attributes:
-        - *sampled_feature:* list
-        - *related_sampling_feature:* list
+        - *related_sampling_feature_complex:* list
+
+    Possible extension: sampled_feature(s)
     """
 
     def __init__(self, datasource, **kwargs):
-        self.sampled_feature = []
-        self.related_sampling_feature = []
+        self.related_sampling_feature_complex = []
 
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
 
+    # ToDo: validate items in lists
 
-class SpatialSamplingFeature(Feature):
+
+class SpatialSamplingFeature(SamplingFeature):
     """
     A feature where sampling is conducted. OGC Observation & Measurements SF_SpatialSamplingFeature.
 
@@ -458,15 +482,14 @@ class SpatialSamplingFeature(Feature):
         - *name:* string
         - *description:* string
         - *type:* string
-        - *observed_property_variables:* list
+        - *observed_property_variable_complex:* list
 
     Inherited attributes (:class:`SamplingFeature`):
-        - *sampled_feature:* list
-        - *related_sampling_feature:* list
+        - *related_sampling_feature_complex:* list
 
     Attributes:
         - *shape:* string
-        - *coordinates:* dictionary
+        - *coordinates:* Coordinate instance
     """
 
     def __init__(self, datasource, **kwargs):
@@ -540,12 +563,11 @@ class MonitoringFeature(SpatialSamplingFeature):
         - *observed_property_variables:* list
 
     Inherited attributes (:class:`SamplingFeature`):
-        - *sampled_feature:* list
-        - *related_sampling_feature:* list
+        - *related_sampling_feature_complex:* list
 
     Inherited attributes (:class:`SpatialSamplingFeature`):
         - *shape:* string
-        - *coordinates:* dictionary
+        - *coordinates:* Coordinate instance
 
     Attributes:
         - *description_reference:* string  # extra information about the Monitoring Feature

@@ -68,6 +68,8 @@ class Observation(Base):
         - *utc_offset:*, float (offset in hours referenced to UTC), +9
         - *phenomenon_time:* datetime (required OGC attribute timePhenomenon),
         - *observed_property:* string,
+        - *feature_of_interest:* string,
+        - *feature_of_interest_type:* enum (see FeatureType object)
         - *result_quality:*, string,
         - *geographical_group_id:* string, River system ID (Region ID)
         - *geographical_group_type:* enum (sampling_feature, site, plot, region, point_location, measurement position)
@@ -84,6 +86,7 @@ class Observation(Base):
         self.phenomenon_time = None
         self.observed_property = None
         self.feature_of_interest = None
+        self.feature_of_interest_type = None
         # self.geographical_group_id = None  # Delete
         # self.geographical_group_type = None  # Delete
         # self.measurement_position = None  # Delete

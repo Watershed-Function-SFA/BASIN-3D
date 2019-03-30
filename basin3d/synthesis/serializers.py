@@ -28,7 +28,7 @@ Serializers that render :mod:`basin.synthesis.models` from Python objects to `JS
 """
 from numbers import Number
 
-from basin3d.models import GeographicalGroup
+from basin3d.models import GeographicalGroup, FeatureTypes
 from basin3d.serializers import ChooseFieldsSerializerMixin
 from basin3d.synthesis.models.field import Region
 from django.utils.datetime_safe import datetime
@@ -116,34 +116,6 @@ class IdUrlSerializerMixin(object):
                            request=self.context["request"], )
 
 
-class RegionSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
-    """
-    Serializes a :class:`basin3d.synthesis.models.field.Region`
-    """
-
-    id = serializers.CharField()
-    name = serializers.CharField()
-    geom = serializers.JSONField()
-    description = serializers.CharField()
-
-    def __init__(self, *args, **kwargs):
-        # Don't pass the 'fields' arg up to the superclass
-        fields = kwargs.pop('fields', None)
-
-        # Instantiate the superclass normally
-        super(self.__class__, self).__init__(*args, **kwargs)
-
-    def create(self, validated_data):
-        return Region(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.id = validated_data.get('id', instance.id)
-        instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get('description', instance.description)
-        instance.geom = validated_data.get('geom', instance.geom)
-        return instance
-
-
 class PersonSerializer(serializers.Serializer):
     """ Serializes a :class:`basin3d.synthesis.models.Person`"""
 
@@ -163,7 +135,7 @@ class PersonSerializer(serializers.Serializer):
 
 
 class VerticalCoordinateSerializer(serializers.Serializer):
-    """ Serializes a :class:`basin3d.synthesis.models.field.VerticalCoordinate` and its base classes """
+    """ Serializes a :class:`basin3d.synthesis.models.field.VerticalCoordinate` and its child classes """
 
     value = serializers.FloatField()
     resolution = serializers.FloatField()
@@ -174,7 +146,7 @@ class VerticalCoordinateSerializer(serializers.Serializer):
 
 
 class HorizonatalCoordinateSerializer(serializers.Serializer):
-    """ Serializes a :class:`basin3d.synthesis.models.field.HorizonatalCoordinate` and its base classes """
+    """ Serializes a :class:`basin3d.synthesis.models.field.HorizonatalCoordinate` and its child classes """
 
     # Base Fields
     x = FloatField()
@@ -228,6 +200,208 @@ class HorizonatalCoordinateSerializer(serializers.Serializer):
         for field in field_to_remove:
             if field in self.fields:
                 self.fields.pop(field)
+
+
+class AbsoluteCoordinateSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
+    """
+    Serializes a :class:`basin3d.synthesis.models.field.AbsoluteCoordinate`
+    """
+
+    horizontal_position = serializers.ListSerializer(child=ReadOnlySynthesisModelField(serializer_class=HorizonatalCoordinateSerializer))
+    vertical_extent = serializers.ListSerializer(child=ReadOnlySynthesisModelField(serializer_class=VerticalCoordinateSerializer))
+
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+
+class RepresentativeCoordinateSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
+    """
+    Serializes a :class:`basin3d.synthesis.models.field.RepresentativeCoordinate`
+    """
+
+    representative_point = ReadOnlySynthesisModelField(serializer_class=AbsoluteCoordinateSerializer)
+    representative_point_type = serializers.CharField()
+    vertical_position = ReadOnlySynthesisModelField(serializer_class=VerticalCoordinateSerializer)
+
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+
+class CoordinateSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
+    """
+    Serializes a :class:`basin3d.synthesis.models.field.Coordinate`
+    """
+
+    absolute = ReadOnlySynthesisModelField(serializer_class=AbsoluteCoordinateSerializer)
+    representative = ReadOnlySynthesisModelField(serializer_class=RepresentativeCoordinateSerializer)
+
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+
+class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
+    """
+
+    """
+    related_sampling_feature = serializers.SerializerMethodField()
+    related_sampling_feature_type = serializers.SerializerMethodField()
+    role = serializers.CharField()
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        kwargs.pop('fields', None)
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+    def get_related_sampling_feature(self, obj):
+        """
+        Resolve the URL for the feature of interest
+        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
+        :return: an URL to the Monitoring Feature group
+        """
+        if "request" in self.context and self.context["request"]:
+            return reverse(
+                # ToDo: fix this url
+                viewname='monitoring_features/{}-detail'.format(FeatureTypes.TYPES[obj.related_sampling_feature_type].lower()),
+                kwargs={'pk': obj.id},
+                request=self.context["request"], )
+        else:
+            return obj.related_sampling_feature
+
+    def get_related_sampling_feature_type(self, obj):
+        """
+        Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
+        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
+        :return: Display value for the :class:`basin3d.models.GeographicalGroup` type
+        """
+        return FeatureTypes.TYPES[obj.related_sampling_feature_type]
+
+
+class FeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
+    """
+    Serializes a :class:`basin3d.synthesis.models.field.Feature`
+    """
+
+    id = serializers.CharField()
+    name = serializers.CharField()
+    description = serializers.CharField()
+    type = serializers.SerializerMethodField()
+    observed_property_variables = serializers.ListField()
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        # ToDo: Figure out what this is doing and explain it better.
+        kwargs.pop('fields', None)
+        super().__init__(*args, **kwargs)
+
+    def get_type(self, obj):
+        """
+        Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
+        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
+        :return: Display value for the :class:`basin3d.models.GeographicalGroup` type
+        """
+        return FeatureTypes.TYPES[obj.type]
+
+    def create(self, validated_data):
+        return FeatureSerializer(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.id = validated_data.get('id', instance.id)
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        instance.type = validated_data.get('type', instance.type)
+        return instance
+
+
+class SamplingFeatureSerializer(FeatureSerializer):
+    """
+    Serializes a :class:`basin3d.synthesis.models.field.SamplingFeature`
+    """
+
+    related_sampling_feature_complex = serializers.ListSerializer(
+        child=ReadOnlySynthesisModelField(serializer_class=RelatedSamplingFeatureSerializer))
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        kwargs.pop('fields', None)
+        super().__init__(*args, **kwargs)
+
+    def create(self, validated_data):
+        return SamplingFeatureSerializer(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.related_sampling_feature_complex = validated_data.get(
+            'related_sampling_feature_complex', instance.related_sampling_feature_complex)
+
+
+class SpatialSamplingFeatureSerializer(SamplingFeatureSerializer):
+    """
+    Serializes a :class:`basin3d.synthesis.models.field.SpatialSamplingFeature`
+    """
+
+    shape = serializers.CharField()
+    coordinates = ReadOnlySynthesisModelField(serializer_class=CoordinateSerializer)
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        kwargs.pop('fields', None)
+        super().__init__(*args, **kwargs)
+
+    def create(self, validated_data):
+        return SpatialSamplingFeatureSerializer(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.shape = validated_data.get('shape', instance.shape)
+        instance.coordinates = validated_data.get('coordinates', instance.coordinates)
+
+
+class MonitoringFeatureSerializer(SpatialSamplingFeatureSerializer):
+    """
+    Serializes a :class:`basin3d.synthesis.models.field.MonitoringFeature`
+    """
+    description_reference = serializers.CharField()
+    related_party = serializers.ListSerializer(child=ReadOnlySynthesisModelField(serializer_class=PersonSerializer))
+    utc_offset = serializers.IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        kwargs.pop('fields', None)
+        super().__init__(*args, **kwargs)
+
+    def create(self, validated_data):
+        return MonitoringFeatureSerializer(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.description_reference = validated_data.get('description_reference', instance.description_reference)
+        instance.related_party = validated_data.get('related_party', instance.related_party)
+        instance.utc_offset = validated_data.get('utc_offset', instance.utc_offset)
+
+
+class RegionSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
+    """
+    Serializes a :class:`basin3d.synthesis.models.field.Region`
+    """
+
+    id = serializers.CharField()
+    name = serializers.CharField()
+    geom = serializers.JSONField()
+    description = serializers.CharField()
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        fields = kwargs.pop('fields', None)
+
+        # Instantiate the superclass normally
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+    def create(self, validated_data):
+        return Region(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.id = validated_data.get('id', instance.id)
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        instance.geom = validated_data.get('geom', instance.geom)
+        return instance
 
 
 class SiteSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
@@ -464,10 +638,12 @@ class ObservationSerializerMixin(object):
         self.fields["phenomenon_time"] = TimestampField()
         self.fields["observed_property"] = serializers.SerializerMethodField()
         self.fields["result_quality"] = serializers.CharField()
-        self.fields["geographical_group_id"] = serializers.SerializerMethodField()
-        self.fields["geographical_group_type"] = serializers.SerializerMethodField()
+        self.fields["feature_of_interest"] = serializers.SerializerMethodField()
+        self.fields["feature_of_interest_type"] = serializers.SerializerMethodField()
+        self.fields["geographical_group_id"] = serializers.SerializerMethodField()  # Delete
+        self.fields["geographical_group_type"] = serializers.SerializerMethodField()  # Delete
         self.fields["measurement_position"] = ReadOnlySynthesisModelField(
-            serializer_class=MeasurementPositionSerializer)
+            serializer_class=MeasurementPositionSerializer)  # Delete
 
     def get_observed_property(self, obj):
         if "request" in self.context and self.context["request"]:
@@ -477,6 +653,30 @@ class ObservationSerializerMixin(object):
         else:
             return obj.observed_property
 
+    def get_feature_of_interest(self, obj):
+        """
+        Resolve the URL for the feature of interest
+        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
+        :return: an URL to the Monitoring Feature group
+        """
+        if "request" in self.context and self.context["request"]:
+            return reverse(
+                # ToDo: fix this url
+                viewname='monitoring_features/{}-detail'.format(FeatureTypes.TYPES[obj.feature_of_interest_type].lower()),
+                kwargs={'pk': obj.id},
+                request=self.context["request"], )
+        else:
+            return obj.feature_of_interest
+
+    def get_feature_of_interest_type(self, obj):
+        """
+        Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
+        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
+        :return: Display value for the :class:`basin3d.models.GeographicalGroup` type
+        """
+        return FeatureTypes.TYPES[obj.feature_of_interest_type]
+
+    # Delete
     def get_geographical_group_type(self, obj):
         """
         Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
@@ -485,6 +685,7 @@ class ObservationSerializerMixin(object):
         """
         return GeographicalGroup.TYPES[obj.geographical_group_type]
 
+    # Delete
     def get_geographical_group_id(self, obj):
         """
         Resolve the URL to the Geographical group
