@@ -75,6 +75,11 @@ class FeatureTypes(object):
     }
 
 
+def get_feature_types():
+    """ Helper function for FeatureTypes """
+    return [x for x in FeatureTypes.TYPES.values()]
+
+
 # Delete
 class GeographicalGroup(object):
     """

@@ -19,6 +19,7 @@
 from collections import namedtuple
 from numbers import Number
 
+from basin3d.models import FeatureTypes
 from basin3d.plugins import get_datasource_observed_property, \
     get_datasource_observed_property_variable
 from basin3d.synthesis.models import Base
@@ -94,9 +95,20 @@ class Observation(Base):
 
         # Initialize after the attributes have been set
         super().__init__(datasource, datasource_ids=['feature_of_interest'], **kwargs)
+        self.__validate__()
 
     def __eq__(self, other):
         return self.id == other.id
+
+    def __validate__(self):
+        """
+        Validate attributes
+        """
+
+        # Validate feature of interest type if present is class FeatureTypes
+        if self.feature_of_interest_type not in FeatureTypes.TYPES.keys():
+            if not isinstance(self.feature_of_interest_type, FeatureTypes):
+                raise AttributeError("feature_of_interest_type must be FeatureType")
 
 
 class TimeMetadataMixin(object):

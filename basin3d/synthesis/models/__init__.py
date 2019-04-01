@@ -83,6 +83,7 @@ class Person(Base):
         self.last_name = None
         self.email = None
         self.institution = None
+        self.role = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)

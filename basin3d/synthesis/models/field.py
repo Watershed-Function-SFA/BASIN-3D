@@ -21,7 +21,7 @@
 
 """
 from basin3d.plugins import get_datasource_observed_property_variables
-from basin3d.synthesis.models import Base
+from basin3d.synthesis.models import Base, Person  # pass Person for plugins
 from basin3d.models import FeatureTypes, SpatialSamplingShapes
 
 
@@ -51,11 +51,11 @@ class RelatedSamplingFeature(Base):
         Validate attributes
         :return:
         """
-
-        if self.related_sampling_feature_type is None:
-            raise AttributeError("RelatedSamplingFeature related_sampling_feature_type is required.")
-        elif self.related_sampling_feature_type not in FeatureTypes.TYPES.keys():
-            raise AttributeError("RelatedSamplingFeature related_sampling_feature_type must be one of predefined types.")
+        # ToDo: refactor this to not require type
+        if self.related_sampling_feature_type is not None and \
+                self.related_sampling_feature_type not in FeatureTypes.TYPES.keys():
+            print(self.related_sampling_feature_type.__class__)
+            raise AttributeError("RelatedSamplingFeature related_sampling_feature_type must be FeatureTypes")
 
         if self.role is None:
             raise AttributeError("RelatedSamplingFeature role is required.")
@@ -439,6 +439,14 @@ class Feature(Base):
                 synth_params.append(synth_param.observed_property_variable_id)
 
             self.observed_property_variables = synth_params
+
+    def __validate__(self):
+        """
+        Validate attributes
+        """
+
+        if self.type is not None and self.type not in FeatureTypes.TYPES.keys():
+            raise AttributeError("Feature attr type must be FeatureTypes.")
 
 
 class SamplingFeature(Feature):
