@@ -56,7 +56,7 @@ class SynthesisSerializerTests(TestCase):
             id="Region1",
             name="AwesomeRegion",
             description="This region is really awesome.",
-            type=FeatureTypes.REGION,
+            feature_type=FeatureTypes.REGION,
             shape=SpatialSamplingShapes.SHAPE_SURFACE,
             coordinates=models.field.Coordinate(representative=models.field.RepresentativeCoordinate(
                 representative_point=models.field.AbsoluteCoordinate(
@@ -79,7 +79,7 @@ class SynthesisSerializerTests(TestCase):
             json.loads(json_obj.decode('utf-8')),
             {"id": "A-Region1", "name": "AwesomeRegion",
              "description": "This region is really awesome.",
-             "type": "Region", "shape": "Surface",
+             "feature_type": "Region", "shape": "Surface",
              "coordinates": {
                  "absolute": None,
                  "representative": {
@@ -111,7 +111,7 @@ class SynthesisSerializerTests(TestCase):
             id="1",
             name="Point Location 1",
             description="The first point.",
-            type=FeatureTypes.POINT,
+            feature_type=FeatureTypes.POINT,
             shape=SpatialSamplingShapes.SHAPE_POINT,
             coordinates=models.field.Coordinate(
                 absolute=models.field.AbsoluteCoordinate(
@@ -145,7 +145,7 @@ class SynthesisSerializerTests(TestCase):
             json.loads(json_obj.decode('utf-8')),
             {"id": "A-1", "name": "Point Location 1",
              "description": "The first point.",
-             "type": "Point", "shape": "Point",
+             "feature_type": "Point", "shape": "Point",
              "coordinates": {
                  "absolute": {
                      "horizontal_position": [{
@@ -231,9 +231,11 @@ class SynthesisSerializerTests(TestCase):
                                                  "latitude": 90.0, "longitude": 90.0,
                                                  "units": "DD"},
                           "contacts": [{"first_name": "Barry", "last_name": "Allen",
-                                        "email": "ballen@foo.bar", "institution": "DC Comics"}],
+                                        "email": "ballen@foo.bar", "institution": "DC Comics",
+                                        "role": None}],
                           "pi": {"first_name": "Jessica", "last_name": "Jones",
-                                 "email": "jjones@foo.bar", "institution": "DC Comics"},
+                                 "email": "jjones@foo.bar", "institution": "DC Comics",
+                                 "role": None},
                           "urls": ["http://foo.bar"],
                           "url": None}
                          )

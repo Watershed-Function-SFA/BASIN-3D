@@ -106,9 +106,8 @@ class Observation(Base):
         """
 
         # Validate feature of interest type if present is class FeatureTypes
-        if self.feature_of_interest_type not in FeatureTypes.TYPES.keys():
-            if not isinstance(self.feature_of_interest_type, FeatureTypes):
-                raise AttributeError("feature_of_interest_type must be FeatureType")
+        if self.feature_of_interest_type and self.feature_of_interest_type not in FeatureTypes.TYPES.keys():
+            raise AttributeError("feature_of_interest_type must be FeatureType")
 
 
 class TimeMetadataMixin(object):

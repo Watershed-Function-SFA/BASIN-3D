@@ -24,7 +24,7 @@ class ModelTests(TestCase):
             id="Region1",
             name="AwesomeRegion",
             description="This region is really awesome.",
-            type=FeatureTypes.REGION,
+            feature_type=FeatureTypes.REGION,
             shape=SpatialSamplingShapes.SHAPE_SURFACE,
             coordinates=Coordinate(representative=RepresentativeCoordinate(
                 representative_point=AbsoluteCoordinate(
@@ -41,7 +41,7 @@ class ModelTests(TestCase):
         assert a_region.datasource.name == "Alpha"
         assert a_region.id == "A-Region1"
         assert a_region.name == "AwesomeRegion"
-        assert a_region.type == FeatureTypes.REGION
+        assert a_region.feature_type == FeatureTypes.REGION
         assert a_region.description == "This region is really awesome."
         assert a_region.shape == SpatialSamplingShapes.SHAPE_SURFACE
         assert a_region.coordinates.representative.representative_point.horizontal_position[0].units == \
@@ -61,7 +61,7 @@ class ModelTests(TestCase):
             id="1",
             name="Point Location 1",
             description="The first point.",
-            type=FeatureTypes.POINT,
+            feature_type=FeatureTypes.POINT,
             shape=SpatialSamplingShapes.SHAPE_POINT,
             coordinates=Coordinate(
                 absolute=AbsoluteCoordinate(
@@ -89,7 +89,7 @@ class ModelTests(TestCase):
         assert a_point.datasource.name == "Alpha"
         assert a_point.id == "A-1"
         assert a_point.name == "Point Location 1"
-        assert a_point.type == FeatureTypes.POINT
+        assert a_point.feature_type == FeatureTypes.POINT
         assert a_point.description == "The first point."
         assert a_point.shape == SpatialSamplingShapes.SHAPE_POINT
         assert a_point.coordinates.absolute.horizontal_position[0].units == \

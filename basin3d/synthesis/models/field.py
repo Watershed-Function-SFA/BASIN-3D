@@ -418,7 +418,7 @@ class Feature(Base):
         - *id:* string
         - *name:* string
         - *description:* string
-        - *type:* string
+        - *feature_type:* string
         - *observed_property_variables:* list
     """
 
@@ -426,7 +426,7 @@ class Feature(Base):
         self.id = None
         self.name = None
         self.description = None
-        self.type = None
+        self.feature_type = None
         self.observed_property_variables = None
 
         # Initialize after the attributes have been set
@@ -445,8 +445,8 @@ class Feature(Base):
         Validate attributes
         """
 
-        if self.type is not None and self.type not in FeatureTypes.TYPES.keys():
-            raise AttributeError("Feature attr type must be FeatureTypes.")
+        if self.feature_type is not None and self.feature_type not in FeatureTypes.TYPES.keys():
+            raise AttributeError("Feature attr feature_type must be FeatureTypes.")
 
 
 class SamplingFeature(Feature):
@@ -460,7 +460,7 @@ class SamplingFeature(Feature):
         - *id:* string
         - *name:* string
         - *description:* string
-        - *type:* string
+        - *feature_type:* string
         - *observed_property_variables:* list
 
     Attributes:
@@ -489,7 +489,7 @@ class SpatialSamplingFeature(SamplingFeature):
         - *id:* string
         - *name:* string
         - *description:* string
-        - *type:* string
+        - *feature_type:* string
         - *observed_property_variable_complex:* list
 
     Inherited attributes (:class:`SamplingFeature`):
@@ -508,18 +508,18 @@ class SpatialSamplingFeature(SamplingFeature):
         super().__init__(datasource, **kwargs)
         self.__validate__()
 
-        # Set the shape dependent on type
+        # Set the shape dependent on feature_type
         for key, values in FeatureTypes.SHAPE_TYPES.items():
-            if self.type in values:
+            if self.feature_type in values:
                 self.shape = key
 
     def __validate__(self):
         """
-        Require that type is set
+        Require that feature_type is set
         """
 
-        if self.type is None:
-            raise AttributeError("Feature type must be indicated")
+        if self.feature_type is None:
+            raise AttributeError("Feature attr feature_type must be indicated")
 
         if self.coordinates and not isinstance(self.coordinates, Coordinate):
             raise TypeError("coordinates must be Coordinate instance.")
@@ -567,7 +567,7 @@ class MonitoringFeature(SpatialSamplingFeature):
         - *id:* string
         - *name:* string
         - *description:* string
-        - *type:* string
+        - *feature_type:* string
         - *observed_property_variables:* list
 
     Inherited attributes (:class:`SamplingFeature`):

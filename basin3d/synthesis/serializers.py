@@ -28,7 +28,7 @@ Serializers that render :mod:`basin.synthesis.models` from Python objects to `JS
 """
 from numbers import Number
 
-from basin3d.models import GeographicalGroup, FeatureTypes, get_feature_types
+from basin3d.models import GeographicalGroup, FeatureTypes
 from basin3d.serializers import ChooseFieldsSerializerMixin
 from basin3d.synthesis.models.field import Region
 from django.utils.datetime_safe import datetime
@@ -263,7 +263,7 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
         """
         path_route = None
         # ToDo: refactor to use get_feature_types (synthesis.models)
-        # ToDo: work without type specified
+        # ToDo: work without feature_type specified
         if "request" in self.context and self.context["request"] and obj.related_sampling_feature is not None:
             for key, feature_type in FeatureTypes.TYPES.items():
                 if key == obj.related_sampling_feature_type:
@@ -292,9 +292,9 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
 
     def get_related_sampling_feature_type(self, obj):
         """
-        Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
+        Convert the :class:`basin3d.models.FeatureTypes` type to the display value
         :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
-        :return: Display value for the :class:`basin3d.models.GeographicalGroup` type
+        :return: Display value for the :class:`basin3d.models.FeatureTypes` type
         """
         return FeatureTypes.TYPES[obj.related_sampling_feature_type]
 
@@ -307,7 +307,7 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
         """
         path_route = None
         # ToDo: refactor to use get_feature_types (synthesis.models)
-        # ToDo: work without type specified
+        # ToDo: work without feature_type specified
         if obj.related_sampling_feature is not None and "request" in self.context and self.context["request"]:
             for key, feature_type in FeatureTypes.TYPES.items():
                 if key == obj.related_sampling_feature_type:
@@ -340,7 +340,7 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
     id = serializers.CharField()
     name = serializers.CharField()
     description = serializers.CharField()
-    type = serializers.SerializerMethodField()
+    feature_type = serializers.SerializerMethodField()
     observed_property_variables = serializers.ListField()
 
     def __init__(self, *args, **kwargs):
@@ -351,13 +351,13 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
 
         self.fields["url"] = serializers.SerializerMethodField()
 
-    def get_type(self, obj):
+    def get_feature_type(self, obj):
         """
-        Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
+        Convert the :class:`basin3d.models.FeatureTypes` type to the display value
         :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
-        :return: Display value for the :class:`basin3d.models.GeographicalGroup` type
+        :return: Display value for the :class:`basin3d.models.FeatureTypes` type
         """
-        return FeatureTypes.TYPES[obj.type]
+        return FeatureTypes.TYPES[obj.feature_type]
 
     def create(self, validated_data):
         return FeatureSerializer(**validated_data)
@@ -366,7 +366,7 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
         instance.id = validated_data.get('id', instance.id)
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
-        instance.type = validated_data.get('type', instance.type)
+        instance.feature_type = validated_data.get('feature_type', instance.feature_type)
         return instance
 
     def get_url(self, obj):
@@ -378,10 +378,10 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
         """
         path_route = None
         # ToDo: refactor to use get_feature_types (synthesis.models)
-        # ToDo: work without type specified
-        if "request" in self.context and self.context["request"] and obj.type is not None:
+        # ToDo: work without feature_type specified
+        if "request" in self.context and self.context["request"] and obj.feature_type is not None:
             for key, feature_type in FeatureTypes.TYPES.items():
-                if key == obj.type:
+                if key == obj.feature_type:
                     ft = ''.join(feature_type.lower().split())
                     path_route = r'monitoringfeature-{}s-detail'.format(ft)
             if path_route is not None:
@@ -396,8 +396,8 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
         return None
         """
         if "request" in self.context and self.context["request"]:
-            if obj.type is not None:
-                feature_type = FeatureTypes.TYPES[obj.type]
+            if obj.feature_type is not None:
+                feature_type = FeatureTypes.TYPES[obj.feature_type]
                 path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
             else:
                 path_route = r'monitoringfeature-detail'
@@ -779,9 +779,9 @@ class ObservationSerializerMixin(object):
 
     def get_feature_of_interest_type(self, obj):
         """
-        Convert the :class:`basin3d.models.GeographicalGroup` type to the display value
+        Convert the :class:`basin3d.models.FeatureTypes` type to the display value
         :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
-        :return: Display value for the :class:`basin3d.models.GeographicalGroup` type
+        :return: Display value for the :class:`basin3d.models.FeatureTypes` type
         """
         return FeatureTypes.TYPES[obj.feature_of_interest_type]
 
