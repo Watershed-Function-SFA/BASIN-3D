@@ -7,10 +7,9 @@ from rest_framework.renderers import JSONRenderer
 
 from basin3d.synthesis import models
 from basin3d.serializers import ObservedPropertySerializer
-from basin3d.models import DataSource, GeographicalGroup, ObservedProperty, \
+from basin3d.models import DataSource, ObservedProperty, \
     ObservedPropertyVariable, SamplingMedium, FeatureTypes, SpatialSamplingShapes
 from basin3d.synthesis.serializers import MonitoringFeatureSerializer, \
-    RegionSerializer, SiteSerializer, \
     MeasurementTimeseriesTVPObservationSerializer
 
 
@@ -48,7 +47,7 @@ class SynthesisSerializerTests(TestCase):
     def setUp(self):
         self.datasource = DataSource.objects.get(name='Alpha')
 
-    def test_monitoring_serializer(self):
+    def test_monitoring_feature_serializer(self):
         """ Test Monitoring Serializer """
 
         obj = models.field.MonitoringFeature(
@@ -175,70 +174,6 @@ class SynthesisSerializerTests(TestCase):
                                                    "role": "Parent", "url": None}]
              }
         )
-
-    # delete
-    def test_region_serializer(self):
-        """ Test Region Serialization"""
-
-        obj = models.field.Region(self.datasource, name="a region",
-                                  id="SI123", description="US", geom={})
-
-        s = RegionSerializer(obj)
-
-        json_obj = JSONRenderer().render(s.data)
-        self.assertEqual(json.loads(json_obj.decode('utf-8')),
-                         {"id": "A-SI123", "description": "US", "geom": {}, 'name': 'a region',
-                          "url": None})
-
-    # delete
-    def test_site_serializer(self):
-        """ Test Site Serialization"""
-
-        obj = models.field.Site(self.datasource, id=1, name="Foo",
-                                description="Foo Bar Site",
-                                country="US",
-                                state_province="California",
-                                utc_offset=-6,
-                                center_coordinates=models.field.GeographicCoordinate(
-                                    x=90.0,
-                                    y=90.0,
-                                    datum=models.field.GeographicCoordinate.DATUM_WGS84,
-                                    units=models.field.GeographicCoordinate.UNITS_DEC_DEGREES
-                                ),
-                                pi=Person(first_name="Jessica",
-                                          last_name="Jones",
-                                          email="jjones@foo.bar",
-                                          institution="DC Comics"),
-                                contacts=[Person(first_name="Barry",
-                                                 last_name="Allen",
-                                                 email="ballen@foo.bar",
-                                                 institution="DC Comics")],
-                                urls=["http://foo.bar"])
-
-        s = SiteSerializer(obj)
-
-        json_obj = JSONRenderer().render(s.data)
-        self.maxDiff = None
-        self.assertEqual(json.loads(json_obj.decode('utf-8')),
-                         {"id": "A-1",
-                          "name": "Foo",
-                          "description": "Foo Bar Site",
-                          "type": "site",
-                          "country": "US",
-                          "state_province": "California",
-                          "utc_offset": -6,
-                          "center_coordinates": {"datum": "WGS84", "type": "geographic",
-                                                 "latitude": 90.0, "longitude": 90.0,
-                                                 "units": "DD"},
-                          "contacts": [{"first_name": "Barry", "last_name": "Allen",
-                                        "email": "ballen@foo.bar", "institution": "DC Comics",
-                                        "role": None}],
-                          "pi": {"first_name": "Jessica", "last_name": "Jones",
-                                 "email": "jjones@foo.bar", "institution": "DC Comics",
-                                 "role": None},
-                          "urls": ["http://foo.bar"],
-                          "url": None}
-                         )
 
     def test_measurement_timeseries_tvp_observation_serializer(self):
         """ Test MeasurementTimeseriesTVPObservation Serializer """
