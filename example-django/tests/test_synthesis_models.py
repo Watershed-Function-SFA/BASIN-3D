@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 from basin3d.models import DataSource, FeatureTypes, SpatialSamplingShapes
-from basin3d.synthesis.models.field import Region, MonitoringFeature, Coordinate, \
+from basin3d.synthesis.models.field import MonitoringFeature, Coordinate, \
     AbsoluteCoordinate, RepresentativeCoordinate, GeographicCoordinate, AltitudeCoordinate, \
     DepthCoordinate, VerticalCoordinate, RelatedSamplingFeature
 from basin3d.synthesis.models.measurement import Observation, \
@@ -113,17 +113,6 @@ class ModelTests(TestCase):
     # ToDo: build tests for all MonitoringFeature / Coordinate Exceptions
     # ToDo: build tests for all coordinate type logic
 
-    def test_region_create(self):
-        """ Test Region Creation"""
-
-        a_region = Region(self.datasource, name="a site",
-                          id="SI123",
-                          description="This is for my site description", )
-
-        self.assertEqual("a site", a_region.name)
-        self.assertEqual("A-SI123", a_region.id)
-        self.assertEqual("This is for my site description", a_region.description)
-
     def test_observation_create(self):
         """
         Test instance of observation model class
@@ -137,8 +126,6 @@ class ModelTests(TestCase):
             phenomenon_time="20180201",
             result_quality=ResultQuality().RESULT_QUALITY_CHECKED,
             feature_of_interest="Point011")
-            # geographical_group_id="Point011",
-            # geographical_group_type=GeographicalGroup.POINT_LOCATION)
 
         assert obs01.datasource.name == "Alpha"
         assert obs01.id == "A-timeseries01"
@@ -147,8 +134,6 @@ class ModelTests(TestCase):
         assert obs01.observed_property is None
         assert obs01.result_quality == ResultQuality().RESULT_QUALITY_CHECKED
         assert obs01.feature_of_interest == "A-Point011"
-        # assert obs01.geographical_group_id == "A-Point011"
-        # assert obs01.geographical_group_type == GeographicalGroup.POINT_LOCATION
 
     def test_measurement_timeseries_tvp_observation_create(self):
         """
@@ -163,8 +148,6 @@ class ModelTests(TestCase):
             result_quality=ResultQuality().RESULT_QUALITY_CHECKED,
             feature_of_interest="Point011",
             feature_of_interest_type=FeatureTypes.POINT,
-            # geographical_group_id="Point011",
-            # geographical_group_type=GeographicalGroup.POINT_LOCATION,
             aggregation_duration="daily",
             time_reference_position="start",
             observed_property_variable="Acetate",
@@ -182,8 +165,6 @@ class ModelTests(TestCase):
         assert obs01.result_quality == ResultQuality.RESULT_QUALITY_CHECKED
         assert obs01.feature_of_interest == "A-Point011"
         assert obs01.feature_of_interest_type == FeatureTypes.POINT
-        # assert obs01.geographical_group_id == "A-Point011"
-        # assert obs01.geographical_group_type == GeographicalGroup.POINT_LOCATION
         assert obs01.aggregation_duration == "daily"
         assert obs01.time_reference_position == "start"
         assert obs01.statistic == "mean"

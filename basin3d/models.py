@@ -80,25 +80,6 @@ def get_feature_types():
     return [x for x in FeatureTypes.TYPES.values()]
 
 
-# Delete
-class GeographicalGroup(object):
-    """
-    Geographical groups where a datapoint can come from
-    """
-    SAMPLING_FEATURE = 0  # Not sure how this is used
-    SITE = 1
-    PLOT = 2
-    REGION = 3
-    POINT_LOCATION = 4
-
-    TYPES = {
-            REGION: "region",
-        SITE: "site",
-        PLOT: "plot",
-        POINT_LOCATION: "pointlocation"
-    }
-
-
 class StringListField(models.TextField):
     """
     StringListField stored delimited strings in the database.
