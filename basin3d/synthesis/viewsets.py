@@ -22,10 +22,11 @@ View Controllers for BASIN-3D REST api
 """
 import logging
 
-from basin3d.models import DataSource
+from basin3d.models import DataSource, FeatureTypes
 from basin3d.plugins import InvalidOrMissingCredentials
 
-from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation
+from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation, \
+    MonitoringFeature
 from basin3d.synthesis.models.measurement import MeasurementTimeseriesTVPObservation, TimeMetadataMixin
 from basin3d.synthesis.query import extract_id, extract_query_param_ids, \
     QUERY_PARAM_OBSERVED_PROPERTY_VARIABLES, QUERY_PARAM_AGGREGATION_DURATION, \
@@ -33,12 +34,13 @@ from basin3d.synthesis.query import extract_id, extract_query_param_ids, \
     QUERY_PARAM_RESULT_QUALITY
 
 from basin3d.synthesis.serializers import RegionSerializer, SiteSerializer, \
-    MeasurementTimeseriesTVPObservationSerializer, \
+    MeasurementTimeseriesTVPObservationSerializer, MonitoringFeatureSerializer, \
     PlotSerializer, PointLocationSerializer
 from rest_framework import status
 from rest_framework import versioning
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
+from rest_framework.decorators import action
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -91,6 +93,9 @@ class DataSourcePluginViewSet(ViewSet):
                                                                                    self.synthesis_model])
                                                                            ):
                             items.append(obj)
+                            print(self.synthesize_query_params(request, plugin_views[self.synthesis_model]))
+                            if hasattr(obj, "type"):
+                                print(obj.type)
                     except InvalidOrMissingCredentials as e:
                         logger.error(e)
 
@@ -113,13 +118,16 @@ class DataSourcePluginViewSet(ViewSet):
             if datasource:
                 datasource_pk = pk.replace("{}-".format(pk_list[0]),
                                            "", 1)  # The datasource id prefix needs to be removed
+                print(datasource_pk)
                 if datasource.enabled:
 
                     plugin_views = datasource.get_plugin().get_plugin_views()
                     if self.synthesis_model in plugin_views:
                         obj = plugin_views[self.synthesis_model].get(request, pk=datasource_pk)
+                        print(datasource_pk + self.synthesis_model.__name__, request.path_info)
             if obj:
                 try:
+                    print(obj.id)
                     serializer = self.__class__.serializer_class(obj, context={'request': request})
                     return Response(serializer.data)
                 except Exception as e:
@@ -133,6 +141,115 @@ class DataSourcePluginViewSet(ViewSet):
             return Response({'success': False, 'detail': "There is no detail for datasource object {}. "
                                                          "The datasource id '{}' is invalid.".format(pk, pk_list[0])},
                             status=status.HTTP_404_NOT_FOUND, )
+
+
+class MonitoringFeatureViewSet(DataSourcePluginViewSet):
+    """
+    Return a list of the MonitoringFeature types in use
+
+    **Fields**
+    * *url* - for each Feature type
+
+    ** Filter results** by the following attributes
+
+    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
+
+    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
+    """
+    serializer_class = MonitoringFeatureSerializer
+    synthesis_model = MonitoringFeature
+
+    def synthesize_query_params(self, request, plugin_view):
+        """
+        Synthesizes query parameters, if necessary
+
+        Parameters Synthesized:
+
+        :param request: the request to synthesize
+        :param plugin_view: The plugin view to synthesize query params for
+        :return:
+        """
+        query_params = {}
+
+        # Look in Request to find URL and get type out if there
+        k, _ = self.extract_type(request)
+        if k is not None:
+            query_params["type"] = k
+
+        for key, value in request.query_params.items():
+            query_params[key] = value
+
+        print(query_params)
+        return query_params
+
+    def extract_type(self, request):
+        for k, feature_type in FeatureTypes.TYPES.items():
+            ft = "".join(feature_type.lower().split())
+            if ft in request.path_info:
+                return k, feature_type
+        return None, None
+
+    def retrieve(self, request, pk=None):
+        """
+        Retrieve a single synthesized value
+        :param request:
+        :param pk:
+        :return:
+        """
+
+        # split the datasource id prefix from the primary key
+        pk_list = pk.split("-")
+        try:
+            datasource = DataSource.objects.get(id_prefix=pk_list[0])
+            obj = None
+            if datasource:
+                # ToDo: Verify with real data. The example plugin does not work with datasource prefix removed.
+                # datasource_pk = pk.replace("{}-".format(pk_list[0]), "", 1)
+                # print(datasource_pk)
+                if datasource.enabled:
+
+                    plugin_views = datasource.get_plugin().get_plugin_views()
+                    if self.synthesis_model in plugin_views:
+                        obj = plugin_views[self.synthesis_model].get(request, pk=pk)
+                        print(pk + self.synthesis_model.__name__, request.path_info)
+            if obj:
+                try:
+                    print(obj.id)
+                    serializer = self.__class__.serializer_class(obj, context={'request': request})
+                    return Response(serializer.data)
+                except Exception as e:
+                    logger.error("Plugin error: ({},{}) -- {}".format(datasource.name, self.action, e))
+
+            return Response({"success": False, "content": "There is no detail for {}".format(pk)},
+                            status=status.HTTP_404_NOT_FOUND)
+        except DataSource.DoesNotExist:
+            return Response({'success': False, 'detail': "There is no detail for datasource object {}. "
+                                                         "The datasource id '{}' is invalid.".format(pk, pk_list[0])},
+                            status=status.HTTP_404_NOT_FOUND, )
+
+    @action(detail=True, url_name='regions-detail')
+    def regions(self, request, pk=None):
+        return self.retrieve(request=request, pk=pk)
+
+    @action(detail=True, url_name='watersheds-detail')
+    def watersheds(self, request, pk=None):
+        return self.retrieve(request=request, pk=pk)
+
+    @action(detail=True, url_name='sites-detail')
+    def sites(self, request, pk=None):
+        return self.retrieve(request=request, pk=pk)
+
+    @action(detail=True, url_name='horizontalpaths-detail')
+    def horizontalpaths(self, request, pk=None):
+        return self.retrieve(request=request, pk=pk)
+
+    @action(detail=True, url_name='verticalpaths-detail')
+    def verticalpaths(self, request, pk=None):
+        return self.retrieve(request=request, pk=pk)
+
+    @action(detail=True, url_name='points-detail')
+    def points(self, request, pk=None):
+        return self.retrieve(request=request, pk=pk)
 
 
 class RegionViewSet(DataSourcePluginViewSet):
@@ -320,7 +437,7 @@ class PointLocationViewSet(DataSourcePluginViewSet):
                                 param_name=QUERY_PARAM_SITES,
                                 id_prefix=id_prefix,
                                 query_params=query_params)
-
+        print(query_params)
         return query_params
 
 
@@ -376,6 +493,7 @@ class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
         for key, value in request.query_params.items():
             query_params[key] = value
 
+        # ToDo: Change to sampling by features types
         extract_query_param_ids(request=request,
                                 param_name=QUERY_PARAM_LOCATIONS,
                                 id_prefix=id_prefix,

@@ -399,6 +399,14 @@ class DataSourcePluginPoint(six.with_metaclass(PluginMount, object)):
         if not id_prefix:
             raise ValueError("{}.DataSourceMeta does not define an 'id_prefix'.")
 
+    @classmethod
+    def get_feature_types(cls):
+        """
+        Get the defined feature types
+        :return:
+        """
+        return getattr(cls, 'feature_types', None)
+
 
 class HTTPConnectionDataSource(object):
     """

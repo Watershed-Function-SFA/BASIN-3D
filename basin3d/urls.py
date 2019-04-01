@@ -13,10 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from basin3d.models import DataSource
+from basin3d.models import DataSource, get_feature_types
 from basin3d.synthesis.viewsets import MeasurementTimeseriesTVPObservationViewSet, \
-    RegionViewSet, SiteViewSet, PlotViewSet, PointLocationViewSet
-from basin3d.views import broker_api_root
+    RegionViewSet, SiteViewSet, PlotViewSet, PointLocationViewSet, MonitoringFeatureViewSet
+from basin3d.views import broker_api_root, monitoring_features_lists
 from basin3d.viewsets import DataSourceViewSet, DirectAPIViewSet, \
     ObservedPropertyViewSet, ObservedPropertyVariableViewSet
 from django.conf import settings
@@ -49,10 +49,40 @@ def get_synthesis_router():
                     plugin_views = plugin.get_plugin_views()
                     for model_name in plugin_views.keys():
                         viewset_models.append(model_name.__name__)
-
+                    """
+                    # Keep for a bit: initial try to include the monitoring feature urlpatterns here
+                    #    by extending router.urls directly. The looping machinery is the same as the
+                    #    function get_monitoring_features_url
+                    
+                    datasource_feature_types = plugin.get_feature_types()
+                    for feature_type in FeatureTypes.TYPES.values():
+                        if feature_type in datasource_feature_types:
+                            ft = ''.join(feature_type.lower().split())
+                            path_route = r'monitoringfeatures/{}'.format(ft)
+                            print(ft + path_route)
+                            router.urls.extend([
+                                '< URLPattern\'^monitoringfeatures/{}s/$\'[name = \'monitoringfeature-list\'] >'.format(ft),
+                                '< URLPattern\'^monitoringfeatures/{}s\.(?P<format>[a-z0-9]+)/?$\'[name = \'monitoringfeature-list\'] >'.format(ft),
+                                '< URLPattern\'^monitoringfeatures/{}s/(?P<pk>[^/.]+)/$\'[name = \'monitoringfeature-{}s-detail\'] >'.format(ft, ft),
+                                '< URLPattern\'^monitoringfeatures/{}s/(?P<pk>[^/.]+)\.(?P<format>[a-z0-9]+)/?$\'[name = \'monitoringfeature-{}s-detail\'] >'.format(ft, ft)
+                            ])
+                            
+                            # This is what router.urls looks like
+                            # [
+                            #     '< URLPattern\'^monitoringfeatures/{}s\.(?P<format>[a-z0-9]+)/?$\'[name = \'monitoringfeature-list\'] >'.format(ft),
+                            #     '< URLPattern\'^monitoringfeatures/{}s/(?P<pk>[^/.]+)/$\'[name = \'monitoringfeature-{}s-detail\'] >'.format(ft, ft),
+                            #     '< URLPattern\'^monitoringfeatures/{}s/(?P<pk>[^/.]+)\.(?P<format>[a-z0-9]+)/?$\'[name = \'monitoringfeature-{}s-detail\'] >'.format(ft, ft)
+                            #     '< URLPattern\'^monitoringfeatures/region/(?P<pk>[^/.]+)/regions/$\'[name = \'monitoringfeature-regions-regions-detail\'] >,
+                            #     '< URLPattern\'^monitoringfeatures/region/(?P<pk>[^/.]+)/regions\.(?P<format>[a-z0-9]+)/?$\'[name = \'monitoringfeature-{}-detail\'] >
+                            # ]
+                    
+                        # router.register(path_route, MonitoringFeatureViewSet, base_name='monitoringfeature-{}s'.format(ft))
+                    """
                     # This is OK for now in the future we want this to be more automated
                     # This will only add the viewsets that are defined
                     viewset_models = set(viewset_models)
+                    # if 'MonitoringFeature' in viewset_models:
+                    #     router.register(r'monitoringfeatures', MonitoringFeatureViewSet, base_name='monitoringfeature')
                     if 'Region' in viewset_models:
                         router.register(r'regions', RegionViewSet, base_name='region')
                     if 'Site' in viewset_models:
@@ -65,6 +95,7 @@ def get_synthesis_router():
                     if 'MeasurementTimeseriesTVPObservation' in viewset_models:
                         router.register(r'measurement_tvp_timeseries', MeasurementTimeseriesTVPObservationViewSet,
                                         base_name='measurementtvptimeseries')
+            # print(router.urls)
         except Exception:
             # This will only be raised during a migration because the database has not been
             # created yet.
@@ -72,13 +103,79 @@ def get_synthesis_router():
 
     return router
 
-# Wire up our API using automatic URL routing.
 
+def get_monitoring_feature_urls():
+    """
+
+    :return: list of url objects
+    """
+    urls = []
+    try:
+        # iterate over the Datasources and register ViewSets to the router
+        # for those models that are defined.
+        for datasource in DataSource.objects.all():
+            viewset_models = []
+            plugin = datasource.get_plugin()  # Get the plugin model
+
+            if datasource.enabled:
+
+                plugin_views = plugin.get_plugin_views()
+                for model_name in plugin_views.keys():
+                    viewset_models.append(model_name.__name__)
+
+                datasource_feature_types = plugin.get_feature_types()
+                # unsupported_feature_types = []
+                for feature_type in datasource_feature_types:
+                    if feature_type in get_feature_types():
+                        ft = ''.join(feature_type.lower().split())
+                        path_route = '^synthesis/monitoringfeatures/{}s'.format(ft)
+                        urls.extend([
+                            url(r'{}/$'.format(path_route),
+                                MonitoringFeatureViewSet.as_view({'get': 'list'}),
+                                name='monitoringfeature-list'),
+                            url(r'{}\.(?P<format>[a-z0-9]+)/?$'.format(path_route),
+                                MonitoringFeatureViewSet.as_view({'get': 'list'}),
+                                name='monitoringfeature-list'),
+                            url(r'{}/(?P<pk>[^/.]+)/$'.format(path_route),
+                                MonitoringFeatureViewSet.as_view({'get': '{}s'.format(ft)}),
+                                name='monitoringfeature-{}s-detail'.format(ft)),
+                            url(r'{}/(?P<pk>[^/.]+).(?P<format>[a-z0-9]+)/?'.format(path_route),
+                                MonitoringFeatureViewSet.as_view({'get': '{}s'.format(ft)}),
+                                name='monitoringfeature-{}s-detail'.format(ft))
+                        ])
+
+                # elif feature_type not in unsupported_feature_types:
+                #     unsupported_feature_types.append(feature_type)
+
+                # if len(unsupported_feature_types) > 0:
+                #    print("{} are not supported FeatureTypes.".format(
+                #        ", ".join(unsupported_feature_types)))
+                urls.extend([url(r'^synthesis/monitoringfeatures/all/$',
+                                 MonitoringFeatureViewSet.as_view({'get': 'list'}),
+                                 name='monitoringfeature-list'),
+                             url(r'^synthesis/monitoringfeatures\all.(?P<format>[a-z0-9]+)/?$',
+                                 MonitoringFeatureViewSet.as_view({'get': 'list'}),
+                                 name='monitoringfeature-list'),
+                            url(r'^synthesis/monitoringfeatures/(?P<pk>[^/.]+)/$',
+                                MonitoringFeatureViewSet.as_view({'get': 'retrieve'}),
+                                name='monitoringfeature-detail'),
+                            url(r'^synthesis/monitoringfeatures/(?P<pk>[^/.]+).(?P<format>[a-z0-9]+)/?',
+                                MonitoringFeatureViewSet.as_view({'get': 'retrieve'}),
+                                name='monitoringfeature-detail')
+                             ])
+        return urls
+    except Exception:
+        pass
+
+# Wire up our API using automatic URL routing.
 
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    url(r'^$', broker_api_root, name='broker-api-root' )
+    url(r'^$', broker_api_root, name='broker-api-root' ),
+    url(r'^synthesis/monitoringfeatures/$', monitoring_features_lists, name='broker-api-monitoring-features-list')
 ]
+
+urlpatterns.extend(get_monitoring_feature_urls())
 
 router = get_synthesis_router()
 if settings.BASIN3D["SYNTHESIS"]:
@@ -87,5 +184,7 @@ if settings.BASIN3D["SYNTHESIS"]:
 if settings.BASIN3D["DIRECT_API"]:
     urlpatterns.append(url(r'^direct/$',DirectAPIViewSet.as_view({'get':'list'}),name='direct-api-list'))
     urlpatterns.append(url(r'^direct/(?P<id_prefix>[a-zA-Z0-9]+)/(?P<direct_path>[a-zA-Z/_\-?&0-9]*)$',
-        DirectAPIViewSet.as_view({'get': 'retrieve', 'post':'retrieve'}),
-        name='direct-path-detail'))
+                           DirectAPIViewSet.as_view({'get': 'retrieve', 'post':'retrieve'}),
+                           name='direct-path-detail'))
+
+# print(urlpatterns)
