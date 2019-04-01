@@ -451,9 +451,8 @@ class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
     * *start_time:* datetime,  survey start time
     * *end_time:* datetime, units: survey end time
     * *utc_offset:* float (offset in hours), +9
-    * *geographical_group_id:* identifier for the geographical group
-    * *geographical_group_type* enum (sampling_feature, site, plot,
-            region, point_location, measurement position)
+    * *feature_of_interest* feature on which the observation is being made
+    * *feature_of_interest_type* enum (FeatureTypes)
     * *result_points* -- for the list of data_points associated with this Data Point Group
 
     ** Filter results** by the following attributes:

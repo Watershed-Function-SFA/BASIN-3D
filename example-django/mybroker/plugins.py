@@ -26,7 +26,7 @@ class AlphaMonitoringFeatureView(with_metaclass(DataSourcePluginViewMeta)):
             id="Region1",
             name="AwesomeRegion",
             description="This region is really awesome.",
-            type=FeatureTypes.REGION,
+            feature_type =FeatureTypes.REGION,
             shape=SpatialSamplingShapes.SHAPE_SURFACE,
             coordinates=Coordinate(representative=RepresentativeCoordinate(
                 representative_point=AbsoluteCoordinate(
@@ -48,7 +48,7 @@ class AlphaMonitoringFeatureView(with_metaclass(DataSourcePluginViewMeta)):
             id="1",
             name="Point Location 1",
             description="The first point.",
-            type=FeatureTypes.POINT,
+            feature_type=FeatureTypes.POINT,
             shape=SpatialSamplingShapes.SHAPE_POINT,
             coordinates=Coordinate(
                 absolute=AbsoluteCoordinate(

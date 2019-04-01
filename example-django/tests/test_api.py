@@ -71,7 +71,8 @@ class TestAPIRoot(TestCase):
                              "synthesis-plots": "http://testserver/synthesis/plots/",
                              "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
                              "synthesis-measurementtvptimeseries": "http://testserver/synthesis/measurement_tvp_timeseries/",
-                             "direct-apis": "http://testserver/direct/"
+                             "direct-apis": "http://testserver/direct/",
+                             "synthesis-monitoringfeatures": "http://testserver/synthesis/monitoringfeatures/"
                          })
 
     @override_settings(BASIN3D={'SYNTHESIS': False, 'DIRECT_API': True})
@@ -94,7 +95,9 @@ class TestAPIRoot(TestCase):
                              "synthesis-sites": "http://testserver/synthesis/sites/",
                              "synthesis-plots": "http://testserver/synthesis/plots/",
                              "synthesis-pointlocations": "http://testserver/synthesis/point_locations/",
-                             "synthesis-measurementtvptimeseries": "http://testserver/synthesis/measurement_tvp_timeseries/"
+                             "synthesis-measurementtvptimeseries": "http://testserver/synthesis/measurement_tvp_timeseries/",
+                             "synthesis-monitoringfeatures": "http://testserver/synthesis/monitoringfeatures/"
+
                          })
 
 
@@ -153,14 +156,16 @@ class TestSiteAPI(TestCase):
                                          "first_name": "Barry",
                                          "last_name": "Allen",
                                          "email": "ballen@foo.bar",
-                                         "institution": "DC Comics"
+                                         "institution": "DC Comics",
+                                         "role": None
                                      }
                                  ],
                                  "pi": {
                                      "first_name": "Jessica",
                                      "last_name": "Jones",
                                      "email": "jjones@foo.bar",
-                                     "institution": "DC Comics"
+                                     "institution": "DC Comics",
+                                     "role": None
                                  },
                                  "urls": [
                                      "http://foo.bar"
@@ -488,8 +493,8 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                              "id": "A-1",
                              "unit_of_measurement": "nm",
                              "observed_property": "http://testserver/synthesis/observedproperty/1/",
-                             "geographical_group_id": "http://testserver/synthesis/point_locations/A-1/",
-                             "geographical_group_type": "pointlocation",
+                             "feature_of_interest": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
+                             "feature_of_interest_type": "point",
                              "utc_offset": -9,
                              "result_points": [["2016-02-01", 0.3454],
                                                ["2016-02-02", 0.6908],
@@ -504,14 +509,6 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                              "statistic": "mean",
                              "type": "measurement_tvp_timeseries",
                              "aggregation_duration": "daily",
-                             "measurement_position": {
-                                 "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                                 "type": "measurementposition",
-                                 "vertical_position": {"datum": "LS",
-                                                       "distance_units": "meters",
-                                                       "resolution": None,
-                                                       "type": 'depth',
-                                                       "value": 0.5}},
                              "phenomenon_time": None
                          })
 
@@ -523,8 +520,8 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                 "id": "A-1",
                 "unit_of_measurement": "nm",
                 "observed_property": "http://testserver/synthesis/observedproperty/1/",
-                "geographical_group_id": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
+                "feature_of_interest": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
+                "feature_of_interest_type": "point",
                 "utc_offset": -9,
                 "result_points": [["2016-02-01", 0.3454],
                                   ["2016-02-02", 0.6908],
@@ -539,21 +536,13 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                 "statistic": "mean",
                 "type": "measurement_tvp_timeseries",
                 "aggregation_duration": "daily",
-                "measurement_position": {
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "type": "measurementposition",
-                    "vertical_position": {"datum": "LS",
-                                          "distance_units": "meters",
-                                          "resolution": None,
-                                          "type": 'depth',
-                                          "value": 0.5}},
                 "phenomenon_time": None
             },
             {
                 "id": "A-2",
                 "observed_property": "http://testserver/synthesis/observedproperty/1/",
-                "geographical_group_id": "http://testserver/synthesis/point_locations/A-1/",
-                "geographical_group_type": "pointlocation",
+                "feature_of_interest_id": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
+                "feature_of_interest_type": "point",
                 "utc_offset": -10,
                 "unit_of_measurement": "nm",
                 "result_points": [["2016-02-01", 0.3454],
@@ -569,14 +558,6 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                 "statistic": "mean",
                 "type": "measurement_tvp_timeseries",
                 "aggregation_duration": "daily",
-                "measurement_position": {
-                    "point_location": "http://testserver/synthesis/point_locations/A-1/",
-                    "type": "measurementposition",
-                    "vertical_position": {"datum": "LS",
-                                          "distance_units": "meters",
-                                          "resolution": None,
-                                          "type": 'depth',
-                                          "value": 0.5}},
                 "phenomenon_time": None
             }]
         self.assertEqual(json.loads(response.content.decode('utf-8')), expected_output)
