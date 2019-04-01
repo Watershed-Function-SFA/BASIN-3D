@@ -64,6 +64,8 @@ def broker_api_root(request, format=None):
 def broker_api_monitoring_features_list(request, format=format):
     """
     Generate list of URLs to views for monitoring features
+
+    KEEP for now: this hardcodes all the features
     """
     monitoring_features_list = {}
     k = r'synthesis-monitoringfeatures-{s}s'
@@ -86,7 +88,7 @@ def broker_api_monitoring_features_list(request, format=format):
 @api_view(['GET'])
 def monitoring_features_lists(request, format=format):
     """
-    Generate list of URLs to views for monitoring features
+    Generate list of URLs to views for monitoring features based on availability in datasource
     """
     monitoring_features_list = {}
     for datasource in DataSource.objects.all():

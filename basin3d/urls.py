@@ -14,8 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from basin3d.models import DataSource, get_feature_types
-from basin3d.synthesis.viewsets import MeasurementTimeseriesTVPObservationViewSet, \
-    RegionViewSet, SiteViewSet, PlotViewSet, PointLocationViewSet, MonitoringFeatureViewSet
+from basin3d.synthesis.viewsets import MonitoringFeatureViewSet, \
+    MeasurementTimeseriesTVPObservationViewSet
 from basin3d.views import broker_api_root, monitoring_features_lists
 from basin3d.viewsets import DataSourceViewSet, DirectAPIViewSet, \
     ObservedPropertyViewSet, ObservedPropertyVariableViewSet
@@ -50,7 +50,7 @@ def get_synthesis_router():
                     for model_name in plugin_views.keys():
                         viewset_models.append(model_name.__name__)
                     """
-                    # Keep for a bit: initial try to include the monitoring feature urlpatterns here
+                    # KEEP for a bit: initial try to include the monitoring feature urlpatterns here
                     #    by extending router.urls directly. The looping machinery is the same as the
                     #    function get_monitoring_features_url
                     
@@ -81,17 +81,6 @@ def get_synthesis_router():
                     # This is OK for now in the future we want this to be more automated
                     # This will only add the viewsets that are defined
                     viewset_models = set(viewset_models)
-                    # if 'MonitoringFeature' in viewset_models:
-                    #     router.register(r'monitoringfeatures', MonitoringFeatureViewSet, base_name='monitoringfeature')
-                    if 'Region' in viewset_models:
-                        router.register(r'regions', RegionViewSet, base_name='region')
-                    if 'Site' in viewset_models:
-                        router.register(r'sites', SiteViewSet, base_name='site')
-                    if 'Plot' in viewset_models:
-                        router.register(r'plots', PlotViewSet, base_name='plot')
-                    if 'PointLocation' in viewset_models:
-                        router.register(r'point_locations', PointLocationViewSet,
-                                        base_name='pointlocation')
                     if 'MeasurementTimeseriesTVPObservation' in viewset_models:
                         router.register(r'measurement_tvp_timeseries', MeasurementTimeseriesTVPObservationViewSet,
                                         base_name='measurementtvptimeseries')
@@ -124,7 +113,6 @@ def get_monitoring_feature_urls():
                     viewset_models.append(model_name.__name__)
 
                 datasource_feature_types = plugin.get_feature_types()
-                # unsupported_feature_types = []
                 for feature_type in datasource_feature_types:
                     if feature_type in get_feature_types():
                         ft = ''.join(feature_type.lower().split())
@@ -144,12 +132,6 @@ def get_monitoring_feature_urls():
                                 name='monitoringfeature-{}s-detail'.format(ft))
                         ])
 
-                # elif feature_type not in unsupported_feature_types:
-                #     unsupported_feature_types.append(feature_type)
-
-                # if len(unsupported_feature_types) > 0:
-                #    print("{} are not supported FeatureTypes.".format(
-                #        ", ".join(unsupported_feature_types)))
                 urls.extend([url(r'^synthesis/monitoringfeatures/all/$',
                                  MonitoringFeatureViewSet.as_view({'get': 'list'}),
                                  name='monitoringfeature-list'),
@@ -172,7 +154,7 @@ def get_monitoring_feature_urls():
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^$', broker_api_root, name='broker-api-root' ),
-    url(r'^synthesis/monitoringfeatures/$', monitoring_features_lists, name='broker-api-monitoring-features-list')
+    url(r'^synthesis/monitoringfeatures/$', monitoring_features_lists, name='monitoring-features-list')
 ]
 
 urlpatterns.extend(get_monitoring_feature_urls())

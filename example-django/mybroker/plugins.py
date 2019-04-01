@@ -1,12 +1,11 @@
 import logging
 
-from basin3d.models import GeographicalGroup, FeatureTypes, SpatialSamplingShapes
+from basin3d.models import FeatureTypes, SpatialSamplingShapes
 from basin3d.plugins import DataSourcePluginPoint, DataSourcePluginViewMeta
 from basin3d.synthesis.models import measurement, Person
-from basin3d.synthesis.models.field import Region, Site, Plot, PointLocation, MeasurementPosition, \
-    GeographicCoordinate, DepthCoordinate, MonitoringFeature, AltitudeCoordinate, \
-    Coordinate, RepresentativeCoordinate, AbsoluteCoordinate, VerticalCoordinate, \
-    RelatedSamplingFeature
+from basin3d.synthesis.models.field import MonitoringFeature, RelatedSamplingFeature, \
+    GeographicCoordinate, DepthCoordinate, AltitudeCoordinate, \
+    Coordinate, RepresentativeCoordinate, AbsoluteCoordinate, VerticalCoordinate
 from basin3d.synthesis.models.measurement import MeasurementTimeseriesTVPObservation
 from django.utils.six import with_metaclass
 
@@ -87,140 +86,6 @@ class AlphaMonitoringFeatureView(with_metaclass(DataSourcePluginViewMeta)):
         return None
 
 
-class AlphaSiteView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = Site
-
-    def list(self, request, **kwargs):
-        """
-        Get the Site information
-
-
-        """
-        obj = self.synthesis_model_class(self.datasource, id=1, name="Foo",
-                                         description="Foo Bar Site",
-                                         country="US",
-                                         state_province="California",
-                                         utc_offset=-6,
-                                         center_coordinates=GeographicCoordinate(
-                                             latitude=90.0,
-                                             longitude=90.0,
-                                             datum=GeographicCoordinate.DATUM_WGS84,
-                                             units=GeographicCoordinate.UNITS_DEC_SECONDS
-                                         ),
-                                         pi=Person(first_name="Jessica",
-                                                   last_name="Jones",
-                                                   email="jjones@foo.bar",
-                                                   institution="DC Comics"),
-                                         contacts=[Person(first_name="Barry",
-                                                          last_name="Allen",
-                                                          email="ballen@foo.bar",
-                                                          institution="DC Comics")],
-                                         urls=["http://foo.bar"])
-
-        yield obj
-
-    def get(self, request, pk=None):
-        """
-        Get a Site
-        :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
-class AlphaPlotView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = Plot
-
-    def list(self, request, **kwargs):
-        """
-        Get the Site information
-
-
-        """
-        obj = self.synthesis_model_class(self.datasource, id=1, name="Plot 1",
-                                         site_id="1",
-                                         geom={},
-                                         pi=Person(first_name="Jessica",
-                                                   last_name="Jones",
-                                                   email="jjones@foo.bar",
-                                                   institution="DC Comics"),
-                                         )
-
-        yield obj
-
-    def get(self, request, pk=None):
-        """
-        Get a Site
-        :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
-class AlphaPointLocationView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = PointLocation
-
-    def list(self, request, **kwargs):
-        """
-        Get the Site information
-
-        """
-
-        for i in range(10):
-            obj = self.synthesis_model_class(self.datasource, id=i,
-                                             name="Point Location {}".format(i),
-                                             site_id="1",
-                                             type="well",
-                                             geographical_group_id=i,
-                                             geographical_group_type=GeographicalGroup.SITE,
-                                             horizontal_position=GeographicCoordinate(
-                                                 latitude=90.0,
-                                                 longitude=90.0,
-                                                 datum=GeographicCoordinate.DATUM_WGS84,
-                                                 units=GeographicCoordinate.UNITS_DEC_DEGREES
-                                             )
-                                             )
-
-            yield obj
-
-    def get(self, request, pk=None):
-        """
-        Get a Site
-        :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
-
-class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
-    synthesis_model_class = Region
-
-    def list(self, request, **kwargs):
-        """
-        Get the Region information
-        """
-        region = self.synthesis_model_class(self.datasource, name="a site",
-                                            id="SI123",
-                                            description="This is for my site description", )
-
-        yield region
-
-    def get(self, request, pk=None):
-        """
-        Get a Region
-        :param pk: primary key
-        """
-        for s in self.list(request):
-            if s.id.endswith(pk):
-                return s
-        return None
-
 
 class AlphaDataMeasurementTimeseriesTVPObservationView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = MeasurementTimeseriesTVPObservation
@@ -272,8 +137,7 @@ class AlphaDataMeasurementTimeseriesTVPObservationView(with_metaclass(DataSource
 class AlphaSourcePlugin(DataSourcePluginPoint):
     name = 'alpha-source-plugin'
     title = 'Alpha Source Plugin'
-    plugin_view_classes = (AlphaRegionView, AlphaSiteView, AlphaPlotView, AlphaPointLocationView, \
-                           AlphaDataMeasurementTimeseriesTVPObservationView, AlphaMonitoringFeatureView)
+    plugin_view_classes = (AlphaDataMeasurementTimeseriesTVPObservationView, AlphaMonitoringFeatureView)
     # Question: should we use the FeatureTypes CV directly?
     feature_types = ['Region', 'Point', 'Tree']
 
