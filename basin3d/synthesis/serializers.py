@@ -28,7 +28,7 @@ Serializers that render :mod:`basin.synthesis.models` from Python objects to `JS
 """
 from numbers import Number
 
-from basin3d.models import GeographicalGroup, FeatureTypes
+from basin3d.models import GeographicalGroup, FeatureTypes, get_feature_types
 from basin3d.serializers import ChooseFieldsSerializerMixin
 from basin3d.synthesis.models.field import Region
 from django.utils.datetime_safe import datetime
@@ -123,6 +123,7 @@ class PersonSerializer(serializers.Serializer):
     last_name = serializers.CharField()
     email = serializers.EmailField()
     institution = serializers.CharField()
+    role = serializers.CharField()
 
     def create(self, validated_data):
         return PersonSerializer(**validated_data)
@@ -132,6 +133,7 @@ class PersonSerializer(serializers.Serializer):
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.email = validated_data.get('email', instance.email)
         instance.institution = validated_data.get('institution', instance.institution)
+        instance.role = validated_data.get('role', instance.role)
 
 
 class VerticalCoordinateSerializer(serializers.Serializer):
@@ -258,14 +260,35 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
         :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
         :return: an URL to the Monitoring Feature group
         """
-        if "request" in self.context and self.context["request"]:
-            return reverse(
-                # ToDo: fix this url
-                viewname='monitoring_features/{}-detail'.format(FeatureTypes.TYPES[obj.related_sampling_feature_type].lower()),
-                kwargs={'pk': obj.id},
-                request=self.context["request"], )
-        else:
-            return obj.related_sampling_feature
+        """
+        path_route = None
+        # ToDo: refactor to use get_feature_types (synthesis.models)
+        # ToDo: work without type specified
+        if "request" in self.context and self.context["request"] and obj.related_sampling_feature is not None:
+            for key, feature_type in FeatureTypes.TYPES.items():
+                if key == obj.related_sampling_feature_type:
+                    ft = ''.join(feature_type.lower().split())
+                    path_route = r'monitoringfeature-{}s-detail'.format(ft)
+            if path_route is not None:
+                return reverse(
+                    viewname=path_route,
+                    # ToDo: take off the database prefix?
+                    kwargs={'pk': obj.related_sampling_feature},
+                    request=self.context["request"], )
+
+        return obj.related_sampling_feature
+        """
+        if "request" in self.context and self.context["request"] and obj.related_sampling_feature:
+            if not obj.related_sampling_feature_type:
+                feature_type = FeatureTypes.TYPES[obj.related_sampling_feature_type]
+                path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
+            else:
+                path_route = r'monitoringfeature-detail'
+            return reverse(viewname=path_route,
+                           # ToDo: take off the database prefix?
+                           kwargs={'pk': obj.related_sampling_feature},
+                           request=self.context["request"], )
+        return obj.related_sampling_feature
 
     def get_related_sampling_feature_type(self, obj):
         """
@@ -275,8 +298,41 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
         """
         return FeatureTypes.TYPES[obj.related_sampling_feature_type]
 
+    def get_url(self, obj):
+        """
+        Get the  url based on the current context
+        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
+        :return: An URL to the current object instance
+        """
+        """
+        path_route = None
+        # ToDo: refactor to use get_feature_types (synthesis.models)
+        # ToDo: work without type specified
+        if obj.related_sampling_feature is not None and "request" in self.context and self.context["request"]:
+            for key, feature_type in FeatureTypes.TYPES.items():
+                if key == obj.related_sampling_feature_type:
+                    ft = ''.join(feature_type.lower().split())
+                    path_route = r'monitoringfeature-{}s-detail'.format(ft)
+            if path_route is not None:
+                return reverse(viewname=path_route,
+                               kwargs={'pk': obj.related_sampling_feature},
+                               request=self.context["request"], )
+        return None
+        """
+        if "request" in self.context and self.context["request"] and obj.related_sampling_feature:
+            if obj.related_sampling_feature_type:
+                feature_type = FeatureTypes.TYPES[obj.related_sampling_feature_type]
+                path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
+            else:
+                path_route = r'monitoringfeature-detail'
+            return reverse(viewname=path_route,
+                           # ToDo: take off the database prefix?
+                           kwargs={'pk': obj.related_sampling_feature},
+                           request=self.context["request"], )
+        return None
 
-class FeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
+
+class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
     """
     Serializes a :class:`basin3d.synthesis.models.field.Feature`
     """
@@ -292,6 +348,8 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, seria
         # ToDo: Figure out what this is doing and explain it better.
         kwargs.pop('fields', None)
         super().__init__(*args, **kwargs)
+
+        self.fields["url"] = serializers.SerializerMethodField()
 
     def get_type(self, obj):
         """
@@ -310,6 +368,44 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, seria
         instance.description = validated_data.get('description', instance.description)
         instance.type = validated_data.get('type', instance.type)
         return instance
+
+    def get_url(self, obj):
+        """
+        Get the Site url based on the current context
+        :param obj: an object instance
+        :return: An URL to the current object instance
+        """
+        """
+        path_route = None
+        # ToDo: refactor to use get_feature_types (synthesis.models)
+        # ToDo: work without type specified
+        if "request" in self.context and self.context["request"] and obj.type is not None:
+            for key, feature_type in FeatureTypes.TYPES.items():
+                if key == obj.type:
+                    ft = ''.join(feature_type.lower().split())
+                    path_route = r'monitoringfeature-{}s-detail'.format(ft)
+            if path_route is not None:
+                return reverse(viewname=path_route,
+                           kwargs={'pk': obj.id},
+                           request=self.context["request"], )
+        if "request" in self.context and self.context["request"]:
+            return reverse(viewname='{}-detail'.format(
+                obj.__class__.__name__.lower()),
+                kwargs={'pk': obj.id},
+                request=self.context["request"], )
+        return None
+        """
+        if "request" in self.context and self.context["request"]:
+            if obj.type is not None:
+                feature_type = FeatureTypes.TYPES[obj.type]
+                path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
+            else:
+                path_route = r'monitoringfeature-detail'
+            return reverse(viewname=path_route,
+                           # ToDo: take off the database prefix?
+                           kwargs={'pk': obj.id},
+                           request=self.context["request"], )
+        return None
 
 
 class SamplingFeatureSerializer(FeatureSerializer):
@@ -640,10 +736,10 @@ class ObservationSerializerMixin(object):
         self.fields["result_quality"] = serializers.CharField()
         self.fields["feature_of_interest"] = serializers.SerializerMethodField()
         self.fields["feature_of_interest_type"] = serializers.SerializerMethodField()
-        self.fields["geographical_group_id"] = serializers.SerializerMethodField()  # Delete
-        self.fields["geographical_group_type"] = serializers.SerializerMethodField()  # Delete
-        self.fields["measurement_position"] = ReadOnlySynthesisModelField(
-            serializer_class=MeasurementPositionSerializer)  # Delete
+        # self.fields["geographical_group_id"] = serializers.SerializerMethodField()  # Delete
+        # self.fields["geographical_group_type"] = serializers.SerializerMethodField()  # Delete
+        # self.fields["measurement_position"] = ReadOnlySynthesisModelField(
+            # serializer_class=MeasurementPositionSerializer)  # Delete
 
     def get_observed_property(self, obj):
         if "request" in self.context and self.context["request"]:
@@ -659,6 +755,7 @@ class ObservationSerializerMixin(object):
         :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
         :return: an URL to the Monitoring Feature group
         """
+        """
         if "request" in self.context and self.context["request"]:
             return reverse(
                 # ToDo: fix this url
@@ -667,6 +764,18 @@ class ObservationSerializerMixin(object):
                 request=self.context["request"], )
         else:
             return obj.feature_of_interest
+        """
+        if "request" in self.context and self.context["request"] and obj.feature_of_interest:
+            if obj.feature_of_interest_type:
+                feature_type = FeatureTypes.TYPES[obj.feature_of_interest_type]
+                path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
+            else:
+                path_route = r'monitoringfeature-detail'
+            return reverse(viewname=path_route,
+                           # ToDo: take off the database prefix?
+                           kwargs={'pk': obj.feature_of_interest},
+                           request=self.context["request"], )
+        return obj.feature_of_interest
 
     def get_feature_of_interest_type(self, obj):
         """
@@ -744,8 +853,6 @@ class MeasurementTimeseriesTVPObservationSerializer(ObservationSerializerMixin, 
             # Remove optional fields.  We don't want them crowding the json
             if not instance.id:
                 field_to_remove.update(["id", "url"])
-            if not instance.measurement_position:
-                field_to_remove.update(["measurement_position"])
             for field in self.FIELDS_OPTIONAL:
                 if not instance.__getattribute__(field):
                     field_to_remove.update([field])
