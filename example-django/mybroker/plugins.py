@@ -86,7 +86,6 @@ class AlphaMonitoringFeatureView(with_metaclass(DataSourcePluginViewMeta)):
         return None
 
 
-
 class AlphaDataMeasurementTimeseriesTVPObservationView(with_metaclass(DataSourcePluginViewMeta)):
     synthesis_model_class = MeasurementTimeseriesTVPObservation
 
@@ -139,7 +138,7 @@ class AlphaSourcePlugin(DataSourcePluginPoint):
     title = 'Alpha Source Plugin'
     plugin_view_classes = (AlphaDataMeasurementTimeseriesTVPObservationView, AlphaMonitoringFeatureView)
     # Question: should we use the FeatureTypes CV directly?
-    feature_types = ['Region', 'Point', 'Tree']
+    feature_types = ['REGION', 'POINT', 'TREE']
 
     class DataSourceMeta:
         """

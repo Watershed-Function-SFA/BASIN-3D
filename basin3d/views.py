@@ -28,12 +28,6 @@ BASIN3D_DIRECT_VIEWS = [('direct-apis', 'direct-api-list')]\
 BASIN3D_SYNTHESIS_VIEWS = [('synthesis-datasources', 'datasource-list'),
                            ('synthesis-observedpropertyvariables', 'observedpropertyvariable-list'),
                            ('synthesis-observedproperty', 'observedproperty-list'),
-                           # ('synthesis-monitoringfeatures', 'monitoringfeature-list'),
-                           # I don't think we need anything for the monitoringfeatures/<type> lists??
-                           ('synthesis-regions', 'region-list'),
-                           ('synthesis-sites', 'site-list'),
-                           ('synthesis-plots', 'plot-list'),
-                           ('synthesis-pointlocations', 'pointlocation-list'),
                            ('synthesis-measurementtvptimeseries', 'measurementtvptimeseries-list'),
                            ]
 
@@ -91,6 +85,7 @@ def monitoring_features_lists(request, format=format):
     Generate list of URLs to views for monitoring features based on availability in datasource
     """
     monitoring_features_list = {}
+    supported_feature_types = get_feature_types()
     for datasource in DataSource.objects.all():
         viewset_models = []
         plugin = datasource.get_plugin()  # Get the plugin model
@@ -104,18 +99,21 @@ def monitoring_features_lists(request, format=format):
             datasource_feature_types = plugin.get_feature_types()
             unsupported_feature_types = []
             for feature_type in datasource_feature_types:
-                if feature_type in get_feature_types():
+                if feature_type in supported_feature_types:
                     ft = ''.join(feature_type.lower().split())
                     monitoring_features_list['{}s'.format(ft)] = \
-                        '{}://{}/synthesis/monitoringfeatures/{}s'.format(
+                        '{}://{}/synthesis/monitoringfeatures/{}s/'.format(
                             request.scheme, request.META["HTTP_HOST"], ft)
+                    supported_feature_types.remove(feature_type)
                 elif feature_type not in unsupported_feature_types:
                     unsupported_feature_types.append(feature_type)
 
             if len(unsupported_feature_types) > 0:
                 print("{} are not supported FeatureTypes.".format(", ".join(unsupported_feature_types)))
-                monitoring_features_list['monitoringfeatures'] = \
-                    '{}://{}/synthesis/monitoringfeatures/all/'.format(
-                            request.scheme, request.META["HTTP_HOST"])
+
+            # ToDo: get this working in future
+            # monitoring_features_list['monitoringfeatures'] = \
+            #     '{}://{}/synthesis/monitoringfeatures/all/'.format(
+            #             request.scheme, request.META["HTTP_HOST"])
     # print(monitoring_features_list)
     return Response(monitoring_features_list)

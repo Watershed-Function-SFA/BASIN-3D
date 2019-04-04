@@ -41,6 +41,7 @@ class Base(object):
 
         if "id" in kwargs and datasource:
             kwargs["id"] = "{}-{}".format(self.datasource.id_prefix, kwargs["id"])
+            kwargs["original_id"] = kwargs["id"]
 
         self.__dict__.update(kwargs)
 
@@ -89,4 +90,4 @@ class Person(Base):
         super().__init__(None, **kwargs)
 
 
-__all__ = ['field', 'simulations', 'measurement', 'Base']
+__all__ = ['field', 'measurement', 'Base']

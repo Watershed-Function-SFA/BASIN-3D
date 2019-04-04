@@ -13,6 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+import string
+
 from basin3d.models import DataSource, get_feature_types
 from basin3d.synthesis.viewsets import MonitoringFeatureViewSet, \
     MeasurementTimeseriesTVPObservationViewSet
@@ -102,6 +104,7 @@ def get_monitoring_feature_urls():
     try:
         # iterate over the Datasources and register ViewSets to the router
         # for those models that are defined.
+        supported_feature_types = get_feature_types()
         for datasource in DataSource.objects.all():
             viewset_models = []
             plugin = datasource.get_plugin()  # Get the plugin model
@@ -114,7 +117,7 @@ def get_monitoring_feature_urls():
 
                 datasource_feature_types = plugin.get_feature_types()
                 for feature_type in datasource_feature_types:
-                    if feature_type in get_feature_types():
+                    if feature_type in supported_feature_types:
                         ft = ''.join(feature_type.lower().split())
                         path_route = '^synthesis/monitoringfeatures/{}s'.format(ft)
                         urls.extend([
@@ -131,20 +134,21 @@ def get_monitoring_feature_urls():
                                 MonitoringFeatureViewSet.as_view({'get': '{}s'.format(ft)}),
                                 name='monitoringfeature-{}s-detail'.format(ft))
                         ])
+                        supported_feature_types.remove(feature_type)
 
-                urls.extend([url(r'^synthesis/monitoringfeatures/all/$',
-                                 MonitoringFeatureViewSet.as_view({'get': 'list'}),
-                                 name='monitoringfeature-list'),
-                             url(r'^synthesis/monitoringfeatures\all.(?P<format>[a-z0-9]+)/?$',
-                                 MonitoringFeatureViewSet.as_view({'get': 'list'}),
-                                 name='monitoringfeature-list'),
-                            url(r'^synthesis/monitoringfeatures/(?P<pk>[^/.]+)/$',
-                                MonitoringFeatureViewSet.as_view({'get': 'retrieve'}),
-                                name='monitoringfeature-detail'),
-                            url(r'^synthesis/monitoringfeatures/(?P<pk>[^/.]+).(?P<format>[a-z0-9]+)/?',
-                                MonitoringFeatureViewSet.as_view({'get': 'retrieve'}),
-                                name='monitoringfeature-detail')
-                             ])
+                # urls.extend([url(r'^synthesis/monitoringfeatures/all/$',
+                #                  MonitoringFeatureViewSet.as_view({'get': 'list'}),
+                #                  name='monitoringfeature-list'),
+                #              url(r'^synthesis/monitoringfeatures\all.(?P<format>[a-z0-9]+)/?$',
+                #                  MonitoringFeatureViewSet.as_view({'get': 'list'}),
+                #                  name='monitoringfeature-list'),
+                #             url(r'^synthesis/monitoringfeatures/(?P<pk>[^/.]+)/$',
+                #                 MonitoringFeatureViewSet.as_view({'get': 'retrieve'}),
+                #                 name='monitoringfeature-detail'),
+                #             url(r'^synthesis/monitoringfeatures/(?P<pk>[^/.]+).(?P<format>[a-z0-9]+)/?',
+                #                 MonitoringFeatureViewSet.as_view({'get': 'retrieve'}),
+                #                 name='monitoringfeature-detail')
+                #              ])
         return urls
     except Exception:
         pass
@@ -153,7 +157,7 @@ def get_monitoring_feature_urls():
 
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    url(r'^$', broker_api_root, name='broker-api-root' ),
+    url(r'^$', broker_api_root, name='broker-api-root'),
     url(r'^synthesis/monitoringfeatures/$', monitoring_features_lists, name='monitoring-features-list')
 ]
 
@@ -164,9 +168,9 @@ if settings.BASIN3D["SYNTHESIS"]:
     urlpatterns.append(url(r'^synthesis/', include(router.urls)))
 
 if settings.BASIN3D["DIRECT_API"]:
-    urlpatterns.append(url(r'^direct/$',DirectAPIViewSet.as_view({'get':'list'}),name='direct-api-list'))
+    urlpatterns.append(url(r'^direct/$', DirectAPIViewSet.as_view({'get':'list'}), name='direct-api-list'))
     urlpatterns.append(url(r'^direct/(?P<id_prefix>[a-zA-Z0-9]+)/(?P<direct_path>[a-zA-Z/_\-?&0-9]*)$',
                            DirectAPIViewSet.as_view({'get': 'retrieve', 'post':'retrieve'}),
                            name='direct-path-detail'))
 
-# print(urlpatterns)
+print(urlpatterns)

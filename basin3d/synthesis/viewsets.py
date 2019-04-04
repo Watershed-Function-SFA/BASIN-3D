@@ -21,9 +21,10 @@ View Controllers for BASIN-3D REST api
 
 """
 import logging
+import os
 
 from basin3d.models import DataSource, FeatureTypes
-from basin3d.plugins import InvalidOrMissingCredentials
+from basin3d.plugins import InvalidOrMissingCredentials, get_request_feature_type
 
 from basin3d.synthesis.models.field import MonitoringFeature
 from basin3d.synthesis.models.measurement import MeasurementTimeseriesTVPObservation, TimeMetadataMixin
@@ -75,7 +76,7 @@ class DataSourcePluginViewSet(ViewSet):
 
         # Iterate over the plugins
         # (Consider parallelizing this, and using a StreamingHttpResponse )
-        for datasource in datasources: # Get the plugin model
+        for datasource in datasources:  # Get the plugin model
 
             if datasource.enabled:
 
@@ -90,9 +91,9 @@ class DataSourcePluginViewSet(ViewSet):
                                                                                    self.synthesis_model])
                                                                            ):
                             items.append(obj)
-                            print(self.synthesize_query_params(request, plugin_views[self.synthesis_model]))
-                            if hasattr(obj, "type"):
-                                print(obj.type)
+                            # print(self.synthesize_query_params(request, plugin_views[self.synthesis_model]))
+                            # if hasattr(obj, "feature_type"):
+                                # print(obj.feature_type)
                     except InvalidOrMissingCredentials as e:
                         logger.error(e)
 
@@ -115,16 +116,16 @@ class DataSourcePluginViewSet(ViewSet):
             if datasource:
                 datasource_pk = pk.replace("{}-".format(pk_list[0]),
                                            "", 1)  # The datasource id prefix needs to be removed
-                print(datasource_pk)
+                # print(datasource_pk)
                 if datasource.enabled:
 
                     plugin_views = datasource.get_plugin().get_plugin_views()
                     if self.synthesis_model in plugin_views:
                         obj = plugin_views[self.synthesis_model].get(request, pk=datasource_pk)
-                        print(datasource_pk + self.synthesis_model.__name__, request.path_info)
+                        # print(datasource_pk + self.synthesis_model.__name__, request.path_info)
             if obj:
                 try:
-                    print(obj.id)
+                    # print(obj.id)
                     serializer = self.__class__.serializer_class(obj, context={'request': request})
                     return Response(serializer.data)
                 except Exception as e:
@@ -177,64 +178,45 @@ class MonitoringFeatureViewSet(DataSourcePluginViewSet):
         for key, value in request.query_params.items():
             query_params[key] = value
 
-        print(query_params)
+        # print(query_params)
         return query_params
 
     def extract_type(self, request):
-        for k, feature_type in FeatureTypes.TYPES.items():
-            ft = "".join(feature_type.lower().split())
-            if ft in request.path_info:
-                return k, feature_type
+        k = get_request_feature_type(request)
+        if k:
+            return k, FeatureTypes.TYPES[k]
         return None, None
-
-    def retrieve(self, request, pk=None):
-        """
-        Retrieve a single synthesized value
-        :param request:
-        :param pk:
-        :return:
-        """
-
-        # split the datasource id prefix from the primary key
-        pk_list = pk.split("-")
-        try:
-            datasource = DataSource.objects.get(id_prefix=pk_list[0])
-            obj = None
-            if datasource:
-                # ToDo: Verify with real data. The example plugin does not work with datasource prefix removed.
-                # datasource_pk = pk.replace("{}-".format(pk_list[0]), "", 1)
-                # print(datasource_pk)
-                if datasource.enabled:
-
-                    plugin_views = datasource.get_plugin().get_plugin_views()
-                    if self.synthesis_model in plugin_views:
-                        obj = plugin_views[self.synthesis_model].get(request, pk=pk)
-                        print(pk + self.synthesis_model.__name__, request.path_info)
-            if obj:
-                try:
-                    print(obj.id)
-                    serializer = self.__class__.serializer_class(obj, context={'request': request})
-                    return Response(serializer.data)
-                except Exception as e:
-                    logger.error("Plugin error: ({},{}) -- {}".format(datasource.name, self.action, e))
-
-            return Response({"success": False, "content": "There is no detail for {}".format(pk)},
-                            status=status.HTTP_404_NOT_FOUND)
-        except DataSource.DoesNotExist:
-            return Response({'success': False, 'detail': "There is no detail for datasource object {}. "
-                                                         "The datasource id '{}' is invalid.".format(pk, pk_list[0])},
-                            status=status.HTTP_404_NOT_FOUND, )
 
     @action(detail=True, url_name='regions-detail')
     def regions(self, request, pk=None):
+        return self.retrieve(request=request, pk=pk)
+
+    @action(detail=True, url_name='subregions-detail')
+    def subregions(self, request, pk=None):
+        return self.retrieve(request=request, pk=pk)
+
+    @action(detail=True, url_name='basins-detail')
+    def basins(self, request, pk=None):
+        return self.retrieve(request=request, pk=pk)
+
+    @action(detail=True, url_name='subbasins-detail')
+    def subbasins(self, request, pk=None):
         return self.retrieve(request=request, pk=pk)
 
     @action(detail=True, url_name='watersheds-detail')
     def watersheds(self, request, pk=None):
         return self.retrieve(request=request, pk=pk)
 
+    @action(detail=True, url_name='subwatersheds-detail')
+    def subwatersheds(self, request, pk=None):
+        return self.retrieve(request=request, pk=pk)
+
     @action(detail=True, url_name='sites-detail')
     def sites(self, request, pk=None):
+        return self.retrieve(request=request, pk=pk)
+
+    @action(detail=True, url_name='plots-detail')
+    def plots(self, request, pk=None):
         return self.retrieve(request=request, pk=pk)
 
     @action(detail=True, url_name='horizontalpaths-detail')

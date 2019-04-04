@@ -29,7 +29,7 @@ class RelatedSamplingFeature(Base):
     See OGC Observations and Measurements
     """
 
-    ROLE_PARENT = "Parent"
+    ROLE_PARENT = "PARENT"
 
     ROLE_TYPES = [ROLE_PARENT]
 
@@ -118,10 +118,8 @@ class AbsoluteCoordinate(Base):
         self.__validate__()
 
     def __validate__(self):
-        # ToDo: require horizontal position
-        if self.horizontal_position is None:
-            raise AttributeError("Horizontal position required for AbsoluteCoordinate instance")
-        elif not isinstance(self.horizontal_position, (list, tuple, set)):  # check for better not iterable
+        # require horizontal position and vertical extent to be lists
+        if not isinstance(self.horizontal_position, (list, tuple, set)):  # check for better not iterable
             self.horizontal_position = [self.horizontal_position]
 
         if not isinstance(self.vertical_extent, (list, tuple, set)):
@@ -132,13 +130,13 @@ class AbsoluteCoordinate(Base):
             if not isinstance(obj, GeographicCoordinate):
                 raise TypeError("Horizontal position must be instance of GeographicCoordinate")
 
-        if self.vertical_extent is not None:
+        if len(self.vertical_extent) > 0:
             for obj in self.vertical_extent:
                 if not isinstance(obj, AltitudeCoordinate):
                     raise TypeError("Vertical extent must be instance of AltitudeCoordinate")
 
-        if len(self.horizontal_position) != len(self.vertical_extent):
-            raise AttributeError("Lengths of horizontal positions and vertical extent must be equal.")
+            if len(self.horizontal_position) != len(self.vertical_extent):
+                raise AttributeError("Lengths of horizontal positions and vertical extent must be equal.")
 
         # ToDo: add validation for shape coordinates.
 
@@ -156,11 +154,11 @@ class RepresentativeCoordinate(Base):
         *vertical_position:* obj DepthCoordinate
     """
 
-    REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE = "Center Local Surface"
-    REPRESENTATIVE_POINT_TYPE_UPPER_LEFT_CORNER = "Upper Left Corner"
-    REPRESENTATIVE_POINT_TYPE_UPPER_RIGHT_CORNER = "Upper Right Corner"
-    REPRESENTATIVE_POINT_TYPE_LOWER_LEFT_CORNER = "Lower Left Corner"
-    REPRESENTATIVE_POINT_TYPE_LOWER_RIGHT_CORNER = "Lower Right Corner"
+    REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE = "CENTER LOCAL SURFACE"
+    REPRESENTATIVE_POINT_TYPE_UPPER_LEFT_CORNER = "UPPER LEFT CORNER"
+    REPRESENTATIVE_POINT_TYPE_UPPER_RIGHT_CORNER = "UPPER RIGHT CORNER"
+    REPRESENTATIVE_POINT_TYPE_LOWER_LEFT_CORNER = "LOWER LEFT CORNER"
+    REPRESENTATIVE_POINT_TYPE_LOWER_RIGHT_CORNER = "LOWER RIGHT CORNER"
 
     def __init__(self, **kwargs):
         self.representative_point = None
@@ -195,15 +193,15 @@ class VerticalCoordinate(Base):
         *distance_units:* enum  ("meters", "feet"), the means used to encode depths.
         *encoding_method:* "Explicit coordinate included with horizontal coordinates", "Implicit coordinate", "Attribute values")
     """
-    TYPE_ALTITUDE = "altitude"
-    TYPE_DEPTH = "depth"
+    TYPE_ALTITUDE = "ALTITUDE"
+    TYPE_DEPTH = "DEPTH"
 
     DISTANCE_UNITS_METERS = "meters"
     DISTANCE_UNITS_FEET = "feet"
 
-    ENCODING_EXPLICIT = "explicit"
-    ENCODING_IMPLICIT = "implicit"
-    ENCODING_ATTRIBUTE = "attribute"
+    ENCODING_EXPLICIT = "EXPLICIT"
+    ENCODING_IMPLICIT = "IMPLICIT"
+    ENCODING_ATTRIBUTE = "ATTRIBUTE"
 
     def __init__(self, **kwargs):
         self.value = None
@@ -271,11 +269,11 @@ class HorizontalCoordinate(Base):
     DATUM_NAD83 = "NAD83"
     DATUM_NAD27 = "NAD27"
 
-    TYPE_GEOGRAPHIC = "geographic"
-    TYPE_PLANAR_GRID = "planar_grid"
-    TYPE_PLANAR_LOCAL = "planar_local"
-    TYPE_PLANAR_MAP_PROJECTION = "planar_map_projection"
-    TYPE_LOCAL = "local"
+    TYPE_GEOGRAPHIC = "GEOGRAPHIC"
+    TYPE_PLANAR_GRID = "PLANAR_GRID"
+    TYPE_PLANAR_LOCAL = "PLANAR_LOCAL"
+    TYPE_PLANAR_MAP_PROJECTION = "PLANAR_MAP_PROJECTION"
+    TYPE_LOCAL = "LOCAL"
 
     def __init__(self, **kwargs):
         self.x = None
@@ -470,8 +468,12 @@ class SamplingFeature(Feature):
 
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
+        self.__validate__()
 
     # ToDo: validate items in lists
+    def __validate__(self):
+        if not isinstance(self.related_sampling_feature_complex, (list, tuple, set)):  # check for better not iterable
+            self.related_sampling_feature_complex = [self.related_sampling_feature_complex]
 
 
 class SpatialSamplingFeature(SamplingFeature):
@@ -525,7 +527,7 @@ class SpatialSamplingFeature(SamplingFeature):
     def _verify_coordinates_match_shape(self):
         # Consider: invert logic in so that the coordinates specify the shape.
         error_msg = "Absolute coordinates do not match specified shape {}. ".format(self.shape)
-        if self.coordinates.absolute is not None:
+        if self.coordinates and self.coordinates.absolute:
             if self.shape == SpatialSamplingShapes.SHAPE_POINT:
                 if len(self.coordinates.absolute.horizontal_position) != 1:
                     raise AttributeError(error_msg + "Shape { } must have only one point.")

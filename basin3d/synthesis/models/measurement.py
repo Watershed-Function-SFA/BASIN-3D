@@ -50,8 +50,8 @@ class ResultQuality(object):
     """
     Controlled Vocabulary for result quality
     """
-    RESULT_QUALITY_CHECKED = "checked"
-    RESULT_QUALITY_UNCHECKED = "unchecked"
+    RESULT_QUALITY_CHECKED = "CHECKED"
+    RESULT_QUALITY_UNCHECKED = "UNCHECKED"
 
 
 class Observation(Base):
@@ -74,8 +74,8 @@ class Observation(Base):
         - *result_quality:*, string,
 
     """
-    TYPE_MEASUREMENT_TVP_TIMESERIES = "measurement_tvp_timeseries"
-    TYPE_MEASUREMENT = "measurement"
+    TYPE_MEASUREMENT_TVP_TIMESERIES = "MEASUREMENT_TVP_TIMESERIES"
+    TYPE_MEASUREMENT = "MEASUREMENT"
 
     def __init__(self, datasource, **kwargs):
         self.id = None
@@ -112,16 +112,16 @@ class TimeMetadataMixin(object):
         - *aggregation_duration:* string with controlled vocab (CV follows OGC TM_PeriodDuration)
         - *time_reference_position:* string with controlled vocab (part of OGC interpolationType)
     """
-    AGGREGATION_DURATION_YEAR = "year"
-    AGGREGATION_DURATION_MONTH = "month"
-    AGGREGATION_DURATION_DAY = "day"
-    AGGREGATION_DURATION_HOUR = "hour"
-    AGGREGATION_DURATION_MINUTE = "minute"
-    AGGREGATION_DURATION_SECOND = "second"
+    AGGREGATION_DURATION_YEAR = "YEAR"
+    AGGREGATION_DURATION_MONTH = "MONTH"
+    AGGREGATION_DURATION_DAY = "DAY"
+    AGGREGATION_DURATION_HOUR = "HOUR"
+    AGGREGATION_DURATION_MINUTE = "MINUTE"
+    AGGREGATION_DURATION_SECOND = "SECOND"
 
-    TIME_REFERENCE_START = "start"
-    TIME_REFERENCE_MIDDLE = "middle"
-    TIME_REFERENCE_END = "end"
+    TIME_REFERENCE_START = "START"
+    TIME_REFERENCE_MIDDLE = "MIDDLE"
+    TIME_REFERENCE_END = "END"
 
     def __init__(self, *args, **kwargs):
         self.aggregation_duration = None
@@ -140,10 +140,10 @@ class MeasurementMetadataMixin(object):
         - *statistic:* string with controlled vocab (part of OGC interpolationType)
     """
 
-    STATISTIC_MEAN = "mean"
-    STATISTIC_MIN = "min"
-    STATISTIC_MAX = "max"
-    STATISTIC_TOTAL = "total"
+    STATISTIC_MEAN = "MEAN"
+    STATISTIC_MIN = "MIN"
+    STATISTIC_MAX = "MAX"
+    STATISTIC_TOTAL = "TOTAL"
 
     def __init__(self, *args, **kwargs):
         self.observed_property_variable = None

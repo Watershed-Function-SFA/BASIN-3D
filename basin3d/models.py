@@ -24,10 +24,10 @@ class SpatialSamplingShapes(object):
     GM_Shape defined in OGC O&M
     """
 
-    SHAPE_SOLID = "Solid"
-    SHAPE_SURFACE = "Surface"
-    SHAPE_CURVE = "Curve"
-    SHAPE_POINT = "Point"
+    SHAPE_SOLID = "SOLID"
+    SHAPE_SURFACE = "SURFACE"
+    SHAPE_CURVE = "CURVE"
+    SHAPE_POINT = "POINT"
 
 
 class FeatureTypes(object):
@@ -53,17 +53,17 @@ class FeatureTypes(object):
     POINT = 10
 
     TYPES = {
-        REGION: "Region",
-        SUBREGION: "Subregion",
-        BASIN: "Basin",
-        SUBBASIN: "Subbasin",
-        WATERSHED: "Watershed",
-        SUBWATERSHED: "Subwatershed",
-        SITE: "Site",
-        PLOT: "Plot",
-        HORIZONTAL_PATH: "Horizontal Path",
-        VERTICAL_PATH: "Vertical Path",
-        POINT: "Point"
+        REGION: "REGION",
+        SUBREGION: "SUBREGION",
+        BASIN: "BASIN",
+        SUBBASIN: "SUBBASIN",
+        WATERSHED: "WATERSHED",
+        SUBWATERSHED: "SUBWATERSHED",
+        SITE: "SITE",
+        PLOT: "PLOT",
+        HORIZONTAL_PATH: "HORIZONTAL PATH",
+        VERTICAL_PATH: "VERTICAL PATH",
+        POINT: "POINT"
     }
 
     SHAPE_TYPES = {
@@ -76,7 +76,10 @@ class FeatureTypes(object):
 
 
 def get_feature_types():
-    """ Helper function for FeatureTypes """
+    """
+    Helper function for FeatureTypes
+    :return list of feature_types as strings
+    """
     return [x for x in FeatureTypes.TYPES.values()]
 
 
@@ -249,11 +252,11 @@ class SamplingMedium(models.Model):
     Types of sampling mediums for Observed Properties
     """
 
-    SOLID_PHASE = "solid phase"
-    WATER = "water"
-    GAS = "gas"
-    OTHER = 'other'
-    NOT_APPLICABLE = 'N/A'
+    SOLID_PHASE = "SOLID PHASE"
+    WATER = "WATER"
+    GAS = "GAS"
+    OTHER = "OTHER"
+    NOT_APPLICABLE = "N/A"
     SAMPLING_MEDIUMS = [WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE]
 
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)

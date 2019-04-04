@@ -27,6 +27,7 @@ except ImportError:
 import yaml
 from basin3d import synthesis, get_url, post_url
 from basin3d.apps import Basin3DConfig
+from basin3d.models import FeatureTypes
 from django.apps import apps
 from django.conf import settings
 from django.http import HttpResponse
@@ -149,6 +150,25 @@ def get_datasource_observed_property_variables(datasource, variable_names=None, 
         # Return all available variables
         return DataSourceObservedPropertyVariable.objects.filter(
             datasource__name=datasource.name)
+
+
+def get_request_feature_type(request, return_format="enum"):
+    """
+    Return the feature type if exists in the request
+    :param request: request
+    :param return_format: "enum" (default) = the FeatureTypes enum,
+                   otherwise return the text version
+    :return: the feature_type in the format specified, None if none exists
+    """
+    path_info = request.path_info.split("/")
+    for k, feature_type in FeatureTypes.TYPES.items():
+        ft = "{}s".format("".join(feature_type.lower().split()))
+        if ft in path_info:
+            if return_format == "enum":
+                return k
+            else:
+                return feature_type
+    return None
 
 
 class DataSourcePluginViewMeta(type):

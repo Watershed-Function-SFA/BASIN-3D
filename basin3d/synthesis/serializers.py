@@ -158,8 +158,8 @@ class HorizonatalCoordinateSerializer(serializers.Serializer):
 
     # Geographic Fields
 
-    FIELDS_HORIZONTAL = {'x', 'y'}
-    FIELDS_GEOGRAPHIC = {'latitude', 'longitude'}
+    FIELDS_HORIZONTAL = {'X', 'Y'}
+    FIELDS_GEOGRAPHIC = {'LATITUDE', 'LONGITUDE'}
 
     def __init__(self, *args, **kwargs):
         """
@@ -257,15 +257,15 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
         """
         # ToDo: verify it works without feature_type specified
         if "request" in self.context and self.context["request"] and obj.related_sampling_feature:
-            if not obj.related_sampling_feature_type:
+            if obj.related_sampling_feature_type in FeatureTypes.TYPES.keys():
                 feature_type = FeatureTypes.TYPES[obj.related_sampling_feature_type]
                 path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
-            else:
-                path_route = r'monitoringfeature-detail'
-            return reverse(viewname=path_route,
-                           # ToDo: take off the database prefix?
-                           kwargs={'pk': obj.related_sampling_feature},
-                           request=self.context["request"], )
+            # else:
+            #     path_route = r'monitoringfeature-detail'
+                return reverse(viewname=path_route,
+                               # ToDo: take off the database prefix?
+                               kwargs={'pk': obj.related_sampling_feature},
+                               request=self.context["request"], )
         return obj.related_sampling_feature
 
     def get_related_sampling_feature_type(self, obj):
@@ -284,15 +284,15 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
         """
         # ToDo: verify it works without feature_type specified
         if "request" in self.context and self.context["request"] and obj.related_sampling_feature:
-            if obj.related_sampling_feature_type:
+            if obj.related_sampling_feature_type in FeatureTypes.TYPES.keys():
                 feature_type = FeatureTypes.TYPES[obj.related_sampling_feature_type]
                 path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
-            else:
-                path_route = r'monitoringfeature-detail'
-            return reverse(viewname=path_route,
-                           # ToDo: take off the database prefix?
-                           kwargs={'pk': obj.related_sampling_feature},
-                           request=self.context["request"], )
+            # else:
+            #     path_route = r'monitoringfeature-detail'
+                return reverse(viewname=path_route,
+                               # ToDo: take off the database prefix?
+                               kwargs={'pk': obj.related_sampling_feature},
+                               request=self.context["request"], )
         return None
 
 
