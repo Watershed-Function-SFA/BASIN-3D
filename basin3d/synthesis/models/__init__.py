@@ -40,8 +40,8 @@ class Base(object):
                     kwargs[id] = "{}-{}".format(self.datasource.id_prefix, kwargs[id])
 
         if "id" in kwargs and datasource:
-            kwargs["id"] = "{}-{}".format(self.datasource.id_prefix, kwargs["id"])
             kwargs["original_id"] = kwargs["id"]
+            kwargs["id"] = "{}-{}".format(self.datasource.id_prefix, kwargs["id"])
 
         self.__dict__.update(kwargs)
 

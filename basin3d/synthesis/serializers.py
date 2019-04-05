@@ -289,10 +289,14 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
                 path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
             # else:
             #     path_route = r'monitoringfeature-detail'
-                return reverse(viewname=path_route,
-                               # ToDo: take off the database prefix?
-                               kwargs={'pk': obj.related_sampling_feature},
-                               request=self.context["request"], )
+                try:
+                    url = reverse(viewname=path_route,
+                                  # ToDo: take off the database prefix?
+                                  kwargs={'pk': obj.related_sampling_feature},
+                                  request=self.context["request"], )
+                except:
+                    return None
+                return url
         return None
 
 
@@ -346,10 +350,14 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
                 path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
             # else:
                 # path_route = r'monitoringfeature-detail'
-                return reverse(viewname=path_route,
-                               # ToDo: take off the database prefix?
-                               kwargs={'pk': obj.id},
-                               request=self.context["request"], )
+                try:
+                    url = reverse(viewname=path_route,
+                                   # ToDo: take off the database prefix?
+                                   kwargs={'pk': obj.id},
+                                   request=self.context["request"], )
+                except Exception:
+                    return None
+                return url
         return None
 
 
@@ -452,12 +460,16 @@ class ObservationSerializerMixin(object):
             if obj.feature_of_interest_type:
                 feature_type = FeatureTypes.TYPES[obj.feature_of_interest_type]
                 path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
-            else:
-                path_route = r'monitoringfeature-detail'
-            return reverse(viewname=path_route,
-                           # ToDo: take off the database prefix?
-                           kwargs={'pk': obj.feature_of_interest},
-                           request=self.context["request"], )
+            # else:
+                # path_route = r'monitoringfeature-detail'
+                try:
+                    url = reverse(viewname=path_route,
+                                   # ToDo: take off the database prefix?
+                                   kwargs={'pk': obj.feature_of_interest},
+                                   request=self.context["request"])
+                except:
+                    return obj.feature_of_interest
+                return url
         return obj.feature_of_interest
 
     def get_feature_of_interest_type(self, obj):
