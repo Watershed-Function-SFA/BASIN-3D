@@ -344,12 +344,12 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
             if obj.feature_type is not None:
                 feature_type = FeatureTypes.TYPES[obj.feature_type]
                 path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
-            else:
-                path_route = r'monitoringfeature-detail'
-            return reverse(viewname=path_route,
-                           # ToDo: take off the database prefix?
-                           kwargs={'pk': obj.id},
-                           request=self.context["request"], )
+            # else:
+                # path_route = r'monitoringfeature-detail'
+                return reverse(viewname=path_route,
+                               # ToDo: take off the database prefix?
+                               kwargs={'pk': obj.id},
+                               request=self.context["request"], )
         return None
 
 

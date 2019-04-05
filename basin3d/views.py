@@ -13,7 +13,7 @@
     :backlinks: top
 """
 from collections import OrderedDict
-
+import logging
 import sys
 
 from basin3d.models import DataSource, FeatureTypes, get_feature_types
@@ -22,6 +22,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse, NoReverseMatch
 
+
+logger = logging.getLogger(__name__)
 
 BASIN3D_DIRECT_VIEWS = [('direct-apis', 'direct-api-list')]\
 
@@ -109,7 +111,7 @@ def monitoring_features_lists(request, format=format):
                     unsupported_feature_types.append(feature_type)
 
             if len(unsupported_feature_types) > 0:
-                print("{} are not supported FeatureTypes.".format(", ".join(unsupported_feature_types)))
+                logger.warning("{} are not supported FeatureTypes in {}.".format(", ".join(unsupported_feature_types), datasource.name))
 
             # ToDo: get this working in future
             # monitoring_features_list['monitoringfeatures'] = \
