@@ -50,7 +50,6 @@ class RelatedSamplingFeature(Base):
         # ToDo: refactor this to not require type
         if self.related_sampling_feature_type is not None and \
                 self.related_sampling_feature_type not in FeatureTypes.TYPES.keys():
-            print(self.related_sampling_feature_type.__class__)
             raise AttributeError("RelatedSamplingFeature related_sampling_feature_type must be FeatureTypes")
 
         if self.role is None:
@@ -90,9 +89,9 @@ class Coordinate(Base):
             raise TypeError("Coordinate.representative attribute must be RepresentativeCoordinate object")
 
         # enforce required coordinates: if only representative, then representative.representative_point is required
-        if self.absolute is None:
-            if self.representative.representative_point is None:
-                raise AttributeError("Representative_point is required if only representative coordinates are provided.")
+        # if self.absolute is None:
+        #     if self.representative.representative_point is None:
+        #         raise AttributeError("Representative_point is required if only representative coordinates are provided.")
 
 
 class AbsoluteCoordinate(Base):
@@ -175,9 +174,9 @@ class RepresentativeCoordinate(Base):
         """
 
         # if representative point, require representative point type
-        if self.representative_point is not None:
-            if self.representative_point_type is None:
-                raise AttributeError("representative_point_type is required if representative_point provided.")
+        # if self.representative_point is not None:
+        #     if self.representative_point_type is None:
+        #         raise AttributeError("representative_point_type is required if representative_point provided.")
 
 
 class VerticalCoordinate(Base):
@@ -433,6 +432,9 @@ class Feature(Base):
                 synth_params.append(synth_param.observed_property_variable_id)
 
             self.observed_property_variables = synth_params
+
+        elif self.observed_property_variables:
+            self.observed_property_variables = [self.observed_property_variables]
 
     def __validate__(self):
         """

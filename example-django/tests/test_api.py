@@ -212,8 +212,40 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                              "id": "A-1",
                              "unit_of_measurement": "nm",
                              "observed_property": "http://testserver/synthesis/observedproperty/1/",
-                             "feature_of_interest": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
-                             "feature_of_interest_type": "point",
+                             "feature_of_interest": {
+                                 "id": "A-1", "name": "Point Location 1",
+                                 "description": "The point.",
+                                 "feature_type": "POINT", "shape": "POINT",
+                                 "coordinates": {
+                                     "absolute": {
+                                         "horizontal_position": [{
+                                             "units": "DD", "latitude": 70.4657, "y": 70.4657, "x": -20.4567,
+                                             "longitude": -20.4567, "datum": None, "type": "GEOGRAPHIC"
+                                         }],
+                                         "vertical_extent": [{
+                                             "datum": "NAVD88", "value": 1500.0,
+                                             "distance_units": "feet", "resolution": None, "type": "ALTITUDE"
+                                         }]
+                                     },
+                                     "representative": {
+                                         "representative_point_type": None, "representative_point": None,
+                                         "vertical_position": {
+                                              "datum": "LS", "value": -0.6, "distance_units": "meters",
+                                              "type": "DEPTH", "resolution": None
+                                         }
+                                     }
+                                 },
+                                 "description_reference": None,
+                                 "observed_property_variables": ["ACT", "Ag"],
+                                 "related_party": [],
+                                 "url": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
+                                 "utc_offset": None,
+                                 "related_sampling_feature_complex": [{"related_sampling_feature": "A-Region1",
+                                                                       "related_sampling_feature_type": "REGION",
+                                                                       "role": "PARENT",
+                                                                       "url": "http://testserver/synthesis/monitoringfeatures/regions/A-Region1/"}],
+                                 },
+                             "feature_of_interest_type": "POINT",
                              "utc_offset": -9,
                              "result_points": [["2016-02-01", 0.3454],
                                                ["2016-02-02", 0.6908],
@@ -224,14 +256,15 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                                                ["2016-02-07", 2.4177999999999997],
                                                ["2016-02-08", 2.7632],
                                                ["2016-02-09", 3.1086]],
-                             "result_quality": "checked",
-                             "statistic": "mean",
-                             "type": "measurement_tvp_timeseries",
-                             "aggregation_duration": "daily",
+                             "result_quality": "CHECKED",
+                             "statistic": "MEAN",
+                             "type": "MEASUREMENT_TVP_TIMESERIES",
+                             "aggregation_duration": "DAILY",
                              "phenomenon_time": None
                          })
 
     def test_get(self):
+        self.maxDiff = None
         response = self.client.get('/synthesis/measurement_tvp_timeseries/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_output = [
@@ -239,8 +272,40 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                 "id": "A-1",
                 "unit_of_measurement": "nm",
                 "observed_property": "http://testserver/synthesis/observedproperty/1/",
-                "feature_of_interest": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
-                "feature_of_interest_type": "point",
+                "feature_of_interest": {
+                     "id": "A-1", "name": "Point Location 1",
+                     "description": "The point.",
+                     "feature_type": "POINT", "shape": "POINT",
+                     "coordinates": {
+                         "absolute": {
+                             "horizontal_position": [{
+                                 "units": "DD", "latitude": 70.4657, "y": 70.4657, "x": -20.4567,
+                                 "longitude": -20.4567, "datum": None, "type": "GEOGRAPHIC"
+                             }],
+                             "vertical_extent": [{
+                                 "datum": "NAVD88", "value": 1500.0,
+                                 "distance_units": "feet", "resolution": None, "type": "ALTITUDE"
+                             }]
+                         },
+                         "representative": {
+                             "representative_point_type": None, "representative_point": None,
+                             "vertical_position": {
+                                  "datum": "LS", "value": -0.6, "distance_units": "meters",
+                                  "type": "DEPTH", "resolution": None
+                             }
+                         }
+                     },
+                     "description_reference": None,
+                     "observed_property_variables": ["ACT", "Ag"],
+                     "related_party": [],
+                     "url": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
+                     "utc_offset": None,
+                     "related_sampling_feature_complex": [{"related_sampling_feature": "A-Region1",
+                                                           "related_sampling_feature_type": "REGION",
+                                                           "role": "PARENT",
+                                                           "url": "http://testserver/synthesis/monitoringfeatures/regions/A-Region1/"}],
+                },
+                "feature_of_interest_type": "POINT",
                 "utc_offset": -9,
                 "result_points": [["2016-02-01", 0.3454],
                                   ["2016-02-02", 0.6908],
@@ -251,17 +316,49 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                                   ["2016-02-07", 2.4177999999999997],
                                   ["2016-02-08", 2.7632],
                                   ["2016-02-09", 3.1086]],
-                "result_quality": "checked",
-                "statistic": "mean",
-                "type": "measurement_tvp_timeseries",
-                "aggregation_duration": "daily",
+                "result_quality": "CHECKED",
+                "statistic": "MEAN",
+                "type": "MEASUREMENT_TVP_TIMESERIES",
+                "aggregation_duration": "DAILY",
                 "phenomenon_time": None
             },
             {
                 "id": "A-2",
                 "observed_property": "http://testserver/synthesis/observedproperty/1/",
-                "feature_of_interest_id": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
-                "feature_of_interest_type": "point",
+                "feature_of_interest": {
+                     "id": "A-2", "name": "Point Location 2",
+                     "description": "The point.",
+                     "feature_type": "POINT", "shape": "POINT",
+                     "coordinates": {
+                         "absolute": {
+                             "horizontal_position": [{
+                                 "units": "DD", "latitude": 70.4657, "y": 70.4657, "x": -20.4567,
+                                 "longitude": -20.4567, "datum": None, "type": "GEOGRAPHIC"
+                             }],
+                             "vertical_extent": [{
+                                 "datum": "NAVD88", "value": 1500.0,
+                                 "distance_units": "feet", "resolution": None, "type": "ALTITUDE"
+                             }]
+                         },
+                         "representative": {
+                             "representative_point_type": None, "representative_point": None,
+                             "vertical_position": {
+                                  "datum": "LS", "value": -0.7, "distance_units": "meters",
+                                  "type": "DEPTH", "resolution": None
+                             }
+                         }
+                     },
+                     "description_reference": None,
+                     "observed_property_variables": ["ACT", "Ag"],
+                     "related_party": [],
+                     "url": "http://testserver/synthesis/monitoringfeatures/points/A-2/",
+                     "utc_offset": None,
+                     "related_sampling_feature_complex": [{"related_sampling_feature": "A-Region1",
+                                                           "related_sampling_feature_type": "REGION",
+                                                           "role": "PARENT",
+                                                           "url": "http://testserver/synthesis/monitoringfeatures/regions/A-Region1/"}],
+                },
+                "feature_of_interest_type": "POINT",
                 "utc_offset": -10,
                 "unit_of_measurement": "nm",
                 "result_points": [["2016-02-01", 0.3454],
@@ -273,10 +370,10 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                                   ["2016-02-07", 2.4177999999999997],
                                   ["2016-02-08", 2.7632],
                                   ["2016-02-09", 3.1086]],
-                "result_quality": "checked",
-                "statistic": "mean",
-                "type": "measurement_tvp_timeseries",
-                "aggregation_duration": "daily",
+                "result_quality": "CHECKED",
+                "statistic": "MEAN",
+                "type": "MEASUREMENT_TVP_TIMESERIES",
+                "aggregation_duration": "DAILY",
                 "phenomenon_time": None
             }]
         self.assertEqual(json.loads(response.content.decode('utf-8')), expected_output)

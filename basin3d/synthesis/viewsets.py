@@ -30,7 +30,7 @@ from basin3d.synthesis.models.field import MonitoringFeature
 from basin3d.synthesis.models.measurement import MeasurementTimeseriesTVPObservation, TimeMetadataMixin
 from basin3d.synthesis.query import extract_query_param_ids, \
     QUERY_PARAM_OBSERVED_PROPERTY_VARIABLES, QUERY_PARAM_AGGREGATION_DURATION, \
-    QUERY_PARAM_LOCATIONS, QUERY_PARAM_RESULT_QUALITY
+    QUERY_PARAM_LOCATIONS, QUERY_PARAM_RESULT_QUALITY, QUERY_PARAM_REGIONS, QUERY_PARAM_SITES
 
 from basin3d.synthesis.serializers import MonitoringFeatureSerializer, \
     MeasurementTimeseriesTVPObservationSerializer
@@ -91,9 +91,7 @@ class DataSourcePluginViewSet(ViewSet):
                                                                                    self.synthesis_model])
                                                                            ):
                             items.append(obj)
-                            # print(self.synthesize_query_params(request, plugin_views[self.synthesis_model]))
-                            # if hasattr(obj, "feature_type"):
-                                # print(obj.feature_type)
+                            logger.debug(self.synthesize_query_params(request, plugin_views[self.synthesis_model]))
                     except InvalidOrMissingCredentials as e:
                         logger.error(e)
 
@@ -116,16 +114,13 @@ class DataSourcePluginViewSet(ViewSet):
             if datasource:
                 datasource_pk = pk.replace("{}-".format(pk_list[0]),
                                            "", 1)  # The datasource id prefix needs to be removed
-                # print(datasource_pk)
                 if datasource.enabled:
 
                     plugin_views = datasource.get_plugin().get_plugin_views()
                     if self.synthesis_model in plugin_views:
                         obj = plugin_views[self.synthesis_model].get(request, pk=datasource_pk)
-                        # print(datasource_pk + self.synthesis_model.__name__, request.path_info)
             if obj:
                 try:
-                    # print(obj.id)
                     serializer = self.__class__.serializer_class(obj, context={'request': request})
                     return Response(serializer.data)
                 except Exception as e:
@@ -178,7 +173,13 @@ class MonitoringFeatureViewSet(DataSourcePluginViewSet):
         for key, value in request.query_params.items():
             query_params[key] = value
 
-        # print(query_params)
+        id_prefix = plugin_view.datasource.id_prefix
+        for param_name in [QUERY_PARAM_LOCATIONS, QUERY_PARAM_REGIONS, QUERY_PARAM_SITES]:
+            extract_query_param_ids(request=request,
+                                    param_name=param_name,
+                                    id_prefix=id_prefix,
+                                    query_params=query_params)
+
         return query_params
 
     def extract_type(self, request):
@@ -283,7 +284,7 @@ class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
         for key, value in request.query_params.items():
             query_params[key] = value
 
-        # ToDo: Change to sampling by features types
+        # ToDo: Change to monitoring feature
         extract_query_param_ids(request=request,
                                 param_name=QUERY_PARAM_LOCATIONS,
                                 id_prefix=id_prefix,

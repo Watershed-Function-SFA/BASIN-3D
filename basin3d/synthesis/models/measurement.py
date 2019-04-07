@@ -88,7 +88,7 @@ class Observation(Base):
         self.result_quality = ResultQuality()
 
         # Initialize after the attributes have been set
-        super().__init__(datasource, datasource_ids=['feature_of_interest'], **kwargs)
+        super().__init__(datasource, **kwargs)
         self.__validate__()
 
     def __eq__(self, other):

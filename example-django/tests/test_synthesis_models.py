@@ -108,10 +108,7 @@ class ModelTests(TestCase):
             DepthCoordinate.DATUM_LOCAL_SURFACE
         assert a_point.observed_property_variables == ["ACT", "Ag"]
         assert a_point.related_sampling_feature_complex[0].related_sampling_feature == "A-Region1"
-        assert a_point.related_sampling_feature_complex[0].role == "Parent"
-
-    # ToDo: build tests for all MonitoringFeature / Coordinate Exceptions
-    # ToDo: build tests for all coordinate type logic
+        assert a_point.related_sampling_feature_complex[0].role == "PARENT"
 
     def test_observation_create(self):
         """
@@ -133,7 +130,7 @@ class ModelTests(TestCase):
         assert obs01.phenomenon_time == "20180201"
         assert obs01.observed_property is None
         assert obs01.result_quality == ResultQuality().RESULT_QUALITY_CHECKED
-        assert obs01.feature_of_interest == "A-Point011"
+        assert obs01.feature_of_interest == "Point011"
 
     def test_measurement_timeseries_tvp_observation_create(self):
         """
@@ -163,7 +160,7 @@ class ModelTests(TestCase):
         assert obs01.observed_property == 1
         assert obs01.observed_property_variable is None
         assert obs01.result_quality == ResultQuality.RESULT_QUALITY_CHECKED
-        assert obs01.feature_of_interest == "A-Point011"
+        assert obs01.feature_of_interest == "Point011"
         assert obs01.feature_of_interest_type == FeatureTypes.POINT
         assert obs01.aggregation_duration == "daily"
         assert obs01.time_reference_position == "start"

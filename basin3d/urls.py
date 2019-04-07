@@ -51,42 +51,12 @@ def get_synthesis_router():
                     plugin_views = plugin.get_plugin_views()
                     for model_name in plugin_views.keys():
                         viewset_models.append(model_name.__name__)
-                    """
-                    # KEEP for a bit: initial try to include the monitoring feature urlpatterns here
-                    #    by extending router.urls directly. The looping machinery is the same as the
-                    #    function get_monitoring_features_url
-                    
-                    datasource_feature_types = plugin.get_feature_types()
-                    for feature_type in FeatureTypes.TYPES.values():
-                        if feature_type in datasource_feature_types:
-                            ft = ''.join(feature_type.lower().split())
-                            path_route = r'monitoringfeatures/{}'.format(ft)
-                            print(ft + path_route)
-                            router.urls.extend([
-                                '< URLPattern\'^monitoringfeatures/{}s/$\'[name = \'monitoringfeature-list\'] >'.format(ft),
-                                '< URLPattern\'^monitoringfeatures/{}s\.(?P<format>[a-z0-9]+)/?$\'[name = \'monitoringfeature-list\'] >'.format(ft),
-                                '< URLPattern\'^monitoringfeatures/{}s/(?P<pk>[^/.]+)/$\'[name = \'monitoringfeature-{}s-detail\'] >'.format(ft, ft),
-                                '< URLPattern\'^monitoringfeatures/{}s/(?P<pk>[^/.]+)\.(?P<format>[a-z0-9]+)/?$\'[name = \'monitoringfeature-{}s-detail\'] >'.format(ft, ft)
-                            ])
-                            
-                            # This is what router.urls looks like
-                            # [
-                            #     '< URLPattern\'^monitoringfeatures/{}s\.(?P<format>[a-z0-9]+)/?$\'[name = \'monitoringfeature-list\'] >'.format(ft),
-                            #     '< URLPattern\'^monitoringfeatures/{}s/(?P<pk>[^/.]+)/$\'[name = \'monitoringfeature-{}s-detail\'] >'.format(ft, ft),
-                            #     '< URLPattern\'^monitoringfeatures/{}s/(?P<pk>[^/.]+)\.(?P<format>[a-z0-9]+)/?$\'[name = \'monitoringfeature-{}s-detail\'] >'.format(ft, ft)
-                            #     '< URLPattern\'^monitoringfeatures/region/(?P<pk>[^/.]+)/regions/$\'[name = \'monitoringfeature-regions-regions-detail\'] >,
-                            #     '< URLPattern\'^monitoringfeatures/region/(?P<pk>[^/.]+)/regions\.(?P<format>[a-z0-9]+)/?$\'[name = \'monitoringfeature-{}-detail\'] >
-                            # ]
-                    
-                        # router.register(path_route, MonitoringFeatureViewSet, base_name='monitoringfeature-{}s'.format(ft))
-                    """
                     # This is OK for now in the future we want this to be more automated
                     # This will only add the viewsets that are defined
                     viewset_models = set(viewset_models)
                     if 'MeasurementTimeseriesTVPObservation' in viewset_models:
                         router.register(r'measurement_tvp_timeseries', MeasurementTimeseriesTVPObservationViewSet,
                                         base_name='measurementtvptimeseries')
-            # print(router.urls)
         except Exception:
             # This will only be raised during a migration because the database has not been
             # created yet.
@@ -136,19 +106,6 @@ def get_monitoring_feature_urls():
                         ])
                         supported_feature_types.remove(feature_type)
 
-                # urls.extend([url(r'^synthesis/monitoringfeatures/all/$',
-                #                  MonitoringFeatureViewSet.as_view({'get': 'list'}),
-                #                  name='monitoringfeature-list'),
-                #              url(r'^synthesis/monitoringfeatures\all.(?P<format>[a-z0-9]+)/?$',
-                #                  MonitoringFeatureViewSet.as_view({'get': 'list'}),
-                #                  name='monitoringfeature-list'),
-                #             url(r'^synthesis/monitoringfeatures/(?P<pk>[^/.]+)/$',
-                #                 MonitoringFeatureViewSet.as_view({'get': 'retrieve'}),
-                #                 name='monitoringfeature-detail'),
-                #             url(r'^synthesis/monitoringfeatures/(?P<pk>[^/.]+).(?P<format>[a-z0-9]+)/?',
-                #                 MonitoringFeatureViewSet.as_view({'get': 'retrieve'}),
-                #                 name='monitoringfeature-detail')
-                #              ])
         return urls
     except Exception:
         pass
@@ -172,5 +129,3 @@ if settings.BASIN3D["DIRECT_API"]:
     urlpatterns.append(url(r'^direct/(?P<id_prefix>[a-zA-Z0-9]+)/(?P<direct_path>[a-zA-Z/_\-?&0-9]*)$',
                            DirectAPIViewSet.as_view({'get': 'retrieve', 'post':'retrieve'}),
                            name='direct-path-detail'))
-
-print(urlpatterns)

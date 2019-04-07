@@ -56,30 +56,6 @@ def broker_api_root(request, format=None):
         '{}://{}/synthesis/monitoringfeatures/'.format(request.scheme, request.META["HTTP_HOST"])
     return Response(root_dict)
 
-@api_view(['GET'])
-def broker_api_monitoring_features_list(request, format=format):
-    """
-    Generate list of URLs to views for monitoring features
-
-    KEEP for now: this hardcodes all the features
-    """
-    monitoring_features_list = {}
-    k = r'synthesis-monitoringfeatures-{s}s'
-    for feature_type in FeatureTypes.TYPES.values():
-        ft = "".join(feature_type.lower().split())
-        monitoring_features_list[ft] = \
-            '{}://{}/synthesis/monitoringfeatures/{}s'.format(request.scheme, request.META["HTTP_HOST"], ft)
-        """
-        try:
-            key = k.format(s=ft)
-            print(key)
-            monitoring_features_list[key] = \
-                reverse('monitoringfeature-list', request=request, format=format)
-        except NoReverseMatch:
-            print("NoReversMatch for {}".format(ft), file=sys.stderr)
-        """
-    return Response(monitoring_features_list)
-
 
 @api_view(['GET'])
 def monitoring_features_lists(request, format=format):
@@ -113,9 +89,4 @@ def monitoring_features_lists(request, format=format):
             if len(unsupported_feature_types) > 0:
                 logger.warning("{} are not supported FeatureTypes in {}.".format(", ".join(unsupported_feature_types), datasource.name))
 
-            # ToDo: get this working in future
-            # monitoring_features_list['monitoringfeatures'] = \
-            #     '{}://{}/synthesis/monitoringfeatures/all/'.format(
-            #             request.scheme, request.META["HTTP_HOST"])
-    # print(monitoring_features_list)
     return Response(monitoring_features_list)

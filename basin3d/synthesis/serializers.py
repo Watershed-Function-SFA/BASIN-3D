@@ -240,7 +240,7 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
     """
 
     """
-    related_sampling_feature = serializers.SerializerMethodField()
+    related_sampling_feature = serializers.CharField()
     related_sampling_feature_type = serializers.SerializerMethodField()
     role = serializers.CharField()
 
@@ -249,24 +249,24 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
         kwargs.pop('fields', None)
         super(self.__class__, self).__init__(*args, **kwargs)
 
-    def get_related_sampling_feature(self, obj):
-        """
-        Resolve the URL for the feature of interest
-        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
-        :return: an URL to the Monitoring Feature group
-        """
-        # ToDo: verify it works without feature_type specified
-        if "request" in self.context and self.context["request"] and obj.related_sampling_feature:
-            if obj.related_sampling_feature_type in FeatureTypes.TYPES.keys():
-                feature_type = FeatureTypes.TYPES[obj.related_sampling_feature_type]
-                path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
-            # else:
-            #     path_route = r'monitoringfeature-detail'
-                return reverse(viewname=path_route,
-                               # ToDo: take off the database prefix?
-                               kwargs={'pk': obj.related_sampling_feature},
-                               request=self.context["request"], )
-        return obj.related_sampling_feature
+    # def get_related_sampling_feature(self, obj):
+    #     """
+    #     Resolve the URL for the feature of interest
+    #     :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
+    #     :return: an URL to the Monitoring Feature group
+    #     """
+    #     # ToDo: verify it works without feature_type specified
+    #     if "request" in self.context and self.context["request"] and obj.related_sampling_feature:
+    #         if obj.related_sampling_feature_type in FeatureTypes.TYPES.keys():
+    #             feature_type = FeatureTypes.TYPES[obj.related_sampling_feature_type]
+    #             path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
+    #         # else:
+    #         #     path_route = r'monitoringfeature-detail'
+    #             return reverse(viewname=path_route,
+    #                            # ToDo: take off the database prefix?
+    #                            kwargs={'pk': obj.related_sampling_feature},
+    #                            request=self.context["request"], )
+    #     return obj.related_sampling_feature
 
     def get_related_sampling_feature_type(self, obj):
         """
@@ -438,7 +438,7 @@ class ObservationSerializerMixin(object):
         self.fields["phenomenon_time"] = TimestampField()
         self.fields["observed_property"] = serializers.SerializerMethodField()
         self.fields["result_quality"] = serializers.CharField()
-        self.fields["feature_of_interest"] = serializers.SerializerMethodField()
+        self.fields["feature_of_interest"] = ReadOnlySynthesisModelField(serializer_class=MonitoringFeatureSerializer)
         self.fields["feature_of_interest_type"] = serializers.SerializerMethodField()
 
     def get_observed_property(self, obj):
@@ -448,29 +448,6 @@ class ObservationSerializerMixin(object):
                            request=self.context["request"], )
         else:
             return obj.observed_property
-
-    def get_feature_of_interest(self, obj):
-        """
-        Resolve the URL for the feature of interest
-        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
-        :return: an URL to the Monitoring Feature group
-        """
-        # ToDo: verify it works without feature_type specified
-        if "request" in self.context and self.context["request"] and obj.feature_of_interest:
-            if obj.feature_of_interest_type:
-                feature_type = FeatureTypes.TYPES[obj.feature_of_interest_type]
-                path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
-            # else:
-                # path_route = r'monitoringfeature-detail'
-                try:
-                    url = reverse(viewname=path_route,
-                                   # ToDo: take off the database prefix?
-                                   kwargs={'pk': obj.feature_of_interest},
-                                   request=self.context["request"])
-                except:
-                    return obj.feature_of_interest
-                return url
-        return obj.feature_of_interest
 
     def get_feature_of_interest_type(self, obj):
         """

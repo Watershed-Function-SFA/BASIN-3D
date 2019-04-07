@@ -112,13 +112,42 @@ class AlphaDataMeasurementTimeseriesTVPObservationView(with_metaclass(DataSource
                 id=num,
                 observed_property=1,
                 utc_offset=-8-num,
-                feature_of_interest=1,
+                feature_of_interest=MonitoringFeature(
+                    datasource=self.datasource,
+                    id=num,
+                    name="Point Location " + str(num),
+                    description="The point.",
+                    feature_type=FeatureTypes.POINT,
+                    shape=SpatialSamplingShapes.SHAPE_POINT,
+                    coordinates=Coordinate(
+                        absolute=AbsoluteCoordinate(
+                            horizontal_position=GeographicCoordinate(
+                                units=GeographicCoordinate.UNITS_DEC_DEGREES,
+                                latitude=70.4657, longitude=-20.4567),
+                            vertical_extent=AltitudeCoordinate(
+                                datum=AltitudeCoordinate.DATUM_NAVD88,
+                                value=1500,
+                                distance_units=VerticalCoordinate.DISTANCE_UNITS_FEET)),
+                        representative=RepresentativeCoordinate(
+                            vertical_position=DepthCoordinate(
+                                datum=DepthCoordinate.DATUM_LOCAL_SURFACE,
+                                value=-0.5-num*0.1,
+                                distance_units=VerticalCoordinate.DISTANCE_UNITS_METERS)
+                        )
+                    ),
+                    observed_property_variables=["Ag", "Acetate"],
+                    related_sampling_feature_complex=[
+                        RelatedSamplingFeature(datasource=self.datasource,
+                                               related_sampling_feature="Region1",
+                                               related_sampling_feature_type=FeatureTypes.REGION,
+                                               role=RelatedSamplingFeature.ROLE_PARENT)]
+                ),
                 feature_of_interest_type=FeatureTypes.POINT,
                 unit_of_measurement="nm",
-                aggregation_duration="daily",
-                result_quality="checked",
+                aggregation_duration="DAILY",
+                result_quality="CHECKED",
                 time_reference_position=None,
-                statistic="mean",
+                statistic="MEAN",
                 result_points=data
             )
 
