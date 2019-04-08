@@ -557,7 +557,7 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
 
         self.credentials = datasource.credentials  # Access the credentials
 
-        # If there are credentials then get the locations
+        # If there are credentials then make the api call
         if self.credentials:
             self.credentials = yaml.load(self.credentials)
             if self._validate_credentials():

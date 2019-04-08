@@ -30,7 +30,7 @@ from basin3d.synthesis.models.field import MonitoringFeature
 from basin3d.synthesis.models.measurement import MeasurementTimeseriesTVPObservation, TimeMetadataMixin
 from basin3d.synthesis.query import extract_query_param_ids, \
     QUERY_PARAM_OBSERVED_PROPERTY_VARIABLES, QUERY_PARAM_AGGREGATION_DURATION, \
-    QUERY_PARAM_LOCATIONS, QUERY_PARAM_RESULT_QUALITY, QUERY_PARAM_REGIONS, QUERY_PARAM_SITES
+    QUERY_PARAM_MONITORING_FEATURES, QUERY_PARAM_RESULT_QUALITY, QUERY_PARAM_REGIONS, QUERY_PARAM_SUBBASINS
 
 from basin3d.synthesis.serializers import MonitoringFeatureSerializer, \
     MeasurementTimeseriesTVPObservationSerializer
@@ -174,7 +174,7 @@ class MonitoringFeatureViewSet(DataSourcePluginViewSet):
             query_params[key] = value
 
         id_prefix = plugin_view.datasource.id_prefix
-        for param_name in [QUERY_PARAM_LOCATIONS, QUERY_PARAM_REGIONS, QUERY_PARAM_SITES]:
+        for param_name in [QUERY_PARAM_MONITORING_FEATURES, QUERY_PARAM_REGIONS, QUERY_PARAM_SUBBASINS]:
             extract_query_param_ids(request=request,
                                     param_name=param_name,
                                     id_prefix=id_prefix,
@@ -250,7 +250,7 @@ class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
     ** Filter results** by the following attributes:
 
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
-    * *locations (required)* comma separated list of locations ids
+    * *monitoring_features (required)* comma separated list of monitoring_features ids
     * *observed_property_variables (required)* comma separated list of observed property variable ids
     * *start_date (required)*
     * *end_date*
@@ -269,7 +269,7 @@ class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
         Synthesizes query parameters, if necessary
 
         Parameters Synthesized:
-          + locations
+          + monitoring_features
           + observed_property_variables
           + temporal_resolution (default: day)
           + quality_checked
@@ -286,7 +286,7 @@ class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
 
         # ToDo: Change to monitoring feature
         extract_query_param_ids(request=request,
-                                param_name=QUERY_PARAM_LOCATIONS,
+                                param_name=QUERY_PARAM_MONITORING_FEATURES,
                                 id_prefix=id_prefix,
                                 query_params=query_params)
 

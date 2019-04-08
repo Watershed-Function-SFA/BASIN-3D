@@ -532,25 +532,30 @@ class SpatialSamplingFeature(SamplingFeature):
         if self.coordinates and self.coordinates.absolute:
             if self.shape == SpatialSamplingShapes.SHAPE_POINT:
                 if len(self.coordinates.absolute.horizontal_position) != 1:
-                    raise AttributeError(error_msg + "Shape { } must have only one point.")
+                    raise AttributeError(error_msg + "Shape {} must have only one point."
+                                         .format(SpatialSamplingShapes.SHAPE_POINT))
                 else:
                     return
             if self.shape == SpatialSamplingShapes.SHAPE_SURFACE:
                 if len(self.coordinates.absolute.horizontal_position) < 1 or \
-                        self.coordinates.absolute.horizontal_position[0] != \
-                        self.coordinates.absolute.horizontal_position[-1]:
-                    raise AttributeError(error_msg + "Shape { } must have more than one point. "
+                        self.coordinates.absolute.horizontal_position[0].x != \
+                        self.coordinates.absolute.horizontal_position[-1].x or \
+                        self.coordinates.absolute.horizontal_position[0].y != \
+                        self.coordinates.absolute.horizontal_position[-1].y:
+                    raise AttributeError(error_msg + "Shape {} must have more than one point. "
                                                      "The first and last points in the list must "
-                                                     "be the same point.")
+                                                     "be the same point.".format(SpatialSamplingShapes.SHAPE_SURFACE))
                 else:
                     return
             if self.shape == SpatialSamplingShapes.SHAPE_CURVE:
                 if len(self.coordinates.absolute.horizontal_position) < 1 or \
-                        self.coordinates.absolute.horizontal_position[0] == \
-                        self.coordinates.absolute.horizontal_position[-1]:
-                    raise AttributeError(error_msg + "Shape { } must have more than one point. "
+                        (self.coordinates.absolute.horizontal_position[0].x == \
+                         self.coordinates.absolute.horizontal_position[-1].x and \
+                         self.coordinates.absolute.horizontal_position[0].y == \
+                         self.coordinates.absolute.horizontal_position[-1].y):
+                    raise AttributeError(error_msg + "Shape {} must have more than one point. "
                                                      "The first and last points in the list must "
-                                                     "NOT be the same point.")
+                                                     "NOT be the same point.".format(SpatialSamplingShapes.SHAPE_CURVE))
                 else:
                     return
             # ToDo: distinguish solid from curve when altitude is included
