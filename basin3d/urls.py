@@ -106,9 +106,9 @@ def get_monitoring_feature_urls():
                         ])
                         supported_feature_types.remove(feature_type)
 
-        return urls
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
+    return urls
 
 # Wire up our API using automatic URL routing.
 
