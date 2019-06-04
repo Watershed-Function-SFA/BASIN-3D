@@ -17,8 +17,8 @@ Broker for Assimilation, Synthesis and Integration of eNvironmental Diverse, Dis
 ### Prerequisities
 BASIN-D3 is a Django application which requires:
 
-* Python (>= 3.4, 3.5)
-* Django (1.8, 1.9)
+* Python (> 3.4)
+* Django (>=2.0,<2.1)
 
 ### Get the code
 
@@ -116,6 +116,7 @@ Workflow for tagging and building release:
 
 * **Charuleka Varadharajan** - [LBL](http://eesa.lbl.gov/profiles/charuleka-varadharajan/)
 * **Valerie Hendrix**  - [LBL](https://dst.lbl.gov/people.php?p=ValHendrix)
+
 
 See also the list of [contributors](contributors.txt) who 
 participated in this project.

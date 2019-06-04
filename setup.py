@@ -37,7 +37,7 @@ if os.path.exists(version_py):
 if sys.version_info.major == 2 and sys.version_info.minor < 7:
     sys.exit('Sorry, Python < 2.7 is not supported')
 
-if sys.version_info.major == 3 and sys.version_info.minor < 4:
+if sys.version_info.major == 3 and sys.version_info.minor <= 4:
     sys.exit('Sorry, Python < 3.4 is not supported')
 
 setup(name='BASIN-3D',
@@ -57,7 +57,8 @@ setup(name='BASIN-3D',
           "python3-keyczar",
           "pyyaml",
           "requests",
-          "markdown"
+          "markdown",
+          "pygments"
       ],
       classifiers=[
           'Development Status :: 1 - Planning',
