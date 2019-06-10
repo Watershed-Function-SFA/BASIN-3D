@@ -10,12 +10,8 @@
 View Controllers for BASIN-3D REST api
 
 * :class:`DataSourcePluginViewSet` - Base ViewSet for all synthesized model views.
-* :class:`DataPointGroupViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.DataPointGroup` objects
-* :class:`DataPointViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.DataPoint` objects
-* :class:`PlotViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Plot` objects
-* :class:`PointLocationViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.PointLocation` objects
-* :class:`RegionViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Region` objects
-* :class:`SiteViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Site` objects
+* :class:`MeasurementTVPObservationViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.MeasurementTVPObservation` objects
+* :class:`MonitoringFeatureViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.MonitoringFeature` objects
 
 ----------------------------------
 
@@ -46,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 class DataSourcePluginViewSet(ViewSet):
     """
-    Base ViewsSet  for all DataSource plugins
+    Base ViewsSet for all DataSource plugins
 
     """
     versioning_class = versioning.NamespaceVersioning
@@ -138,13 +134,26 @@ class DataSourcePluginViewSet(ViewSet):
 
 class MonitoringFeatureViewSet(DataSourcePluginViewSet):
     """
-    Return a list of the MonitoringFeature types in use
+    MonitoringFeature
 
-    **Fields**
-    * *url* - for each Feature type
+    **Properties**
+
+    * *id:* string
+    * *name:* string
+    * *description:* string
+    * *feature_type:* enum (FeatureTypes: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED,
+        SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT)
+    * * observed_property_variables:* list of observed variables made at the Feature.
+        Variables are configured via the plugins.
+    * *related_sampling_feature_comples:* list of related_sampling_features. PARENT features are currently supported.
+    * *shape:* enum (POINT, CURVE, SURFACE, SOLID)
+    * *coordinates:* location of Feature in absolute and/or representative datum
+    * *description_reference:* string, additional information about the Feature
+    * *related_party:* (optional) list of people or organizations responsible for the Feature
+    * *utc_offset:* float (offset in hours), e.g., +9
+    * *url:* url
 
     ** Filter results** by the following attributes
-
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
 
     ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
@@ -239,23 +248,29 @@ class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
 
     ** Properties **
 
-    * *observation_property:* string, (optional)
-    * *start_time:* datetime,  survey start time
-    * *end_time:* datetime, units: survey end time
-    * *utc_offset:* float (offset in hours), +9
-    * *feature_of_interest* feature on which the observation is being made
-    * *feature_of_interest_type* enum (FeatureTypes)
-    * *result_points* -- for the list of data_points associated with this Data Point Group
+    * *id:* string, Observation identifier (optional)
+    * *type:* enum = MEASUREMENT_TVP_TIMESERIES
+    * *observed_property:* url, url for the observation's observed property
+    * *phenomenon_time:* datetime
+    * *utc_offset:* float (offset in hours), e.g., +9
+    * *feature_of_interest:* feature on which the observation is being made
+    * *feature_of_interest_type:* enum (FeatureTypes)
+    * *result_points:* TimeValuePair, observed values of the observed property being assessed
+    * *time_reference_position:* enum, position of timestamp in aggregated_duration (START, MIDDLE, END)
+    * *aggregation_duration:* enum, time period represented by observation
+        (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)
+    * *unit_of_measurement:* string, units in which the observation is reported
+    * *statistic:* enum (MEAN, MIN, MAX, TOTAL)
+    * *result_quality:* enum, (CHECKED, UNCHECKED)
 
     ** Filter results** by the following attributes:
 
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
     * *monitoring_features (required)* comma separated list of monitoring_features ids
     * *observed_property_variables (required)* comma separated list of observed property variable ids
-    * *start_date (required)*
-    * *end_date*
-    * *aggregation_duration (default:day):*  options (year|month|day|hour|minute|second)
-    * *result_quality* if 'True' then filter by quality checked data. Otherwise, there is no filtering.
+    * *start_date (required)* date YYYY-MM-DD
+    * *end_date* date YYYY-MM-DD
+    * *aggregation_duration:* (default: DAY) enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)
 
     ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
 
@@ -271,7 +286,7 @@ class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
         Parameters Synthesized:
           + monitoring_features
           + observed_property_variables
-          + temporal_resolution (default: day)
+          + aggregation_duration (default: DAY)
           + quality_checked
 
         :param request: the request to synthesize

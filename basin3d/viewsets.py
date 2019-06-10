@@ -11,6 +11,12 @@
 .. contents:: Contents
     :local:
     :backlinks: top
+
+* :class:`DirectAPIViewSet` - supports REST ` `GET`` methods that list the direct datasource APIs
+* :class:`DataSourceViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.DataSource` objects
+* :class:`ObservedPropertyVariableViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.models.ObservedPropertyVariable` objects
+* :class:`ObservedPropertyViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.models.ObservedProperty` objects
+
 """
 import json
 import logging
@@ -92,17 +98,15 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
     """
         Returns a list of all Data Sources available to the BASIN-3D service
 
-
         ** Properties **
 
-        * *name* - unique name for the datasource
-        * *id_prefix* - unique id prefix for all datasource ids
-        * *location* - the web location of the data source
-        * *url* - for detail on a single Model Domain
-        * *direct_path* - a direct call to the data source itself
-        * *variables* - returns the measurement variables for the current data source
-        * *observed_property_variables* - returns the observed property variables for the current data source
-        * *check* - validate the datasource connection
+        * *name:* string, Unique name for the Data Source
+        * *id_prefix:* string, unique id prefix for all Data Source ids
+        * *location:* string, Location of the Data Source
+        * *url:* url, Endpoint for Data Source
+        * *direct_path:* url, A direct call to the data source itself
+        * *observed_property_variables:* url, Observed property variables for Data Source
+        * *check:* url, Validate the Data Source connection
 
     """
     queryset = DataSource.objects.all()
@@ -188,10 +192,11 @@ class ObservedPropertyVariableViewSet(viewsets.ReadOnlyModelViewSet):
 
         **Properties**
 
-        * *id* - unique measurement variable identifier
-        * *full_name* - descriptive name
-        * *categories* - categories listed in hierarchical order
-        * *datasources* - retrieves the datasources that define the current variable
+        * *id:* string, Unique observed property variable identifier
+        * *full_name:* string, Descriptive name
+        * *categories:* list of strings, Categories of which the variable is a member, listed in hierarchical order
+        * *datasources:* url, Retrieves the datasources that define the current variable
+        * *url:* url, Endpoint for the observed property variable
 
     """
     queryset = ObservedPropertyVariable.objects.all()
@@ -227,6 +232,15 @@ class ObservedPropertyVariableViewSet(viewsets.ReadOnlyModelViewSet):
 class ObservedPropertyViewSet(viewsets.ReadOnlyModelViewSet):
     """
         Returns a list of available Observation Properties
+
+        **Properties**
+
+        * *observed_property_variable:* string, observed property variable assigned to the observed property
+        * *datasource:* string, data source defining the observed property
+        * *sampling_medium:* enum, medium in which the observed property is observed
+            (WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE)
+        * *description:* string, additional information about the observed property
+        * *url:* url, endpoint for observed property
 
     """
     queryset = ObservedProperty.objects.all()

@@ -10,16 +10,24 @@
 Serializers that render :mod:`basin.synthesis.models` from Python objects to `JSON` and back again.
 
 
+* :class:`TimestampField` - Extends :class:`rest_framework.serializers.DateTimeField` to handle
+* :class:`ReadOnlySynthesisModelField` -  A generic field that can be used against any serializer
+    numeric epoch times.
 * :class:`FloatField` -  A Float field that can handle empty strings
-* :class:`HorizontalCoordinateSerializer`
 * :class:`IdUrlSerializerMixin` - Serializer Mixin to support Hypermedia as the Engine of Application State (HATEOAS).
 * :class:`PersonSerializer`
-* :class:`ReadOnlySynthesisModelField` -  A generic field that can be used against any serializer
-* :class:`TimestampSerializer` - Extends :class:`rest_framework.serializers.DateTimeField` to handle
-    numeric epoch times.
+* :class:`VerticalCoordinateSerializer`
+* :class:`HorizontalCoordinateSerializer`
+* :class:`AbsoluteCoordinateSerializer`
+* :class:`RepresentativeCoordinateSerializer`
+* :class:`CoordinateSerializer`
+* :class:`RelatedSampltingFeatureSerializer`
+* :class:`FeatureSerializer`
+* :class:`SamplingFeatureSerializer`
+* :class:`SpatialSamplingFeatureSerializer`
+* :class:`MonitoringFeatureSerializer`
 * :class:`ObservationSerializerMixin`
 * :class:`MeasurementTimeseriesTVPObservationSerializer`
-# ToDo: add documenation
 
 """
 from numbers import Number
@@ -238,7 +246,7 @@ class CoordinateSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
 
 class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
     """
-
+    Serializes a :class:`basin3d.synthesis.models.field.RelatedSamplingFeature`
     """
     related_sampling_feature = serializers.CharField()
     related_sampling_feature_type = serializers.SerializerMethodField()

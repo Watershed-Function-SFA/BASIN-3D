@@ -76,6 +76,7 @@ class Person(Base):
         *last_name:* string
         *email:* string
         *institution:* string
+        *role:* string
     """
 
     def __init__(self, **kwargs):

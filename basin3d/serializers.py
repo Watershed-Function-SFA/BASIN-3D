@@ -153,8 +153,7 @@ class DataSourceObservedPropertyVariableSerializer(serializers.HyperlinkedModelS
 
 class ObservedPropertyVariableSerializer(serializers.HyperlinkedModelSerializer):
     """
-
-    Observed Property Variable serializer
+    Observed Property Variable Serializer
 
     """
 
@@ -185,7 +184,6 @@ class ObservedPropertyVariableSerializer(serializers.HyperlinkedModelSerializer)
 
 class ObservedPropertySerializer(serializers.HyperlinkedModelSerializer):
     """
-
     Observed Property Serializer
 
     """

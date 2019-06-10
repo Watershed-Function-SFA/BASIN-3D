@@ -6,14 +6,22 @@
 
 :synopsis: Classes to represent Multi-scale Spatial Hierarchy for Field Observations
 
+* :class:`Coordinate` - Base coordinate class that holds absolute and/or representative coordinates.
+* :class: `AbsoluteCoordinate` - Location of the Observation or Feature described with an absolute coordinate system.
+* :class: `RepresentativeCoordinate` - Location of the Observation or Feature described with relative coordinates.
+* :class:`VerticalCoordinate` - The reference frame or system from which vertical distances (altitudes or depths) are measured.
 * :class:`AltitudeCoordinate` - The reference frame or system from which altitudes (elevations) are measured.
 * :class:`DepthCoordinate` -  The reference frame or system from which depths are measured.
-* :class:`GeographicCoordinate` - The quantities of latitude and longitude which define the position of a point on
     the Earth's surface with respect to a reference spheroid.
 * :class:`HorizontalCoordinate` - Generic XY coordinates for a point on earth
-* :class:`SamplingFeature` - Base class.  A feature where sampling is conducted  #ToDo: edit
-* :class:`VerticalCoordinate` - The reference frame or system from which vertical distances (altitudes or depths) are measured.
-# ToDo: add new documentation
+* :class:`GeographicCoordinate` - The quantities of latitude and longitude which define the position of a point on
+* :class:`Feature` - A general feature upon which an observation can be made.
+* :class:`SamplingFeature` - A feature where sampling is conducted.
+* :class:`SpatialSamplingFeature` - A spatially-explicit feature where sampling is conducted.
+* :class:`MonitoringFeature` - A feature upon which monitoring is made. In practice, most features should be
+    described as MonitorningFeatures.
+* :class:`RelatedSamplingFeature` - A related sampling feature and it's role relative to
+    the sampling feature to which it is related.
 
 """
 from basin3d.plugins import get_datasource_observed_property_variables
@@ -27,6 +35,16 @@ class RelatedSamplingFeature(Base):
     the sampling feature to which it is related.
 
     See OGC Observations and Measurements
+
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
+    Attributes:
+        - *related_sample_feature:* string
+        - *related_sampleing_type:* string FeatureTypes
+        - *role:* enum
+            + **PARENT** Parent feature in a nested feature hierarchy.
+
     """
 
     ROLE_PARENT = "PARENT"
@@ -60,11 +78,14 @@ class RelatedSamplingFeature(Base):
 
 class Coordinate(Base):
     """
-    Top level coordinate class that holds absolute or relative coordinates
+    Top level coordinate class that holds absolute or representative coordinates
+
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
 
     Attributes:
-        *absolute:* obj AbsoluteCooradinate
-        *representative:* obj RepresentativeCoordinate
+        - *absolute:* obj AbsoluteCooradinate
+        - *representative:* obj RepresentativeCoordinate
     """
 
     def __init__(self, **kwargs):
@@ -102,10 +123,13 @@ class AbsoluteCoordinate(Base):
     May want to include a type attribute akin to GeoJSON type
     In future, reconsider the format of attributes to allow for more types of description (meshes, solids, etc)
 
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
     Attributes:
-        *horizontal_position:* list of obj GeographicCoordinate
-        *vertical_extent:* list of obj AltitudeCoordinate
-        *shape:* str internally determined by coordinates (determination of solid not functional)
+        - *horizontal_position:* list of obj GeographicCoordinate
+        - *vertical_extent:* list of obj AltitudeCoordinate
+        - *shape:* enum internally determined by coordinates (determination of solid not yet supported)
     """
 
     def __init__(self, **kwargs):
@@ -147,10 +171,18 @@ class RepresentativeCoordinate(Base):
     Extendable to other forms of representing (e.g., diameter, area, side_length)
     Representative point types are also expandable as use cases require.
 
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
     Attributes:
-        *representative_point:* obj AbsoluteCoordinate for POINT
-        *representative_point_type:* string (CV assumes @ local surface)
-        *vertical_position:* obj DepthCoordinate
+        - *representative_point:* obj AbsoluteCoordinate for POINT
+        - *representative_point_type:* enum (CV assumes coordinate is at local surface)
+            + **CENTER LOCAL SURFACE**
+            + **UPPER LEFT CORNER**
+            + **UPPER RIGHT CORNER**
+            + **LOWER LEFT CORNER**
+            + **LOWER RIGHT CORNER**
+        - *vertical_position:* obj DepthCoordinate
     """
 
     REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE = "CENTER LOCAL SURFACE"
@@ -183,14 +215,24 @@ class VerticalCoordinate(Base):
     """
     The reference frame or system from which vertical distances (altitudes or depths) are measured.
 
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
     Attributes:
-        *type:* enum ("altitude”, "depth),
-        *value:* float,
-        *datum:* string,
-        *resolution:* float, the minimum distance possible between two adjacent
+        - *type:* enum
+            + **ALTITUDE** The distance above or below sea level (elevation)
+            + **DEPTH** The distance above (height) or below (depth) of the local surface
+        - *value:* float,
+        - *datum:* string,
+        - *resolution:* float, the minimum distance possible between two adjacent
                       depth values, expressed in Depth Distance Units of measure
-        *distance_units:* enum  ("meters", "feet"), the means used to encode depths.
-        *encoding_method:* "Explicit coordinate included with horizontal coordinates", "Implicit coordinate", "Attribute values")
+        - *distance_units:* enum
+            + **meters**
+            + **feet**
+        - *encoding_method:* enum
+            + **EXPLICIT** Explicit coordinate included with horizontal coordinates
+            + **IMPLICIT** Implicit coordinate
+            + **ATTRIBUTE** Attribute values"
     """
     TYPE_ALTITUDE = "ALTITUDE"
     TYPE_DEPTH = "DEPTH"
@@ -220,8 +262,20 @@ class AltitudeCoordinate(VerticalCoordinate):
     "altitude" is used instead of the common term "elevation" to conform to the terminology
     in Federal Information Processing Standards 70-1 and 173.
 
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
+    Inherited attributes (:class:`VerticalCoordinate`):
+        - *type:* enum (ALTITUDE, DEPTH)
+        - *value:* float,
+        - *datum:* string,
+        - *resolution:* float, the minimum distance possible between two adjacent
+                      depth values, expressed in Depth Distance Units of measure
+        - *distance_units:* enum (meters, feet)
+        - *encoding_method:* enum (EXPLICIT, IMPLICIT, ATTRIBUTE)
+
     Attributes:
-        *datum_name:*
+        - *datum:*
             + **NGVD29** "National Geodetic Vertical Datum of 1929"
             + **NAVD88** "North American Vertical Datum of 1988"
     """
@@ -239,8 +293,20 @@ class DepthCoordinate(VerticalCoordinate):
     """
     The reference frame or system from which depths are measured.
 
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
+    Inherited attributes (:class:`VerticalCoordinate`):
+        - *type:* enum (ALTITUDE, DEPTH)
+        - *value:* float,
+        - *datum:* string,
+        - *resolution:* float, the minimum distance possible between two adjacent
+                      depth values, expressed in Depth Distance Units of measure
+        - *distance_units:* enum (meters, feet)
+        - *encoding_method:* enum (EXPLICIT, IMPLICIT, ATTRIBUTE)
+
     Attributes:
-        + datum_name:
+        - datum:
             + **LS** "Local surface"
             + **MSL** "Mean sea level"
     """
@@ -257,11 +323,22 @@ class DepthCoordinate(VerticalCoordinate):
 class HorizontalCoordinate(Base):
     """Generic XY coordinates for a point on earth (https://www.fgdc.gov/csdgmgraphical/spref.htm)
 
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
     Attributes:
-        + *x:* float
-        + *y:* float
-        + *datum:* enum ("WGS84”, "NAD27”, "NAD83”),
-        + *type:* enum ("geographic”,”planar_grid”,”planar_local”, "planar_map_projection”, "local”)
+        - *x:* float
+        - *y:* float
+        - *datum:* enum
+            + **WGS84**
+            + **NAD27**
+            + **NAD83**
+        - *type:* enum
+            + **GEOGRAPHIC**
+            + **PLANAR_GRID**
+            + **PLANAR_LOCAL**
+            + **PLANAR_MAP_PROJECTION**
+            + **LOCAL**
     """
 
     DATUM_WGS84 = "WGS84"
@@ -289,17 +366,26 @@ class GeographicCoordinate(HorizontalCoordinate):
     The quantities of latitude and longitude which define the position of a point on
     the Earth's surface with respect to a reference spheroid. (https://www.fgdc.gov/csdgmgraphical/spref.htm)
 
+    Inherited attributes (:class:`Base`):
+        - *datasource*: string
+
+    Inherited attributes (:class:`HorizontalCoordinate`):
+        - *x:* float
+        - *y:* float
+        - *datum:* enum (WGS84, NAD27, NAD83)
+        - *type:* enum (GEOGRAPHIC, PLANAR_GRID, PLANAR_LOCAL, PLANAR_MAP_PROJECTION, LOCAL)
+
     Attributes:
-        + *latitude:*
-        + *longitude:*
-        + *units:* units determine the datatypes of latitude and longitude
+        - *latitude:*
+        - *longitude:*
+        - *units:* units determine the datatypes of latitude and longitude
             + **DD** "Decimal degrees"
             + **DM** "Decimal minutes"
             + **DS** "Decimal seconds"
             + **DDM** "Degrees and decimal minutes"
             + **DMDS** "Degrees, minutes, and decimal seconds"
             + **Radians** "Radians"
-            + **Grads** "Grads")
+            + **Grads** "Grads"
 
     """
 
@@ -411,7 +497,7 @@ class Feature(Base):
         - *id:* string
         - *name:* string
         - *description:* string
-        - *feature_type:* string
+        - *feature_type:* enum FeatureTypes
         - *observed_property_variables:* list
     """
 
@@ -456,7 +542,7 @@ class SamplingFeature(Feature):
         - *id:* string
         - *name:* string
         - *description:* string
-        - *feature_type:* string
+        - *feature_type:* enum FeatureTypes
         - *observed_property_variables:* list
 
     Attributes:
@@ -480,7 +566,7 @@ class SamplingFeature(Feature):
 
 class SpatialSamplingFeature(SamplingFeature):
     """
-    A feature where sampling is conducted. OGC Observation & Measurements SF_SpatialSamplingFeature.
+    A spatially-defined feature where sampling is conducted. OGC Observation & Measurements SF_SpatialSamplingFeature.
 
     Inherited attributes (:class:`Base`):
         - *datasource*: string
@@ -489,7 +575,7 @@ class SpatialSamplingFeature(SamplingFeature):
         - *id:* string
         - *name:* string
         - *description:* string
-        - *feature_type:* string
+        - *feature_type:* enum FeatureTypes
         - *observed_property_variable_complex:* list
 
     Inherited attributes (:class:`SamplingFeature`):
@@ -563,7 +649,7 @@ class SpatialSamplingFeature(SamplingFeature):
 
 class MonitoringFeature(SpatialSamplingFeature):
     """
-    A feature where monitoring is happenin. OGC Timeseries Profile OM_MonitoringFeature.
+    A feature upon which monitoring is made. OGC Timeseries Profile OM_MonitoringFeature.
 
     Inherited attributes (:class:`Base`):
         - *datasource*: string
@@ -572,7 +658,7 @@ class MonitoringFeature(SpatialSamplingFeature):
         - *id:* string
         - *name:* string
         - *description:* string
-        - *feature_type:* string
+        - *feature_type:* enum FeatureTypes
         - *observed_property_variables:* list
 
     Inherited attributes (:class:`SamplingFeature`):
@@ -583,8 +669,9 @@ class MonitoringFeature(SpatialSamplingFeature):
         - *coordinates:* Coordinate instance
 
     Attributes:
-        - *description_reference:* string  # extra information about the Monitoring Feature
-        - *related_party:* list of obj Person  # extend in future to full OGC Responsible_Party
+        - *description_reference:* string, Extra information about the Monitoring Feature
+        - *related_party:* list of Person, people or organizations responsible for Feature.
+            To be extended in future to full OGC Responsible_Party
         - *utc_offset:* int
 
     """

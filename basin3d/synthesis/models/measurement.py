@@ -4,15 +4,20 @@
 `basin3d.synthesis.models.measurement`
 **************************************
 
-.. currentmodule:: basin3d.synthesis.models.simulations
+.. currentmodule:: basin3d.synthesis.models.measurement
 
 :synopsis: Classes to represent Measurements & Results
 
 
-* :class:`DataPointGroup` - Series of data points grouped by time, space, model, sample  etc.
-* :class:`DataPoint` - Base class
-* :class:`ImageDataPoint` - Represents any imaging result
-* :class:`TimeSeriesDataPoint` - Represents a time series result
+* :class:`TimeValuePair` - Result (data) type containing a timestamp and observed value.
+* :class:`Observation` - OGC OM_Observation feature type. This is a parent class to which Mixins
+        should be added to create observation types with metadata and result.
+* :class:`MeasurementTimeseriesTVPObservation` - Series of measurement data points
+        grouped by time (i.e., a timeseries).
+* :class:`TimeMetadataMixin` - Metadata attributes for Observations with a time
+* :class:`MeasurementMetadataMixin` - Metadata attributes for Observations type Measurement
+* :class:`MeasurementTimeseriesTVPResultMixin` - Result Mixin: Measurement Timeseries TimeValuePair
+* :class:`MeasurementResultMixin` - Result Mixin: Measurement
 
 ---------------------
 """
@@ -65,7 +70,9 @@ class Observation(Base):
 
     Attributes:
         - *id:* string,
-        - *type:* string,
+        - *type:* string
+            + **MEASUREMENT**
+            + **MEASUREMENT_TVP_TIMESERIES**
         - *utc_offset:*, float (offset in hours referenced to UTC), +9
         - *phenomenon_time:* datetime (required OGC attribute timePhenomenon),
         - *observed_property:* string,
@@ -109,8 +116,17 @@ class TimeMetadataMixin(object):
     Metadata attributes for Observations with a time
 
     Attributes:
-        - *aggregation_duration:* string with controlled vocab (CV follows OGC TM_PeriodDuration)
-        - *time_reference_position:* string with controlled vocab (part of OGC interpolationType)
+        - *aggregation_duration:* enum Follows OGC TM_PeriodDuration.
+            + **YEAR**
+            + **MONTH**
+            + **DAY**
+            + **HOUR**
+            + **MINUTE**
+            + **SECOND**
+        - *time_reference_position:* enum Encompassed as part of OGC interpolationType
+            + **START**
+            + **MIDDLE**
+            + **END**
     """
     AGGREGATION_DURATION_YEAR = "YEAR"
     AGGREGATION_DURATION_MONTH = "MONTH"
@@ -137,7 +153,11 @@ class MeasurementMetadataMixin(object):
 
     Attributes:
         - *observed_property_variable:* string
-        - *statistic:* string with controlled vocab (part of OGC interpolationType)
+        - *statistic:* enum (part of OGC interpolationType)
+            + **MEAN**
+            + **MIN**
+            + **MAX**
+            + **TOTAL**
     """
 
     STATISTIC_MEAN = "MEAN"
@@ -191,28 +211,28 @@ class MeasurementTimeseriesTVPObservation(TimeMetadataMixin, MeasurementMetadata
     """
     Series of measurement data points grouped by time (i.e., a timeseries).
     Anything specified at the group level automatically applies to the individual data point.
-    Have to call Observation (the one inheriting from Base) last.
+    Position Observation (the one inheriting from Base) last in the inheritance list.
 
     Inherited attributes (:class:`Base`):
         - *datasource* (from Base): string
 
     Inherited attributes (:class:`Observation`):
-        - *id:* string,
-        - *type:* string,
-        - *utc_offset:*, float (offset in hours referenced to UTC), +9
-        - *phenomenon_time:* datetime (required OGC attribute timePhenomenon),
-        - *observed_property:* string,
+        - *id:* string
+        - *type:* string
+        - *utc_offset:* float (offset in hours referenced to UTC), +9
+        - *phenomenon_time:* datetime (required OGC attribute timePhenomenon)
+        - *observed_property:* string
         - *feature_of_interest:* object Feature
         - *feature_of_interest_type:* enum (FeatureTypes)
-        - *result_quality:*, string,
+        - *result_quality:* string
 
     Inherited attributes (:class:`TimeMetadataMixin`):
-        - *aggregation_duration:* string with controlled vocab (CV follows OGC TM_PeriodDuration)
-        - *time_reference_position:* string with controlled vocab (part of OGC interpolationType)
+        - *aggregation_duration:* enum (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)
+        - *time_reference_position:* enum (START, MIDDLE, END)
 
     Inherited attributes (:class:`MeasurementMetadataMixin`):
         - *observed_property_variable:* string
-        - *statistic:* string with controlled vocab (part of OGC interpolationType)
+        - *statistic:* enum (MEAN, MIN, MAX, TOTAL)
 
     Inherited attributes (:class:`MeasurementResultMixin`):
         - *result_points:* list of TimeValuePair
