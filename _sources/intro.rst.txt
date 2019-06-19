@@ -4,6 +4,22 @@ What is BASIN-3D?
 *****************
 **Broker for Assimilation, Synthesis and Integration of eNvironmental Diverse, Distributed Datasets**
 
+Earth science research requires integration and analysis of diverse and complex data. Observations
+can include continuous sensor-based time-series data, sample-based laboratory characterizations,
+remote sensing measurements and derived products, and outputs from numerical simulations. Observations
+can span multiple scientific disciplines, as well as disparate spatial and temporal scales. Synthesizing
+diverse observations requires substantial resources from scientists because data are often held in multiple
+repositories using different formats (e.g. variable names, units, associated metadata), and may be updated over time.
+
+A data broker is a centralized software that aggregates data from connected data sources in
+real-time. So far, implementations of data brokering approaches for the earth sciences have only
+aggregated catalogs of data sources or integrated observations with the cooperation of data providers.
+
+BASIN-3D (Broker for Assimilation, Synthesis and Integration of eNvironmental Diverse, Distributed Datasets)
+is a data brokering framework designed to alleviate earth scientist's data synthesis burden by parsing,
+translating, and synthesizing diverse observations from well-curated repositories into a standardized format,
+without establishing working relationships with each data source \cite{BASIN-3D}.
+
 BASIN-3D is designed to provide unified access to a diverse set of data sources and data types by connecting
 to those data sources in real-time and transforming the data streams to provide an integrated view.
 BASIN-3D enables users to always have access to the latest data from each of the sources, but to

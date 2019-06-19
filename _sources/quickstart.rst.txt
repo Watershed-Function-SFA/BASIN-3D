@@ -32,78 +32,38 @@ Include the basin3d URLconf in your project urls.py like this::
 Implement Data Source plugins
 -----------------------------
 
-Create one or more plugins in a plugins module in `your-app/plugins.py`.
+Create one or more plugins in a plugins module in `your-app/plugins.py`. The following files
+must be placed in `your-app/` directory along side `plugins.py`
 
-Add the apps broker measurement variables in a multi-dimensional array::
+`measurement_variables.csv`
+...........................
+Define your broker variables in a comma separated values (csv) file named `measurement_variables.csv`.
+This file must be placed this in `your-app/` directory (e.g `your-app/measurement_variables.csv`) .
 
-    # Format: (id, full_name, (categories ordered by priority) )
-    MEASUREMENT_VARIABLES = [["ACT", "Acetate (CH3COO)", ["Geochemistry", "Anions"]],
-                            ["Ag", "Silver (Ag)", ["Geochemistry", "Trace elements"]],
-                            ["Al", "Aluminum (Al)", ["Geochemistry", "Trace elements"]],
-                            ["As", "Arsenic (As)", ["Geochemistry", "Trace elements"]],
-                            ]
-    MEASUREMENTS = [{'description': """The method is based on the sample filtration and dilution ...""",
-                 'variable_id': "ACT",
-                 'sampling_medium': SamplingMedium.GROUNDWATER,
-                 'measurement_approach': MeasurementApproach.MANUAL},
-                {'description': """Aqua regia digestion method.""",
-                 'variable_id': "Ag",
-                 'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
-                 'measurement_approach': MeasurementApproach.SENSOR},
-                {'description': """Aqua regia digestion method.""",
-                 'variable_id': "Al",
-                 'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
-                 'measurement_approach': MeasurementApproach.SENSOR},
-                {'description': """Aqua regia digestion method.""",
-                 'variable_id': "As",
-                 'sampling_medium': SamplingMedium.SOIL_SEDIMENT,
-                 'measurement_approach': MeasurementApproach.SENSOR}
-                ]
-Extend the broker source plugin with the described attributes::
-
-    class AlphaSourcePlugin(DataSourcePluginPoint):
-
-        name = 'alpha-source-plugin'
-        title = 'Alpha Source Plugin'
-        plugin_view_classes = (AlphaRegionView, )
-
-        class DataSourceMeta:
-            # Data Source attributes
-            location = 'https://asource.foo'
-            id = 'Alpha'  # unique id for the datasource
-            id_prefix = 'A' # id prefix to make model object ids unique across datasources
-            name = id  # Human Friendly Data Source Name
-            credentials_format = 'username:\npassword:\n'
-
-            # format basin id:measurement variable id
-            measure_variable_map = OrderedDict(
-                [('ACT', 'Acetate'), ('Ag', 'Ag'), ('Al', 'Al'), ('As', 'As')])
+.. literalinclude:: ../example-django/mybroker/measurement_variables.csv
 
 
-Create view classes for the desired synthesis models::
+`mapping_<plugin_name>.csv`
+...........................
+Map your measurement variables for your plugin variables. The name of the file should be
+`mapping_<plugin_name>.csv`. This file must be placed this in `your-app/` directory
+(e.g `your-app/mapping_alpha.csv`) .
 
-    class AlphaRegionView(with_metaclass(DataSourcePluginViewMeta)):
-        synthesis_model_class = Region
+.. literalinclude:: ../example-django/mybroker/mapping_alpha.csv
 
-        def list(self, request, **kwargs):
-            """
-            Get the Region information
-            """
-            region = self.synthesis_model_class(self.datasource, name="a site",
-                                                id="SI123",
-                                                description="This is for my site description", )
 
-            yield region
+Extend the broker source plugin with the described attributes
 
-        def get(self, request, pk=None):
-            """
-            Get a Region
-            :param pk: primary key
-            """
-            for s in self.list(request):
-                if s.id.endswith(pk):
-                    return s
-            return None
+.. literalinclude:: ../example-django/mybroker/plugins.py
+   :language: python
+   :lines: 164-191
+
+
+Create view classes for the desired synthesis models
+
+.. literalinclude:: ../example-django/mybroker/plugins.py
+   :language: python
+   :lines: 15-87
 
 Create a  Keyset
 ----------------
