@@ -1,9 +1,0 @@
-django>=2.0,<2.1
-djangorestframework
-django-filter
-django-extensions
-python3-keyczar
-pyyaml
-requests
-markdown
-pygments

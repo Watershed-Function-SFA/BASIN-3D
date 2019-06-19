@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>rest_framework.versioning &#8212; BASIN-3D v2.0.0-rc1-2-g2348a06 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-2-g2348a06</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for rest_framework.versioning</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">ugettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+
+<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="k">import</span> <span class="n">exceptions</span>
+<span class="kn">from</span> <span class="nn">rest_framework.compat</span> <span class="k">import</span> <span class="n">unicode_http_header</span>
+<span class="kn">from</span> <span class="nn">rest_framework.reverse</span> <span class="k">import</span> <span class="n">_reverse</span>
+<span class="kn">from</span> <span class="nn">rest_framework.settings</span> <span class="k">import</span> <span class="n">api_settings</span>
+<span class="kn">from</span> <span class="nn">rest_framework.templatetags.rest_framework</span> <span class="k">import</span> <span class="n">replace_query_param</span>
+<span class="kn">from</span> <span class="nn">rest_framework.utils.mediatypes</span> <span class="k">import</span> <span class="n">_MediaType</span>
+
+
+<span class="k">class</span> <span class="nc">BaseVersioning</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">default_version</span> <span class="o">=</span> <span class="n">api_settings</span><span class="o">.</span><span class="n">DEFAULT_VERSION</span>
+    <span class="n">allowed_versions</span> <span class="o">=</span> <span class="n">api_settings</span><span class="o">.</span><span class="n">ALLOWED_VERSIONS</span>
+    <span class="n">version_param</span> <span class="o">=</span> <span class="n">api_settings</span><span class="o">.</span><span class="n">VERSION_PARAM</span>
+
+    <span class="k">def</span> <span class="nf">determine_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{cls}</span><span class="s1">.determine_version() must be implemented.&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewname</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_reverse</span><span class="p">(</span><span class="n">viewname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">is_allowed_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_versions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="p">((</span><span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">version</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_version</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="p">(</span><span class="n">version</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_versions</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">AcceptHeaderVersioning</span><span class="p">(</span><span class="n">BaseVersioning</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GET /something/ HTTP/1.1</span>
+<span class="sd">    Host: example.com</span>
+<span class="sd">    Accept: application/json; version=1.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">invalid_version_message</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Invalid version in &quot;Accept&quot; header.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">determine_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">media_type</span> <span class="o">=</span> <span class="n">_MediaType</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">accepted_media_type</span><span class="p">)</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">media_type</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version_param</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_version</span><span class="p">)</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">unicode_http_header</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allowed_version</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">NotAcceptable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_version_message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">version</span>
+
+    <span class="c1"># We don&#39;t need to implement `reverse`, as the versioning is based</span>
+    <span class="c1"># on the `Accept` header, not on the request URL.</span>
+
+
+<span class="k">class</span> <span class="nc">URLPathVersioning</span><span class="p">(</span><span class="n">BaseVersioning</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    To the client this is the same style as `NamespaceVersioning`.</span>
+<span class="sd">    The difference is in the backend - this implementation uses</span>
+<span class="sd">    Django&#39;s URL keyword arguments to determine the version.</span>
+
+<span class="sd">    An example URL conf for two views that accept two different versions.</span>
+
+<span class="sd">    urlpatterns = [</span>
+<span class="sd">        url(r&#39;^(?P&lt;version&gt;[v1|v2]+)/users/$&#39;, users_list, name=&#39;users-list&#39;),</span>
+<span class="sd">        url(r&#39;^(?P&lt;version&gt;[v1|v2]+)/users/(?P&lt;pk&gt;[0-9]+)/$&#39;, users_detail, name=&#39;users-detail&#39;)</span>
+<span class="sd">    ]</span>
+
+<span class="sd">    GET /1.0/something/ HTTP/1.1</span>
+<span class="sd">    Host: example.com</span>
+<span class="sd">    Accept: application/json</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">invalid_version_message</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Invalid version in URL path.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">determine_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version_param</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_version</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_version</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allowed_version</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">NotFound</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_version_message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">version</span>
+
+    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewname</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="p">(</span><span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="n">kwargs</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">version_param</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">version</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">URLPathVersioning</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reverse</span><span class="p">(</span>
+            <span class="n">viewname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">NamespaceVersioning</span><span class="p">(</span><span class="n">BaseVersioning</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    To the client this is the same style as `URLPathVersioning`.</span>
+<span class="sd">    The difference is in the backend - this implementation uses</span>
+<span class="sd">    Django&#39;s URL namespaces to determine the version.</span>
+
+<span class="sd">    An example URL conf that is namespaced into two separate versions</span>
+
+<span class="sd">    # users/urls.py</span>
+<span class="sd">    urlpatterns = [</span>
+<span class="sd">        url(r&#39;^/users/$&#39;, users_list, name=&#39;users-list&#39;),</span>
+<span class="sd">        url(r&#39;^/users/(?P&lt;pk&gt;[0-9]+)/$&#39;, users_detail, name=&#39;users-detail&#39;)</span>
+<span class="sd">    ]</span>
+
+<span class="sd">    # urls.py</span>
+<span class="sd">    urlpatterns = [</span>
+<span class="sd">        url(r&#39;^v1/&#39;, include(&#39;users.urls&#39;, namespace=&#39;v1&#39;)),</span>
+<span class="sd">        url(r&#39;^v2/&#39;, include(&#39;users.urls&#39;, namespace=&#39;v2&#39;))</span>
+<span class="sd">    ]</span>
+
+<span class="sd">    GET /1.0/something/ HTTP/1.1</span>
+<span class="sd">    Host: example.com</span>
+<span class="sd">    Accept: application/json</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">invalid_version_message</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Invalid version in URL path. Does not match any version namespace.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">determine_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">resolver_match</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;resolver_match&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">resolver_match</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">resolver_match</span><span class="o">.</span><span class="n">namespace</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_version</span>
+
+        <span class="c1"># Allow for possibly nested namespaces.</span>
+        <span class="n">possible_versions</span> <span class="o">=</span> <span class="n">resolver_match</span><span class="o">.</span><span class="n">namespace</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">possible_versions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allowed_version</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">version</span>
+        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">NotFound</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_version_message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewname</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">viewname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_versioned_viewname</span><span class="p">(</span><span class="n">viewname</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">NamespaceVersioning</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reverse</span><span class="p">(</span>
+            <span class="n">viewname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_versioned_viewname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewname</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">version</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">viewname</span>
+
+
+<span class="k">class</span> <span class="nc">HostNameVersioning</span><span class="p">(</span><span class="n">BaseVersioning</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GET /something/ HTTP/1.1</span>
+<span class="sd">    Host: v1.example.com</span>
+<span class="sd">    Accept: application/json</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hostname_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^([a-zA-Z0-9]+)\.[a-zA-Z0-9]+\.[a-zA-Z0-9]+$&#39;</span><span class="p">)</span>
+    <span class="n">invalid_version_message</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Invalid version in hostname.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">determine_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">hostname</span><span class="p">,</span> <span class="n">separator</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_host</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_version</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allowed_version</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">NotFound</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_version_message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">version</span>
+
+    <span class="c1"># We don&#39;t need to implement `reverse`, as the hostname will already be</span>
+    <span class="c1"># preserved as part of the REST framework `reverse` implementation.</span>
+
+
+<span class="k">class</span> <span class="nc">QueryParameterVersioning</span><span class="p">(</span><span class="n">BaseVersioning</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GET /something/?version=0.1 HTTP/1.1</span>
+<span class="sd">    Host: example.com</span>
+<span class="sd">    Accept: application/json</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">invalid_version_message</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Invalid version in query parameter.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">determine_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version_param</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_version</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allowed_version</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">NotFound</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_version_message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">version</span>
+
+    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewname</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">QueryParameterVersioning</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reverse</span><span class="p">(</span>
+            <span class="n">viewname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">replace_query_param</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_param</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">url</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-2-g2348a06</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
+(subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+    </div>
+  </body>
+</html>
