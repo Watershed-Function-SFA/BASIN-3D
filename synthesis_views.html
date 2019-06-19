@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Synthesis Views &#8212; BASIN-3D v2.0.0-rc1-3-g532905e documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="basin3d.models" href="framework.html" />
+    <link rel="prev" title="Synthesis Models" href="synthesis_models.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="framework.html" title="basin3d.models"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="synthesis_models.html" title="Synthesis Models"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="synthesis-views">
+<span id="apireference"></span><h1>Synthesis Views<a class="headerlink" href="#synthesis-views" title="Permalink to this headline">¶</a></h1>
+<p>This is the main package, containing the BASIN-3D Django Framework’s synthesis view classes used for building custom a
+brokering service.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#basin3d-synthesis-viewsets" id="id1"><cite>basin3d.synthesis.viewsets</cite></a></p>
+<ul>
+<li><p><a class="reference internal" href="#view-controllers-for-basin-3d-rest-api" id="id2">View Controllers for BASIN-3D REST api</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<span class="target" id="module-basin3d.synthesis.viewsets"></span><div class="section" id="basin3d-synthesis-viewsets">
+<h2><a class="toc-backref" href="#contents"><cite>basin3d.synthesis.viewsets</cite></a><a class="headerlink" href="#basin3d-synthesis-viewsets" title="Permalink to this headline">¶</a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">synopsis</dt>
+<dd class="field-odd"><p>The BASIN-3D Synthesis Model Viewsets that support the REST API</p>
+</dd>
+<dt class="field-even">module author</dt>
+<dd class="field-even"><p>Val Hendrix &lt;<a class="reference external" href="mailto:vhendrix&#37;&#52;&#48;lbl&#46;gov">vhendrix<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
+</dd>
+</dl>
+<div class="section" id="view-controllers-for-basin-3d-rest-api">
+<h3><a class="toc-backref" href="#contents">View Controllers for BASIN-3D REST api</a><a class="headerlink" href="#view-controllers-for-basin-3d-rest-api" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="basin3d.synthesis.viewsets.DataSourcePluginViewSet">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.synthesis.viewsets.</code><code class="sig-name descname">DataSourcePluginViewSet</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/synthesis/viewsets.html#DataSourcePluginViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets.ViewSet</span></code></p>
+<p>Base ViewsSet for all DataSource plugins</p>
+<dl class="method">
+<dt id="basin3d.synthesis.viewsets.DataSourcePluginViewSet.list">
+<code class="sig-name descname">list</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">format=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/synthesis/viewsets.html#DataSourcePluginViewSet.list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet.list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the synthesized plugin results</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="basin3d.synthesis.viewsets.DataSourcePluginViewSet.retrieve">
+<code class="sig-name descname">retrieve</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">pk=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/synthesis/viewsets.html#DataSourcePluginViewSet.retrieve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet.retrieve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a single synthesized value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – The request object</p></li>
+<li><p><strong>pk</strong> – The primary key</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="basin3d.synthesis.viewsets.DataSourcePluginViewSet.synthesize_query_params">
+<code class="sig-name descname">synthesize_query_params</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">plugin_view</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/synthesis/viewsets.html#DataSourcePluginViewSet.synthesize_query_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet.synthesize_query_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synthesizes query parameters, if necessary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – the request to synthesize</p></li>
+<li><p><strong>plugin_view</strong> – The plugin view to synthesize query params for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.synthesis.viewsets.DataSourcePluginViewSet.versioning_class">
+<code class="sig-name descname">versioning_class</code><a class="headerlink" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet.versioning_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.versioning.NamespaceVersioning</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.synthesis.viewsets.</code><code class="sig-name descname">MeasurementTimeseriesTVPObservationViewSet</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/synthesis/viewsets.html#MeasurementTimeseriesTVPObservationViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet" title="basin3d.synthesis.viewsets.DataSourcePluginViewSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.synthesis.viewsets.DataSourcePluginViewSet</span></code></a></p>
+<p>Retrieve MeasurementTimeseriesTVPObservation Groups</p>
+<p>** Properties **</p>
+<ul class="simple">
+<li><p><em>id:</em> string, Observation identifier (optional)</p></li>
+<li><p><em>type:</em> enum = MEASUREMENT_TVP_TIMESERIES</p></li>
+<li><p><em>observed_property:</em> url, url for the observation’s observed property</p></li>
+<li><p><em>phenomenon_time:</em> datetime</p></li>
+<li><p><em>utc_offset:</em> float (offset in hours), e.g., +9</p></li>
+<li><p><em>feature_of_interest:</em> feature on which the observation is being made</p></li>
+<li><p><em>feature_of_interest_type:</em> enum (FeatureTypes)</p></li>
+<li><p><em>result_points:</em> TimeValuePair, observed values of the observed property being assessed</p></li>
+<li><p><em>time_reference_position:</em> enum, position of timestamp in aggregated_duration (START, MIDDLE, END)</p></li>
+<li><dl class="simple">
+<dt><em>aggregation_duration:</em> enum, time period represented by observation</dt><dd><p>(YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)</p>
+</dd>
+</dl>
+</li>
+<li><p><em>unit_of_measurement:</em> string, units in which the observation is reported</p></li>
+<li><p><em>statistic:</em> enum (MEAN, MIN, MAX, TOTAL)</p></li>
+<li><p><em>result_quality:</em> enum, (CHECKED, UNCHECKED)</p></li>
+</ul>
+<p>** Filter results** by the following attributes:</p>
+<ul class="simple">
+<li><p><em>datasource (optional):</em> a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)</p></li>
+<li><p><em>monitoring_features (required)</em> comma separated list of monitoring_features ids</p></li>
+<li><p><em>observed_property_variables (required)</em> comma separated list of observed property variable ids</p></li>
+<li><p><em>start_date (required)</em> date YYYY-MM-DD</p></li>
+<li><p><em>end_date</em> date YYYY-MM-DD</p></li>
+<li><p><em>aggregation_duration:</em> (default: DAY) enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)</p></li>
+</ul>
+<p>** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)</p>
+<dl class="attribute">
+<dt id="basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet.serializer_class">
+<code class="sig-name descname">serializer_class</code><a class="headerlink" href="#basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.synthesis.serializers.MeasurementTimeseriesTVPObservationSerializer</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet.synthesis_model">
+<code class="sig-name descname">synthesis_model</code><a class="headerlink" href="#basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet.synthesis_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="synthesis_models.html#basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPObservation" title="basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPObservation"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPObservation</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet.synthesize_query_params">
+<code class="sig-name descname">synthesize_query_params</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">plugin_view</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/synthesis/viewsets.html#MeasurementTimeseriesTVPObservationViewSet.synthesize_query_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet.synthesize_query_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synthesizes query parameters, if necessary</p>
+<dl class="simple">
+<dt>Parameters Synthesized:</dt><dd><ul class="simple">
+<li><p>monitoring_features</p></li>
+<li><p>observed_property_variables</p></li>
+<li><p>aggregation_duration (default: DAY)</p></li>
+<li><p>quality_checked</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – the request to synthesize</p></li>
+<li><p><strong>plugin_view</strong> – The plugin view to synthesize query params for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.synthesis.viewsets.MonitoringFeatureViewSet">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.synthesis.viewsets.</code><code class="sig-name descname">MonitoringFeatureViewSet</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/synthesis/viewsets.html#MonitoringFeatureViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.synthesis.viewsets.MonitoringFeatureViewSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet" title="basin3d.synthesis.viewsets.DataSourcePluginViewSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.synthesis.viewsets.DataSourcePluginViewSet</span></code></a></p>
+<p>MonitoringFeature</p>
+<p><strong>Properties</strong></p>
+<ul class="simple">
+<li><p><em>id:</em> string</p></li>
+<li><p><em>name:</em> string</p></li>
+<li><p><em>description:</em> string</p></li>
+<li><dl class="simple">
+<dt><em>feature_type:</em> enum (FeatureTypes: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED,</dt><dd><p>SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT)</p>
+</dd>
+</dl>
+</li>
+<li><ul>
+<li><p>observed_property_variables:* list of observed variables made at the Feature.
+Variables are configured via the plugins.</p></li>
+</ul>
+</li>
+<li><p><em>related_sampling_feature_comples:</em> list of related_sampling_features. PARENT features are currently supported.</p></li>
+<li><p><em>shape:</em> enum (POINT, CURVE, SURFACE, SOLID)</p></li>
+<li><p><em>coordinates:</em> location of Feature in absolute and/or representative datum</p></li>
+<li><p><em>description_reference:</em> string, additional information about the Feature</p></li>
+<li><p><em>related_party:</em> (optional) list of people or organizations responsible for the Feature</p></li>
+<li><p><em>utc_offset:</em> float (offset in hours), e.g., +9</p></li>
+<li><p><em>url:</em> url</p></li>
+</ul>
+<p>** Filter results** by the following attributes
+* <em>datasource (optional):</em> a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)</p>
+<p>** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)</p>
+<dl class="method">
+<dt id="basin3d.synthesis.viewsets.MonitoringFeatureViewSet.extract_type">
+<code class="sig-name descname">extract_type</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/synthesis/viewsets.html#MonitoringFeatureViewSet.extract_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.synthesis.viewsets.MonitoringFeatureViewSet.extract_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the feature types from the request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request</strong> – The Request object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuple <cite>(feature_type_code, feature_type_name)</cite>. (e.g (0, ‘REGION’)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.synthesis.viewsets.MonitoringFeatureViewSet.serializer_class">
+<code class="sig-name descname">serializer_class</code><a class="headerlink" href="#basin3d.synthesis.viewsets.MonitoringFeatureViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.synthesis.serializers.MonitoringFeatureSerializer</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.synthesis.viewsets.MonitoringFeatureViewSet.synthesis_model">
+<code class="sig-name descname">synthesis_model</code><a class="headerlink" href="#basin3d.synthesis.viewsets.MonitoringFeatureViewSet.synthesis_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="synthesis_models.html#basin3d.synthesis.models.field.MonitoringFeature" title="basin3d.synthesis.models.field.MonitoringFeature"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.synthesis.models.field.MonitoringFeature</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="basin3d.synthesis.viewsets.MonitoringFeatureViewSet.synthesize_query_params">
+<code class="sig-name descname">synthesize_query_params</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">plugin_view</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/synthesis/viewsets.html#MonitoringFeatureViewSet.synthesize_query_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.synthesis.viewsets.MonitoringFeatureViewSet.synthesize_query_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synthesizes query parameters, if necessary</p>
+<p>Parameters Synthesized:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – the request to synthesize</p></li>
+<li><p><strong>plugin_view</strong> – The plugin view to synthesize query params for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Synthesis Views</a><ul>
+<li><a class="reference internal" href="#basin3d-synthesis-viewsets"><cite>basin3d.synthesis.viewsets</cite></a><ul>
+<li><a class="reference internal" href="#view-controllers-for-basin-3d-rest-api">View Controllers for BASIN-3D REST api</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="synthesis_models.html"
+                        title="previous chapter">Synthesis Models</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="framework.html"
+                        title="next chapter"><cite>basin3d.models</cite></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/synthesis_views.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="framework.html" title="basin3d.models"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="synthesis_models.html" title="Synthesis Models"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
+(subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+    </div>
+  </body>
+</html>

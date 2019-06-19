@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>basin3d.models &#8212; BASIN-3D v2.0.0-rc1-3-g532905e documentation</title>
+    <title>Framework &#8212; BASIN-3D v2.0.0-rc1-3-g532905e documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Synthesis Packages" href="synthesis_models.html" /> 
+    <link rel="prev" title="Synthesis Views" href="synthesis_views.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -27,7 +27,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="synthesis_models.html" title="Synthesis Packages"
+          <a href="synthesis_views.html" title="Synthesis Views"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li> 
       </ul>
@@ -38,8 +38,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <span class="target" id="module-basin3d.models"><span id="apireference"></span></span><div class="section" id="basin3d-models">
-<h1><cite>basin3d.models</cite><a class="headerlink" href="#basin3d-models" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-basin3d.models">
+<span id="framework"></span><span id="apireference"></span><h1>Framework<a class="headerlink" href="#module-basin3d.models" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basin3d-models">
+<h2><cite>basin3d.models</cite><a class="headerlink" href="#basin3d-models" title="Permalink to this headline">¶</a></h2>
 <dl class="field-list simple">
 <dt class="field-odd">synopsis</dt>
 <dd class="field-odd"><p>The BASIN-3D  Models</p>
@@ -695,7 +697,7 @@ This is used by the serialization framework.</p>
 
 </div>
 <span class="target" id="module-basin3d.plugins"></span><div class="section" id="basin3d-plugins">
-<h1><cite>basin3d.plugins</cite><a class="headerlink" href="#basin3d-plugins" title="Permalink to this headline">¶</a></h1>
+<h2><cite>basin3d.plugins</cite><a class="headerlink" href="#basin3d-plugins" title="Permalink to this headline">¶</a></h2>
 <dl class="field-list simple">
 <dt class="field-odd">platform</dt>
 <dd class="field-odd"><p>Unix, Mac</p>
@@ -727,231 +729,8 @@ This is used by the serialization framework.</p>
 </dd></dl>
 
 </div>
-<span class="target" id="module-basin3d.serializers"></span><div class="section" id="basin3d-serializers">
-<h1><cite>basin3d.serializers</cite><a class="headerlink" href="#basin3d-serializers" title="Permalink to this headline">¶</a></h1>
-<dl class="field-list simple">
-<dt class="field-odd">platform</dt>
-<dd class="field-odd"><p>Unix, Mac</p>
-</dd>
-<dt class="field-even">synopsis</dt>
-<dd class="field-even"><p>BASIN-3D Serializers</p>
-</dd>
-<dt class="field-odd">module author</dt>
-<dd class="field-odd"><p>Val Hendrix &lt;<a class="reference external" href="mailto:vhendrix&#37;&#52;&#48;lbl&#46;gov">vhendrix<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
-</dd>
-</dl>
-<p>About Django Serializers:</p>
-<blockquote>
-<div><p>Serializers allow complex data such as querysets and model instances to be converted
-to native Python datatypes that can then be easily rendered into JSON, XML or other
-content types. Serializers also provide deserialization, allowing parsed data to be
-converted back into complex types, after first validating the incoming data.
-<em>– http://www.django-rest-framework.org/api-guide/serializers/</em></p>
-</div></blockquote>
-<dl class="class">
-<dt id="basin3d.serializers.ChooseFieldsSerializerMixin">
-<em class="property">class </em><code class="sig-prename descclassname">basin3d.serializers.</code><code class="sig-name descname">ChooseFieldsSerializerMixin</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#ChooseFieldsSerializerMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.ChooseFieldsSerializerMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A serializer that  dynamically sets fields</p>
-<dl class="method">
-<dt id="basin3d.serializers.ChooseFieldsSerializerMixin.handle_fields">
-<code class="sig-name descname">handle_fields</code><span class="sig-paren">(</span><em class="sig-param">request=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#ChooseFieldsSerializerMixin.handle_fields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.ChooseFieldsSerializerMixin.handle_fields" title="Permalink to this definition">¶</a></dt>
-<dd><p>Restrict the fields by those in the request
-:param request:
-:return:</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="basin3d.serializers.DataSourceObservedPropertyVariableSerializer">
-<em class="property">class </em><code class="sig-prename descclassname">basin3d.serializers.</code><code class="sig-name descname">DataSourceObservedPropertyVariableSerializer</code><span class="sig-paren">(</span><em class="sig-param">instance=None</em>, <em class="sig-param">data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#DataSourceObservedPropertyVariableSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.DataSourceObservedPropertyVariableSerializer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.HyperlinkedModelSerializer</span></code></p>
-<p>Model that Serializes Mapped Data Source Parameters</p>
-<dl class="class">
-<dt id="basin3d.serializers.DataSourceObservedPropertyVariableSerializer.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="_modules/basin3d/serializers.html#DataSourceObservedPropertyVariableSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.DataSourceObservedPropertyVariableSerializer.Meta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="attribute">
-<dt id="basin3d.serializers.DataSourceObservedPropertyVariableSerializer.Meta.fields">
-<code class="sig-name descname">fields</code><em class="property"> = ('id', 'name', 'datasource', 'observed_property_variable')</em><a class="headerlink" href="#basin3d.serializers.DataSourceObservedPropertyVariableSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="basin3d.serializers.DataSourceObservedPropertyVariableSerializer.Meta.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#basin3d.serializers.DataSourceObservedPropertyVariableSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#basin3d.models.DataSourceObservedPropertyVariable" title="basin3d.models.DataSourceObservedPropertyVariable"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.models.DataSourceObservedPropertyVariable</span></code></a></p>
-</dd></dl>
-
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="basin3d.serializers.DataSourceSerializer">
-<em class="property">class </em><code class="sig-prename descclassname">basin3d.serializers.</code><code class="sig-name descname">DataSourceSerializer</code><span class="sig-paren">(</span><em class="sig-param">instance=None</em>, <em class="sig-param">data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#DataSourceSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.DataSourceSerializer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.HyperlinkedModelSerializer</span></code></p>
-<p>Data Source serializer that converts a models.DataSource</p>
-<dl class="class">
-<dt id="basin3d.serializers.DataSourceSerializer.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="_modules/basin3d/serializers.html#DataSourceSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.DataSourceSerializer.Meta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="attribute">
-<dt id="basin3d.serializers.DataSourceSerializer.Meta.depth">
-<code class="sig-name descname">depth</code><em class="property"> = 1</em><a class="headerlink" href="#basin3d.serializers.DataSourceSerializer.Meta.depth" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="basin3d.serializers.DataSourceSerializer.Meta.fields">
-<code class="sig-name descname">fields</code><em class="property"> = ('url', 'direct_path', 'name', 'location', 'id_prefix', 'observed_property_variables', 'check')</em><a class="headerlink" href="#basin3d.serializers.DataSourceSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="basin3d.serializers.DataSourceSerializer.Meta.lookup_field">
-<code class="sig-name descname">lookup_field</code><em class="property"> = 'name'</em><a class="headerlink" href="#basin3d.serializers.DataSourceSerializer.Meta.lookup_field" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="basin3d.serializers.DataSourceSerializer.Meta.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#basin3d.serializers.DataSourceSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#basin3d.models.DataSource" title="basin3d.models.DataSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.models.DataSource</span></code></a></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="basin3d.serializers.DataSourceSerializer.Meta.read_only_fields">
-<code class="sig-name descname">read_only_fields</code><em class="property"> = ('name', 'location', 'id_prefix', 'observed_property_variables', 'check')</em><a class="headerlink" href="#basin3d.serializers.DataSourceSerializer.Meta.read_only_fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="method">
-<dt id="basin3d.serializers.DataSourceSerializer.get_check">
-<code class="sig-name descname">get_check</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#DataSourceSerializer.get_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.DataSourceSerializer.get_check" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check the data source
-:param obj:
-:return:</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="basin3d.serializers.DataSourceSerializer.get_direct_path">
-<code class="sig-name descname">get_direct_path</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#DataSourceSerializer.get_direct_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.DataSourceSerializer.get_direct_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the url for direct api access
-:param obj:
-:return:</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="basin3d.serializers.DataSourceSerializer.get_observed_property_variables">
-<code class="sig-name descname">get_observed_property_variables</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#DataSourceSerializer.get_observed_property_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.DataSourceSerializer.get_observed_property_variables" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the url for the observed property variables associated with the current datasource
-:param obj:
-:return:</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="basin3d.serializers.DelimitedListField">
-<em class="property">class </em><code class="sig-prename descclassname">basin3d.serializers.</code><code class="sig-name descname">DelimitedListField</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">delimiter='</em>, <em class="sig-param">'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#DelimitedListField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.DelimitedListField" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.fields.ListField</span></code></p>
-<p>Convert a delemited string field to a list</p>
-<dl class="attribute">
-<dt id="basin3d.serializers.DelimitedListField.child">
-<code class="sig-name descname">child</code><em class="property"> = CharField()</em><a class="headerlink" href="#basin3d.serializers.DelimitedListField.child" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="basin3d.serializers.DelimitedListField.to_representation">
-<code class="sig-name descname">to_representation</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#DelimitedListField.to_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.DelimitedListField.to_representation" title="Permalink to this definition">¶</a></dt>
-<dd><p>List of object instances -&gt; List of dicts of primitive datatypes.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="basin3d.serializers.ObservedPropertySerializer">
-<em class="property">class </em><code class="sig-prename descclassname">basin3d.serializers.</code><code class="sig-name descname">ObservedPropertySerializer</code><span class="sig-paren">(</span><em class="sig-param">instance=None</em>, <em class="sig-param">data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#ObservedPropertySerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.ObservedPropertySerializer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.HyperlinkedModelSerializer</span></code></p>
-<p>Observed Property Serializer</p>
-<dl class="class">
-<dt id="basin3d.serializers.ObservedPropertySerializer.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="_modules/basin3d/serializers.html#ObservedPropertySerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.ObservedPropertySerializer.Meta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="attribute">
-<dt id="basin3d.serializers.ObservedPropertySerializer.Meta.depth">
-<code class="sig-name descname">depth</code><em class="property"> = 2</em><a class="headerlink" href="#basin3d.serializers.ObservedPropertySerializer.Meta.depth" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="basin3d.serializers.ObservedPropertySerializer.Meta.fields">
-<code class="sig-name descname">fields</code><em class="property"> = '__all__'</em><a class="headerlink" href="#basin3d.serializers.ObservedPropertySerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="basin3d.serializers.ObservedPropertySerializer.Meta.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#basin3d.serializers.ObservedPropertySerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#basin3d.models.ObservedProperty" title="basin3d.models.ObservedProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.models.ObservedProperty</span></code></a></p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="method">
-<dt id="basin3d.serializers.ObservedPropertySerializer.get_datasource">
-<code class="sig-name descname">get_datasource</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#ObservedPropertySerializer.get_datasource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.ObservedPropertySerializer.get_datasource" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="basin3d.serializers.ObservedPropertySerializer.get_observed_property_variable">
-<code class="sig-name descname">get_observed_property_variable</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#ObservedPropertySerializer.get_observed_property_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.ObservedPropertySerializer.get_observed_property_variable" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="basin3d.serializers.ObservedPropertySerializer.get_sampling_medium">
-<code class="sig-name descname">get_sampling_medium</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#ObservedPropertySerializer.get_sampling_medium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.ObservedPropertySerializer.get_sampling_medium" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="basin3d.serializers.ObservedPropertyVariableSerializer">
-<em class="property">class </em><code class="sig-prename descclassname">basin3d.serializers.</code><code class="sig-name descname">ObservedPropertyVariableSerializer</code><span class="sig-paren">(</span><em class="sig-param">instance=None</em>, <em class="sig-param">data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#ObservedPropertyVariableSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.ObservedPropertyVariableSerializer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.HyperlinkedModelSerializer</span></code></p>
-<p>Observed Property Variable Serializer</p>
-<dl class="class">
-<dt id="basin3d.serializers.ObservedPropertyVariableSerializer.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="_modules/basin3d/serializers.html#ObservedPropertyVariableSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.ObservedPropertyVariableSerializer.Meta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="attribute">
-<dt id="basin3d.serializers.ObservedPropertyVariableSerializer.Meta.depth">
-<code class="sig-name descname">depth</code><em class="property"> = 2</em><a class="headerlink" href="#basin3d.serializers.ObservedPropertyVariableSerializer.Meta.depth" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="basin3d.serializers.ObservedPropertyVariableSerializer.Meta.fields">
-<code class="sig-name descname">fields</code><em class="property"> = ('url', 'id', 'full_name', 'categories', 'datasources')</em><a class="headerlink" href="#basin3d.serializers.ObservedPropertyVariableSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="basin3d.serializers.ObservedPropertyVariableSerializer.Meta.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#basin3d.serializers.ObservedPropertyVariableSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#basin3d.models.ObservedPropertyVariable" title="basin3d.models.ObservedPropertyVariable"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.models.ObservedPropertyVariable</span></code></a></p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="method">
-<dt id="basin3d.serializers.ObservedPropertyVariableSerializer.get_datasources">
-<code class="sig-name descname">get_datasources</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/serializers.html#ObservedPropertyVariableSerializer.get_datasources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.serializers.ObservedPropertyVariableSerializer.get_datasources" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the url for the data sources associated with the current variable
-:param obj:
-:return:</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
 <span class="target" id="module-basin3d.viewsets"></span><div class="section" id="basin3d-viewsets">
-<h1><cite>basin3d.viewsets</cite><a class="headerlink" href="#basin3d-viewsets" title="Permalink to this headline">¶</a></h1>
+<h2><cite>basin3d.viewsets</cite><a class="headerlink" href="#basin3d-viewsets" title="Permalink to this headline">¶</a></h2>
 <dl class="field-list simple">
 <dt class="field-odd">platform</dt>
 <dd class="field-odd"><p>Unix, Mac</p>
@@ -1019,7 +798,7 @@ converted back into complex types, after first validating the incoming data.
 <dl class="attribute">
 <dt id="basin3d.viewsets.DataSourceViewSet.serializer_class">
 <code class="sig-name descname">serializer_class</code><a class="headerlink" href="#basin3d.viewsets.DataSourceViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#basin3d.serializers.DataSourceSerializer" title="basin3d.serializers.DataSourceSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.DataSourceSerializer</span></code></a></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.DataSourceSerializer</span></code></p>
 </dd></dl>
 
 </dd></dl>
@@ -1066,7 +845,7 @@ converted back into complex types, after first validating the incoming data.
 <dl class="attribute">
 <dt id="basin3d.viewsets.DirectAPIViewSet.serializer_class">
 <code class="sig-name descname">serializer_class</code><a class="headerlink" href="#basin3d.viewsets.DirectAPIViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#basin3d.serializers.DataSourceSerializer" title="basin3d.serializers.DataSourceSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.DataSourceSerializer</span></code></a></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.DataSourceSerializer</span></code></p>
 </dd></dl>
 
 </dd></dl>
@@ -1116,7 +895,7 @@ being measured. See <a class="reference external" href="http://vocabulary.odm2.o
 <dl class="attribute">
 <dt id="basin3d.viewsets.ObservedPropertyVariableViewSet.serializer_class">
 <code class="sig-name descname">serializer_class</code><a class="headerlink" href="#basin3d.viewsets.ObservedPropertyVariableViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#basin3d.serializers.ObservedPropertyVariableSerializer" title="basin3d.serializers.ObservedPropertyVariableSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.ObservedPropertyVariableSerializer</span></code></a></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.ObservedPropertyVariableSerializer</span></code></p>
 </dd></dl>
 
 </dd></dl>
@@ -1151,11 +930,12 @@ being measured. See <a class="reference external" href="http://vocabulary.odm2.o
 <dl class="attribute">
 <dt id="basin3d.viewsets.ObservedPropertyViewSet.serializer_class">
 <code class="sig-name descname">serializer_class</code><a class="headerlink" href="#basin3d.viewsets.ObservedPropertyViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#basin3d.serializers.ObservedPropertySerializer" title="basin3d.serializers.ObservedPropertySerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.ObservedPropertySerializer</span></code></a></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.ObservedPropertySerializer</span></code></p>
 </dd></dl>
 
 </dd></dl>
 
+</div>
 </div>
 
 
@@ -1166,15 +946,17 @@ being measured. See <a class="reference external" href="http://vocabulary.odm2.o
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><cite>basin3d.models</cite></a></li>
+<li><a class="reference internal" href="#">Framework</a><ul>
+<li><a class="reference internal" href="#basin3d-models"><cite>basin3d.models</cite></a></li>
 <li><a class="reference internal" href="#basin3d-plugins"><cite>basin3d.plugins</cite></a></li>
-<li><a class="reference internal" href="#basin3d-serializers"><cite>basin3d.serializers</cite></a></li>
 <li><a class="reference internal" href="#basin3d-viewsets"><cite>basin3d.viewsets</cite></a></li>
+</ul>
+</li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="synthesis_models.html"
-                        title="previous chapter">Synthesis Packages</a></p>
+  <p class="topless"><a href="synthesis_views.html"
+                        title="previous chapter">Synthesis Views</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -1206,7 +988,7 @@ being measured. See <a class="reference external" href="http://vocabulary.odm2.o
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="synthesis_models.html" title="Synthesis Packages"
+          <a href="synthesis_views.html" title="Synthesis Views"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li> 
       </ul>

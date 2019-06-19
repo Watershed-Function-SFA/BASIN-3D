@@ -1,5 +1,7 @@
 .. _apireference:
 
+Framework
+*********
 
 .. automodule:: basin3d.models
     :members:
@@ -7,11 +9,6 @@
     :show-inheritance:
 
 .. automodule:: basin3d.plugins
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-.. automodule:: basin3d.serializers
     :members:
     :undoc-members:
     :show-inheritance:
