@@ -26,7 +26,7 @@ run:
 
 .PHONY: test
 test:
-	$(CURDIR)/bin/pytest -v --flake8 --mypy --cov basin3d $(CURDIR)/.. $(CURDIR)/tests && cd $(CURDIR)
+	$(CURDIR)/bin/pytest -v --flake8 --mypy --cov basin3d $(CURDIR)/.. $(CURDIR)/tests --ignore $(CURDIR)/../basin3d/migrations && cd $(CURDIR)
 
 .PHONY: clean
 clean:
