@@ -4,9 +4,12 @@ PYTHON=python
 
 all: bin/python keyset db.sqlite3
 
+develop: 
+	$(CURDIR)/bin/pip install -e $(CURDIR)/..
+
 bin/python:
 	$(PYTHON) -m venv .
-	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt pytest-django pytest-cov $(CURDIR)/..
+	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt pytest-flake8 pytest-django pytest-cov $(CURDIR)/..
 
 db.sqlite3:
 	$(CURDIR)/bin/python manage.py migrate
@@ -23,7 +26,7 @@ run:
 
 .PHONY: test
 test:
-	$(CURDIR)/bin/pytest -v --cov basin3d  $(CURDIR)/tests && cd $(CURDIR)
+	$(CURDIR)/bin/pytest -v --flake8 --cov basin3d  $(CURDIR)/tests && cd $(CURDIR)
 
 
 .PHONY: clean

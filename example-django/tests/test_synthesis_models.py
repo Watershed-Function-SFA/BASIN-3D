@@ -1,5 +1,3 @@
-
-
 from basin3d.models import DataSource, FeatureTypes, SpatialSamplingShapes
 from basin3d.synthesis.models.field import MonitoringFeature, Coordinate, \
     AbsoluteCoordinate, RepresentativeCoordinate, GeographicCoordinate, AltitudeCoordinate, \
@@ -17,14 +15,14 @@ class ModelTests(TestCase):
         """Test a Representative Coordinatge"""
 
         r_coord = RepresentativeCoordinate(
-                representative_point=AbsoluteCoordinate(
-                    horizontal_position=GeographicCoordinate(
-                        units=GeographicCoordinate.UNITS_DEC_DEGREES,
-                        latitude=70.4657, longitude=-20.4567),
-                    vertical_extent=AltitudeCoordinate(
-                        datum=AltitudeCoordinate.DATUM_NAVD88,
-                        value=1500, distance_units=VerticalCoordinate.DISTANCE_UNITS_FEET)),
-                representative_point_type=RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE)
+            representative_point=AbsoluteCoordinate(
+                horizontal_position=GeographicCoordinate(
+                    units=GeographicCoordinate.UNITS_DEC_DEGREES,
+                    latitude=70.4657, longitude=-20.4567),
+                vertical_extent=AltitudeCoordinate(
+                    datum=AltitudeCoordinate.DATUM_NAVD88,
+                    value=1500, distance_units=VerticalCoordinate.DISTANCE_UNITS_FEET)),
+            representative_point_type=RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE)
 
         assert r_coord.representative_point.vertical_extent[0].datum == AltitudeCoordinate.DATUM_NAVD88
         assert r_coord.representative_point.vertical_extent[0].value == 1500
@@ -34,7 +32,7 @@ class ModelTests(TestCase):
         assert r_coord.representative_point.horizontal_position[0].y == 70.4657
         assert r_coord.representative_point.horizontal_position[0].latitude == 70.4657
         assert r_coord.representative_point.horizontal_position[0].units == GeographicCoordinate.UNITS_DEC_DEGREES
-        assert r_coord.representative_point_type == RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE\
+        assert r_coord.representative_point_type == RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE \
 
 
     def test_related_sampling_feature(self):
@@ -50,7 +48,6 @@ class ModelTests(TestCase):
         assert related_sampling_feature.role == RelatedSamplingFeature.ROLE_PARENT
 
     def test_absolute_coordinate(self):
-
         a_coord = AltitudeCoordinate(
             datum=AltitudeCoordinate.DATUM_NAVD88,
             value=1500,
@@ -101,7 +98,7 @@ class ModelTests(TestCase):
         assert a_region.coordinates.representative.representative_point.vertical_extent[0].distance_units == \
             VerticalCoordinate.DISTANCE_UNITS_FEET
         assert a_region.coordinates.representative.representative_point_type == \
-               RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE
+            RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE
 
         a_point = MonitoringFeature(
             datasource=self.datasource,
