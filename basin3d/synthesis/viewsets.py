@@ -12,7 +12,6 @@ View Controllers for BASIN-3D REST api
 
 """
 import logging
-import os
 
 from basin3d.models import DataSource, FeatureTypes
 from basin3d.plugins import InvalidOrMissingCredentials, get_request_feature_type

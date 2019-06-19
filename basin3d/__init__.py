@@ -165,12 +165,12 @@ def __insert_basin3d_defaults():
             # We don't want to override local setting
             if not hasattr(settings, key):
                 setattr(settings, key, getattr(basin3d_settings, key))
-            elif key in ['BASIN3D','REST_FRAMEWORK']:
+            elif key in ['BASIN3D', 'REST_FRAMEWORK']:
                 basin3d = getattr(basin3d_settings, key)
                 local_basin3d = getattr(settings, key)
                 for key in basin3d.keys():
                     if key not in local_basin3d:
-                        local_basin3d[key]=basin3d[key]
+                        local_basin3d[key] = basin3d[key]
 
 
 __insert_basin3d_defaults()

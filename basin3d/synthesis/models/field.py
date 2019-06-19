@@ -9,9 +9,9 @@
 """
 from typing import List
 
-from basin3d.plugins import get_datasource_observed_property_variables
-from basin3d.synthesis.models import Base, Person  # pass Person for plugins
 from basin3d.models import FeatureTypes, SpatialSamplingShapes
+from basin3d.plugins import get_datasource_observed_property_variables
+from basin3d.synthesis.models import Base  # pass Person for plugins
 
 
 class RelatedSamplingFeature(Base):
@@ -290,8 +290,8 @@ class VerticalCoordinate(Base):
         self._resolution: float = None
         self._distance_units: str = None
         self._encoding_method: str = None
-        self._datum:str = None
-        self._type:str = None
+        self._datum: str = None
+        self._type: str = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
@@ -389,7 +389,7 @@ class AltitudeCoordinate(VerticalCoordinate):
 
     @datum.setter
     def datum(self, value):
-        self._datum=value
+        self._datum = value
 
 
 class DepthCoordinate(VerticalCoordinate):
@@ -584,11 +584,11 @@ class GeographicCoordinate(HorizontalCoordinate):
                                                                                          type(
                                                                                              units_data_type).__name__,
                                                                                          ",".join([
-                                                                                                      x.__name__
-                                                                                                      for
-                                                                                                      x
-                                                                                                      in
-                                                                                                      units_data_type])))
+                                                                                             x.__name__
+                                                                                             for
+                                                                                             x
+                                                                                             in
+                                                                                             units_data_type])))
                     else:
                         for idx, v in enumerate(value):
                             if not isinstance(v, units_data_type[idx]):
@@ -787,11 +787,11 @@ class SpatialSamplingFeature(SamplingFeature):
                 else:
                     return
             if self.shape == SpatialSamplingShapes.SHAPE_CURVE:
-                if len(self.coordinates.absolute.horizontal_position) < 1 or \
-                        (self.coordinates.absolute.horizontal_position[0].x == \
-                         self.coordinates.absolute.horizontal_position[-1].x and \
-                         self.coordinates.absolute.horizontal_position[0].y == \
-                         self.coordinates.absolute.horizontal_position[-1].y):
+                if len(self.coordinates.absolute.horizontal_position) < 1 or (
+                        self.coordinates.absolute.horizontal_position[0].x ==
+                        self.coordinates.absolute.horizontal_position[-1].x and
+                        self.coordinates.absolute.horizontal_position[0].y ==
+                        self.coordinates.absolute.horizontal_position[-1].y):
                     raise AttributeError(error_msg + "Shape {} must have more than one point. "
                                                      "The first and last points in the list must "
                                                      "NOT be the same point.".format(SpatialSamplingShapes.SHAPE_CURVE))
@@ -832,7 +832,7 @@ class MonitoringFeature(SpatialSamplingFeature):
         super().__init__(datasource, **kwargs)
 
     @property
-    def description_reference(self)  -> str:
+    def description_reference(self) -> str:
         """Extra information about the Monitoring Feature"""
         return self._description_reference
 

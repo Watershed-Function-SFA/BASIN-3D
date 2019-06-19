@@ -26,8 +26,7 @@ run:
 
 .PHONY: test
 test:
-	$(CURDIR)/bin/pytest -v --flake8 --cov basin3d  $(CURDIR)/tests && cd $(CURDIR)
-	cd $(CURDIR)/.. && mypy basin3d && cd $(CURDIR)
+	$(CURDIR)/bin/pytest -v --flake8 --mypy --cov basin3d $(CURDIR)/.. $(CURDIR)/tests && cd $(CURDIR)
 
 .PHONY: clean
 clean:

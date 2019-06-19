@@ -32,18 +32,18 @@
 # built documents.
 #
 # The short X.Y version.
-import os
+# part of setuptools
+from basin3d.version import __release__, __version__
 
-import django
+import os
 import sys
 
+import django
 
 sys.path.append('{}/../example-django'.format(os.path.dirname(__file__)))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mybroker.settings")
 django.setup()
 
-
-from basin3d.version import __release__, __version__  # part of setuptools
 version = __version__
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -82,8 +82,6 @@ master_doc = 'index'
 project = 'BASIN-3D'
 copyright = '2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory \n(subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved.'
 author = 'Charuleka Varadharajan, Valerie Hendrix'
-
-
 
 # The full version, including alpha/beta/rc tags.
 release = __release__
@@ -265,26 +263,26 @@ htmlhelp_basename = 'BASIN-3Ddoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-  'classoptions': ',openany,oneside',
-  'babel': '\\usepackage[english]{babel}'
+    'classoptions': ',openany,oneside',
+    'babel': '\\usepackage[english]{babel}'
 }
-#latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    #
-    # 'papersize': 'letterpaper',
+# latex_elements = {
+# The paper size ('letterpaper' or 'a4paper').
+#
+# 'papersize': 'letterpaper',
 
-    # The font size ('10pt', '11pt' or '12pt').
-    #
-    # 'pointsize': '10pt',
+# The font size ('10pt', '11pt' or '12pt').
+#
+# 'pointsize': '10pt',
 
-    # Additional stuff for the LaTeX preamble.
-    #
-    # 'preamble': '',
+# Additional stuff for the LaTeX preamble.
+#
+# 'preamble': '',
 
-    # Latex figure (float) alignment
-    #
-    # 'figure_align': 'htbp',
-#}
+# Latex figure (float) alignment
+#
+# 'figure_align': 'htbp',
+# }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,

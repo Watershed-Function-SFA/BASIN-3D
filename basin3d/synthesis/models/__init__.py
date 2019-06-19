@@ -42,7 +42,7 @@ class Base(object):
         bad_attributes = []
         for key, value in kwargs.items():
 
-            if not hasattr(self,key):
+            if not hasattr(self, key):
                 bad_attributes.append(key)
             else:
                 setattr(self, key, value)

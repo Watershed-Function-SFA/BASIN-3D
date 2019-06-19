@@ -103,12 +103,10 @@ class Observation(Base):
     def id(self, value):
         self._id = value
 
-
     @property
     def type(self):
         """This can be either :class:`TYPE_MEASUREMENT` or :class:`TYPE_MEASUREMENT_TVP_TIMESERIES`"""
         return self._type
-
 
     @type.setter
     def type(self, value):

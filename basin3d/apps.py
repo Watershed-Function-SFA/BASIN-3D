@@ -1,6 +1,8 @@
+import csv
 import importlib
-
-import sys, os, csv, inspect
+import inspect
+import os
+import sys
 
 from django.apps import AppConfig
 from django.conf import settings
@@ -35,7 +37,7 @@ def load_data_sources(sender, **kwargs):
     for plugin in PluginMount.plugins:
         module_name = plugin.__module__
         class_name = plugin.__name__
-        print("Loading Plugin = {}.{}".format(module_name,class_name))
+        print("Loading Plugin = {}.{}".format(module_name, class_name))
 
         try:
             datasource = DataSource.objects.get(name=plugin.get_meta().id)
@@ -58,45 +60,45 @@ def load_data_sources(sender, **kwargs):
 
         for variable_mapping in __iterate_observed_property_mapping(datasource.get_plugin()):
 
-                sm = SamplingMedium.objects.get(name=variable_mapping["sampling_medium"])
-                v = None
-                try:
-                    v = ObservedPropertyVariable.objects.get(id=variable_mapping['broker_id'])
-                    op = ObservedProperty.objects.get(observed_property_variable=v, datasource=datasource)
-                    op.sampling_medium = sm
-                    op.description = variable_mapping['description']
-                    op.save()
+            sm = SamplingMedium.objects.get(name=variable_mapping["sampling_medium"])
+            v = None
+            try:
+                v = ObservedPropertyVariable.objects.get(id=variable_mapping['broker_id'])
+                op = ObservedProperty.objects.get(observed_property_variable=v, datasource=datasource)
+                op.sampling_medium = sm
+                op.description = variable_mapping['description']
+                op.save()
 
-                except ObservedProperty.DoesNotExist:
+            except ObservedProperty.DoesNotExist:
 
-                    op = ObservedProperty(sampling_medium=sm,
-                                          description=variable_mapping["description"],
-                                          datasource=datasource,
-                                          observed_property_variable=v)
-                    op.save()
-                    print("Created Observed Property {} for {}".format(v, datasource))
-                except IntegrityError as ie:
-                    # Its OK that is has already been created
-                    print(str(ie), file=sys.stderr)
+                op = ObservedProperty(sampling_medium=sm,
+                                      description=variable_mapping["description"],
+                                      datasource=datasource,
+                                      observed_property_variable=v)
+                op.save()
+                print("Created Observed Property {} for {}".format(v, datasource))
+            except IntegrityError as ie:
+                # Its OK that is has already been created
+                print(str(ie), file=sys.stderr)
 
-                except Exception as e:
+            except Exception as e:
 
-                    print("Error Registering Measurement '{} {}': {}".format(variable_mapping['broker_id'],
-                                                                             variable_mapping['description'], str(e)))
-                try:
-                    datasource_parameter = DataSourceObservedPropertyVariable()
-                    datasource_parameter.observed_property_variable = v
-                    datasource_parameter.datasource = datasource
-                    datasource_parameter.name = variable_mapping['datasource_name']
-                    datasource_parameter.save()
+                print("Error Registering Measurement '{} {}': {}".format(variable_mapping['broker_id'],
+                                                                         variable_mapping['description'], str(e)))
+            try:
+                datasource_parameter = DataSourceObservedPropertyVariable()
+                datasource_parameter.observed_property_variable = v
+                datasource_parameter.datasource = datasource
+                datasource_parameter.name = variable_mapping['datasource_name']
+                datasource_parameter.save()
 
-                except IntegrityError:
-                    # This object has already been loaded
-                    pass
+            except IntegrityError:
+                # This object has already been loaded
+                pass
 
-                except Exception as e:
-                    print("Error Registering DataSource Observed Property Variable '{}' for Data Source '{}': {}".
-                          format(variable_mapping['broker_id'], datasource.name, str(e)), file=sys.stderr)
+            except Exception as e:
+                print("Error Registering DataSource Observed Property Variable '{}' for Data Source '{}': {}".
+                      format(variable_mapping['broker_id'], datasource.name, str(e)), file=sys.stderr)
 
 
 def load_observed_property_variables(plugin):
@@ -165,7 +167,7 @@ def load_sampling_mediums():
             print("Error Registering SamplingMedium '{}': {}".format(sm, str(e)), file=sys.stderr)
 
 
-def __iterate_observed_property_mapping(plugin):  #ToDo: change this to __iterate_observed_property_mapping
+def __iterate_observed_property_mapping(plugin):  # ToDo: change this to __iterate_observed_property_mapping
     """
     Generator for iterating over the measurement mapping
     :param plugin: the plugin to find the mapping for
@@ -178,7 +180,7 @@ def __iterate_observed_property_mapping(plugin):  #ToDo: change this to __iterat
 
         # There should be a mapping file for this data sources parameters.  If there isn't
         # throw an exception.
-        mapping_file = os.path.join(plugin_file_path,"mapping_{}.csv".format(plugin.get_meta().id.lower()))
+        mapping_file = os.path.join(plugin_file_path, "mapping_{}.csv".format(plugin.get_meta().id.lower()))
         if os.path.exists(mapping_file):
             with open(mapping_file, ) as csvfile:
                 # Create a dictionary reader where the header
@@ -190,7 +192,9 @@ def __iterate_observed_property_mapping(plugin):  #ToDo: change this to __iterat
                 for row in reader:
                     yield row
         else:
-            raise Exception("There are no measurement variables ({}) mapped for this plugin {}.{}".format(mapping_file, plugin.plugin_module,plugin.plugin_class))
+            raise Exception("There are no measurement variables ({}) mapped for this plugin {}.{}".format(mapping_file,
+                                                                                                          plugin.plugin_module,
+                                                                                                          plugin.plugin_class))
 
     else:
         raise Exception("File path does not exist for plugin {}.{}".format(plugin.plugin_module, plugin.plugin_class))
@@ -200,7 +204,5 @@ class Basin3DConfig(AppConfig):
     name = 'basin3d'
 
     def ready(self):
-
         # Execute the post migration scripts
         post_migrate.connect(load_data_sources, sender=self)
-

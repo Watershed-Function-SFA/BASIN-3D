@@ -58,7 +58,7 @@ class ReadOnlySynthesisModelField(serializers.Field):
         super(ReadOnlySynthesisModelField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
-        raise NotImplemented
+        raise NotImplementedError
 
     def to_representation(self, obj):
         serializer = self.serializer_class(obj, context=self.context)
@@ -283,7 +283,7 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
                                   # ToDo: take off the database prefix?
                                   kwargs={'pk': obj.related_sampling_feature},
                                   request=self.context["request"], )
-                except:
+                except Exception:
                     return None
                 return url
         return None
@@ -341,9 +341,9 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
                 # path_route = r'monitoringfeature-detail'
                 try:
                     url = reverse(viewname=path_route,
-                                   # ToDo: take off the database prefix?
-                                   kwargs={'pk': obj.id},
-                                   request=self.context["request"], )
+                                  # ToDo: take off the database prefix?
+                                  kwargs={'pk': obj.id},
+                                  request=self.context["request"], )
                 except Exception:
                     return None
                 return url
