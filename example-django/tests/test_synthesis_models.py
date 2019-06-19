@@ -1,17 +1,64 @@
 
 
-from django.test import TestCase
 from basin3d.models import DataSource, FeatureTypes, SpatialSamplingShapes
 from basin3d.synthesis.models.field import MonitoringFeature, Coordinate, \
     AbsoluteCoordinate, RepresentativeCoordinate, GeographicCoordinate, AltitudeCoordinate, \
     DepthCoordinate, VerticalCoordinate, RelatedSamplingFeature
 from basin3d.synthesis.models.measurement import Observation, \
     MeasurementTimeseriesTVPObservation, ResultQuality, TimeValuePair
+from django.test import TestCase
 
 
 class ModelTests(TestCase):
     def setUp(self):
         self.datasource = DataSource.objects.get(name="Alpha")
+
+    def test_representative_coordinate(self):
+        """Test a Representative Coordinatge"""
+
+        r_coord = RepresentativeCoordinate(
+                representative_point=AbsoluteCoordinate(
+                    horizontal_position=GeographicCoordinate(
+                        units=GeographicCoordinate.UNITS_DEC_DEGREES,
+                        latitude=70.4657, longitude=-20.4567),
+                    vertical_extent=AltitudeCoordinate(
+                        datum=AltitudeCoordinate.DATUM_NAVD88,
+                        value=1500, distance_units=VerticalCoordinate.DISTANCE_UNITS_FEET)),
+                representative_point_type=RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE)
+
+        assert r_coord.representative_point.vertical_extent[0].datum == AltitudeCoordinate.DATUM_NAVD88
+        assert r_coord.representative_point.vertical_extent[0].value == 1500
+        assert r_coord.representative_point.vertical_extent[0].distance_units == VerticalCoordinate.DISTANCE_UNITS_FEET
+        assert r_coord.representative_point.horizontal_position[0].longitude == -20.4567
+        assert r_coord.representative_point.horizontal_position[0].x == -20.4567
+        assert r_coord.representative_point.horizontal_position[0].y == 70.4657
+        assert r_coord.representative_point.horizontal_position[0].latitude == 70.4657
+        assert r_coord.representative_point.horizontal_position[0].units == GeographicCoordinate.UNITS_DEC_DEGREES
+        assert r_coord.representative_point_type == RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE\
+
+
+    def test_related_sampling_feature(self):
+        """Test a Related Sampling feature"""
+        related_sampling_feature = RelatedSamplingFeature(datasource=self.datasource,
+                                                          related_sampling_feature="Region1",
+                                                          related_sampling_feature_type=FeatureTypes.REGION,
+                                                          role=RelatedSamplingFeature.ROLE_PARENT)
+
+        assert related_sampling_feature.datasource == self.datasource
+        assert related_sampling_feature.related_sampling_feature == "A-Region1"
+        assert related_sampling_feature.related_sampling_feature_type == FeatureTypes.REGION
+        assert related_sampling_feature.role == RelatedSamplingFeature.ROLE_PARENT
+
+    def test_absolute_coordinate(self):
+
+        a_coord = AltitudeCoordinate(
+            datum=AltitudeCoordinate.DATUM_NAVD88,
+            value=1500,
+            distance_units=VerticalCoordinate.DISTANCE_UNITS_FEET)
+
+        assert a_coord.datum == AltitudeCoordinate.DATUM_NAVD88
+        assert a_coord.value == 1500
+        assert a_coord.distance_units == VerticalCoordinate.DISTANCE_UNITS_FEET
 
     def test_monitoring_feature_create(self):
         """

@@ -21,29 +21,36 @@ class Base(object):
 
     def __init__(self, datasource, **kwargs):
 
-        self.__attributes = {x for x in self.__dict__.keys()}
-        self.__attributes.add("datasource_ids")
-        self.datasource = datasource
+        self._datasource_ids = None
+        self._datasource = datasource
+        self._id = None
+        self._original_id = None
+
         if not isinstance(kwargs, dict):
             raise TypeError("Expected a dict")
-
-        # Check for invalid arguments
-        bad_attributes = set(kwargs.keys()).difference(self.__attributes)
-        if len(bad_attributes) > 0:
-            raise ValueError("Invalid argument(s) for {} : {}".format(self.__class__.__name__,
-                                                                      ",".join(bad_attributes)))
 
         # any ids listed should have the DataSource.id_prefix
         if 'datasource_ids' in kwargs.keys():
             for id in kwargs['datasource_ids']:
                 if kwargs[id]:
                     kwargs[id] = "{}-{}".format(self.datasource.id_prefix, kwargs[id])
-
         if "id" in kwargs and datasource:
             kwargs["original_id"] = kwargs["id"]
             kwargs["id"] = "{}-{}".format(self.datasource.id_prefix, kwargs["id"])
 
-        self.__dict__.update(kwargs)
+        # Now that we have massaged the incoming key/value pairs, let's
+        # set them in the
+        bad_attributes = []
+        for key, value in kwargs.items():
+
+            if not hasattr(self,key):
+                bad_attributes.append(key)
+            else:
+                setattr(self, key, value)
+
+        if len(bad_attributes) > 0:
+            raise ValueError("Invalid argument(s) for {} : {}".format(self.__class__.__name__,
+                                                                      ",".join(bad_attributes)))
 
         def __setattr__(self, *ignore_args):
             """
@@ -65,6 +72,34 @@ class Base(object):
 
         self.__setattr__ = __setattr__
         self.__delattr__ = __delattr__
+
+    @property
+    def datasource_ids(self):
+        return self._datasource_ids
+
+    @datasource_ids.setter
+    def datasource_ids(self, value):
+        self._datasource_ids = value
+
+    @property
+    def datasource(self):
+        return self._datasource
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id = value
+
+    @property
+    def original_id(self):
+        return self._original_id
+
+    @original_id.setter
+    def original_id(self, value):
+        self._original_id = value
 
 
 class Person(Base):

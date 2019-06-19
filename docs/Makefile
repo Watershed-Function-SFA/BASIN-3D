@@ -223,3 +223,7 @@ dummy:
 	$(SPHINXBUILD) -b dummy $(ALLSPHINXOPTS) $(BUILDDIR)/dummy
 	@echo
 	@echo "Build finished. Dummy builder generates no files."
+
+github:
+	@make html
+	@cp -a $(BUILDDIR)/html/. $(GH_PAGES)

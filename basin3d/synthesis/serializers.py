@@ -9,26 +9,6 @@
 
 Serializers that render :mod:`basin.synthesis.models` from Python objects to `JSON` and back again.
 
-
-* :class:`TimestampField` - Extends :class:`rest_framework.serializers.DateTimeField` to handle
-* :class:`ReadOnlySynthesisModelField` -  A generic field that can be used against any serializer
-    numeric epoch times.
-* :class:`FloatField` -  A Float field that can handle empty strings
-* :class:`IdUrlSerializerMixin` - Serializer Mixin to support Hypermedia as the Engine of Application State (HATEOAS).
-* :class:`PersonSerializer`
-* :class:`VerticalCoordinateSerializer`
-* :class:`HorizontalCoordinateSerializer`
-* :class:`AbsoluteCoordinateSerializer`
-* :class:`RepresentativeCoordinateSerializer`
-* :class:`CoordinateSerializer`
-* :class:`RelatedSampltingFeatureSerializer`
-* :class:`FeatureSerializer`
-* :class:`SamplingFeatureSerializer`
-* :class:`SpatialSamplingFeatureSerializer`
-* :class:`MonitoringFeatureSerializer`
-* :class:`ObservationSerializerMixin`
-* :class:`MeasurementTimeseriesTVPObservationSerializer`
-
 """
 from numbers import Number
 
@@ -91,6 +71,7 @@ class FloatField(serializers.FloatField):
     """
 
     def to_representation(self, value):
+        """to float representation"""
         if not value:
             return None
         return float(value)

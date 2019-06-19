@@ -6,24 +6,9 @@
 
 :synopsis: Classes to represent Multi-scale Spatial Hierarchy for Field Observations
 
-* :class:`Coordinate` - Base coordinate class that holds absolute and/or representative coordinates.
-* :class: `AbsoluteCoordinate` - Location of the Observation or Feature described with an absolute coordinate system.
-* :class: `RepresentativeCoordinate` - Location of the Observation or Feature described with relative coordinates.
-* :class:`VerticalCoordinate` - The reference frame or system from which vertical distances (altitudes or depths) are measured.
-* :class:`AltitudeCoordinate` - The reference frame or system from which altitudes (elevations) are measured.
-* :class:`DepthCoordinate` -  The reference frame or system from which depths are measured.
-    the Earth's surface with respect to a reference spheroid.
-* :class:`HorizontalCoordinate` - Generic XY coordinates for a point on earth
-* :class:`GeographicCoordinate` - The quantities of latitude and longitude which define the position of a point on
-* :class:`Feature` - A general feature upon which an observation can be made.
-* :class:`SamplingFeature` - A feature where sampling is conducted.
-* :class:`SpatialSamplingFeature` - A spatially-explicit feature where sampling is conducted.
-* :class:`MonitoringFeature` - A feature upon which monitoring is made. In practice, most features should be
-    described as MonitorningFeatures.
-* :class:`RelatedSamplingFeature` - A related sampling feature and it's role relative to
-    the sampling feature to which it is related.
-
 """
+from typing import List
+
 from basin3d.plugins import get_datasource_observed_property_variables
 from basin3d.synthesis.models import Base, Person  # pass Person for plugins
 from basin3d.models import FeatureTypes, SpatialSamplingShapes
@@ -35,26 +20,17 @@ class RelatedSamplingFeature(Base):
     the sampling feature to which it is related.
 
     See OGC Observations and Measurements
-
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Attributes:
-        - *related_sample_feature:* string
-        - *related_sampleing_type:* string FeatureTypes
-        - *role:* enum
-            + **PARENT** Parent feature in a nested feature hierarchy.
-
     """
 
+    #: Sampling Feature is a parent
     ROLE_PARENT = "PARENT"
 
     ROLE_TYPES = [ROLE_PARENT]
 
     def __init__(self, datasource, **kwargs):
-        self.related_sampling_feature = None
-        self.related_sampling_feature_type = None
-        self.role = None
+        self._related_sampling_feature = None
+        self._related_sampling_feature_type = None
+        self._role = None
 
         # Initialize after the attributes have been set
         super().__init__(datasource, datasource_ids=['related_sampling_feature'], **kwargs)
@@ -75,22 +51,42 @@ class RelatedSamplingFeature(Base):
         elif self.role not in RelatedSamplingFeature.ROLE_TYPES:
             raise AttributeError("RelatedSamplingFeature role must be one of predefined roles.")
 
+    @property
+    def related_sampling_feature(self) -> 'SamplingFeature':
+        """A sampling feature relation"""
+        return self._related_sampling_feature
+
+    @related_sampling_feature.setter
+    def related_sampling_feature(self, value: 'SamplingFeature'):
+        self._related_sampling_feature = value
+
+    @property
+    def related_sampling_feature_type(self) -> str:
+        """This is a feature type. See :class:`FeatureTypes` for a list of types"""
+        return self._related_sampling_feature_type
+
+    @related_sampling_feature_type.setter
+    def related_sampling_feature_type(self, value: str):
+        self._related_sampling_feature_type = value
+
+    @property
+    def role(self) -> str:
+        """Currently the only Related Sampling Feature role is a :class:`RelatedSamplingFeature.PARENT`"""
+        return self._role
+
+    @role.setter
+    def role(self, value: str):
+        self._role = value
+
 
 class Coordinate(Base):
     """
     Top level coordinate class that holds absolute or representative coordinates
-
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Attributes:
-        - *absolute:* obj AbsoluteCooradinate
-        - *representative:* obj RepresentativeCoordinate
     """
 
     def __init__(self, **kwargs):
-        self.absolute = None
-        self.representative = None
+        self._absolute = None
+        self._representative = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
@@ -114,6 +110,24 @@ class Coordinate(Base):
         #     if self.representative.representative_point is None:
         #         raise AttributeError("Representative_point is required if only representative coordinates are provided.")
 
+    @property
+    def absolute(self) -> 'AbsoluteCoordinate':
+        """The absolute coordinate"""
+        return self._absolute
+
+    @absolute.setter
+    def absolute(self, value: 'AbsoluteCoordinate'):
+        self._absolute = value
+
+    @property
+    def representative(self) -> 'RepresentativeCoordinate':
+        """The representative coordinate"""
+        return self._representative
+
+    @representative.setter
+    def representative(self, value: 'RepresentativeCoordinate'):
+        self._representative = value
+
 
 class AbsoluteCoordinate(Base):
     """
@@ -122,19 +136,11 @@ class AbsoluteCoordinate(Base):
     Planned extension to better check point, curve, surface, solid shape-specific coordinates.
     May want to include a type attribute akin to GeoJSON type
     In future, reconsider the format of attributes to allow for more types of description (meshes, solids, etc)
-
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Attributes:
-        - *horizontal_position:* list of obj GeographicCoordinate
-        - *vertical_extent:* list of obj AltitudeCoordinate
-        - *shape:* enum internally determined by coordinates (determination of solid not yet supported)
     """
 
     def __init__(self, **kwargs):
-        self.horizontal_position = []
-        self.vertical_extent = []
+        self._horizontal_position = []
+        self._vertical_extent = []
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
@@ -163,6 +169,24 @@ class AbsoluteCoordinate(Base):
 
         # ToDo: add validation for shape coordinates.
 
+    @property
+    def horizontal_position(self) -> List['GeographicCoordinate']:
+        """list of obj :class:`GeographicCoordinate`"""
+        return self._horizontal_position
+
+    @horizontal_position.setter
+    def horizontal_position(self, value: List['GeographicCoordinate']):
+        self._horizontal_position = value
+
+    @property
+    def vertical_extent(self) -> List['AltitudeCoordinate']:
+        """list of obj :class:`AltitudeCoordinate`"""
+        return self._vertical_extent
+
+    @vertical_extent.setter
+    def vertical_extent(self, value: List['AltitudeCoordinate']):
+        self._vertical_extent = value
+
 
 class RepresentativeCoordinate(Base):
     """
@@ -170,31 +194,27 @@ class RepresentativeCoordinate(Base):
 
     Extendable to other forms of representing (e.g., diameter, area, side_length)
     Representative point types are also expandable as use cases require.
-
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Attributes:
-        - *representative_point:* obj AbsoluteCoordinate for POINT
-        - *representative_point_type:* enum (CV assumes coordinate is at local surface)
-            + **CENTER LOCAL SURFACE**
-            + **UPPER LEFT CORNER**
-            + **UPPER RIGHT CORNER**
-            + **LOWER LEFT CORNER**
-            + **LOWER RIGHT CORNER**
-        - *vertical_position:* obj DepthCoordinate
     """
 
+    #: Placement of the representative point is the center of a local surface
     REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE = "CENTER LOCAL SURFACE"
+
+    #: Placement of the representative point is the upper left corner (northwest)
     REPRESENTATIVE_POINT_TYPE_UPPER_LEFT_CORNER = "UPPER LEFT CORNER"
+
+    #: Placement of the representative point is the upper right corner (northeast)
     REPRESENTATIVE_POINT_TYPE_UPPER_RIGHT_CORNER = "UPPER RIGHT CORNER"
+
+    #: Placement of the representative point is the lower left corner (southhwest)
     REPRESENTATIVE_POINT_TYPE_LOWER_LEFT_CORNER = "LOWER LEFT CORNER"
+
+    #: Placement of the representative point is the lower right corner (northeast)
     REPRESENTATIVE_POINT_TYPE_LOWER_RIGHT_CORNER = "LOWER RIGHT CORNER"
 
     def __init__(self, **kwargs):
-        self.representative_point = None
-        self.representative_point_type = None
-        self.vertical_position = None
+        self._representative_point = None
+        self._representative_point_type = None
+        self._vertical_position = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
@@ -210,50 +230,135 @@ class RepresentativeCoordinate(Base):
         #     if self.representative_point_type is None:
         #         raise AttributeError("representative_point_type is required if representative_point provided.")
 
+    @property
+    def representative_point(self) -> AbsoluteCoordinate:
+        """obj :class:`AbsoluteCoordinate` for POINT"""
+        return self._representative_point
+
+    @representative_point.setter
+    def representative_point(self, value: AbsoluteCoordinate):
+        self._representative_point = value
+
+    @property
+    def representative_point_type(self) -> str:
+        """The assumption is that the coordinate is at the local surface (CV).
+           Use constants prefixed with `REPRESENTATIVE_POINT_TYPE_` """
+        return self._representative_point_type
+
+    @representative_point_type.setter
+    def representative_point_type(self, value: str):
+        self._representative_point_type = value
+
+    @property
+    def vertical_position(self) -> 'DepthCoordinate':
+        """obj :class:`DepthCoordinate`"""
+        return self._vertical_position
+
+    @vertical_position.setter
+    def vertical_position(self, value: 'DepthCoordinate'):
+        self._vertical_position = value
+
 
 class VerticalCoordinate(Base):
     """
     The reference frame or system from which vertical distances (altitudes or depths) are measured.
 
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Attributes:
-        - *type:* enum
-            + **ALTITUDE** The distance above or below sea level (elevation)
-            + **DEPTH** The distance above (height) or below (depth) of the local surface
-        - *value:* float,
-        - *datum:* string,
-        - *resolution:* float, the minimum distance possible between two adjacent
-                      depth values, expressed in Depth Distance Units of measure
-        - *distance_units:* enum
-            + **meters**
-            + **feet**
-        - *encoding_method:* enum
-            + **EXPLICIT** Explicit coordinate included with horizontal coordinates
-            + **IMPLICIT** Implicit coordinate
-            + **ATTRIBUTE** Attribute values"
     """
+    #: The distance above or below sea level (elevation)
     TYPE_ALTITUDE = "ALTITUDE"
+
+    #: The distance above (height) or below (depth) of the local surface
     TYPE_DEPTH = "DEPTH"
 
+    #: Distance in meters
     DISTANCE_UNITS_METERS = "meters"
+
+    #: Distance in feet
     DISTANCE_UNITS_FEET = "feet"
 
+    #: Explicit coordinate included with horizontal coordinates
     ENCODING_EXPLICIT = "EXPLICIT"
+
+    #: Implicit coordinate
     ENCODING_IMPLICIT = "IMPLICIT"
+
+    #: Attribute values
     ENCODING_ATTRIBUTE = "ATTRIBUTE"
 
     def __init__(self, **kwargs):
-        self.value = None
-        self.resolution = None
-        self.distance_units = None
-        self.encoding_method = None
-        self.datum = None
-        self.type = None
+        self._value = None
+        self._resolution = None
+        self._distance_units = None
+        self._encoding_method = None
+        self._datum = None
+        self._type = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
+
+    @property
+    def type(self) -> str:
+        """This can either be :class:`VerticalCoordinate.TYPE_ALTITUDE` or :class:`VerticalCoordinate.TYPE_DEPTH`"""
+        return self._type
+
+    @type.setter
+    def type(self, value):
+        self._type = value
+
+    @property
+    def datum(self) -> str:
+        """
+        The reference coordinate system. Use constants prefixed with `DATUM_`
+        """
+        return self._datum
+
+    @datum.setter
+    def datum(self, value):
+        self._datum = value
+
+    @property
+    def encoding_method(self) -> str:
+        """The method for encoding the units of measure. Use constants prefixed with `ENCODING_` """
+        return self._distance_units
+
+    @encoding_method.setter
+    def encoding_method(self, value):
+        self._encoding_method = value
+
+    @property
+    def distance_units(self) -> str:
+        """The unit of measuring distance. It uses constants prefixed with `DISTANCE_UNITS_`"""
+        return self._distance_units
+
+    @distance_units.setter
+    def distance_units(self, value):
+        self._distance_units = value
+
+    @property
+    def resolution(self) -> float:
+        """the minimum distance possible between two adjacent
+           depth values, expressed in Depth Distance Units of measure"""
+        return self._resolution
+
+    @resolution.setter
+    def resolution(self, value: float):
+        self._resolution = value
+
+    @property
+    def value(self) -> float:
+        """
+        *The coordinate value
+
+        """
+        return self._value
+
+    @value.setter
+    def value(self, value: float):
+        """
+        The coordinate value
+
+        """
+        self._value = value
 
 
 class AltitudeCoordinate(VerticalCoordinate):
@@ -261,140 +366,165 @@ class AltitudeCoordinate(VerticalCoordinate):
     The reference frame or system from which altitudes (elevations) are measured. The term
     "altitude" is used instead of the common term "elevation" to conform to the terminology
     in Federal Information Processing Standards 70-1 and 173.
-
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Inherited attributes (:class:`VerticalCoordinate`):
-        - *type:* enum (ALTITUDE, DEPTH)
-        - *value:* float,
-        - *datum:* string,
-        - *resolution:* float, the minimum distance possible between two adjacent
-                      depth values, expressed in Depth Distance Units of measure
-        - *distance_units:* enum (meters, feet)
-        - *encoding_method:* enum (EXPLICIT, IMPLICIT, ATTRIBUTE)
-
-    Attributes:
-        - *datum:*
-            + **NGVD29** "National Geodetic Vertical Datum of 1929"
-            + **NAVD88** "North American Vertical Datum of 1988"
     """
+
+    #: National Geodetic Vertical Datum of 1929
     DATUM_NGVD29 = "NGVD29"
+
+    #: North American Vertical Datum of 1988
     DATUM_NAVD88 = "NAVD88"
 
     def __init__(self, **kwargs):
-        self.datum = None
+        self._datum = None
 
         # Initialize after the attributes have been set
         super().__init__(type=self.TYPE_ALTITUDE, **kwargs)
+
+    @property
+    def datum(self) -> str:
+        """
+        The reference coordinate system. Use constants prefixed with `DATUM_`
+        """
+        return self._datum
+
+    @datum.setter
+    def datum(self, value):
+        self._datum=value
 
 
 class DepthCoordinate(VerticalCoordinate):
     """
     The reference frame or system from which depths are measured.
-
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Inherited attributes (:class:`VerticalCoordinate`):
-        - *type:* enum (ALTITUDE, DEPTH)
-        - *value:* float,
-        - *datum:* string,
-        - *resolution:* float, the minimum distance possible between two adjacent
-                      depth values, expressed in Depth Distance Units of measure
-        - *distance_units:* enum (meters, feet)
-        - *encoding_method:* enum (EXPLICIT, IMPLICIT, ATTRIBUTE)
-
-    Attributes:
-        - datum:
-            + **LS** "Local surface"
-            + **MSL** "Mean sea level"
     """
+
+    #: Local surface
     DATUM_LOCAL_SURFACE = "LS"
+
+    #: Mean sea level
     DATUM_MEAN_SEA_LEVEL = "MSL"
 
     def __init__(self, **kwargs):
-        self.datum = None
+        self._datum = None
 
         # Initialize after the attributes have been set
         super().__init__(type=self.TYPE_DEPTH, **kwargs)
 
+    @property
+    def datum(self):
+        """
+        The reference coordinate system. Use constants prefixed with `DATUM_`
+        """
+        return self._datum
+
+    @datum.setter
+    def datum(self, value):
+        self._datum = value
+
 
 class HorizontalCoordinate(Base):
-    """Generic XY coordinates for a point on earth (https://www.fgdc.gov/csdgmgraphical/spref.htm)
+    """Generic XY coordinates for a point on earth (https://www.fgdc.gov/csdgmgraphical/spref.htm)"""
 
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Attributes:
-        - *x:* float
-        - *y:* float
-        - *datum:* enum
-            + **WGS84**
-            + **NAD27**
-            + **NAD83**
-        - *type:* enum
-            + **GEOGRAPHIC**
-            + **PLANAR_GRID**
-            + **PLANAR_LOCAL**
-            + **PLANAR_MAP_PROJECTION**
-            + **LOCAL**
-    """
-
+    #: World Geodetic System 1984 (WGS84)
     DATUM_WGS84 = "WGS84"
+
+    #: North American Datum of 1983 (NAD 83)
     DATUM_NAD83 = "NAD83"
+
+    #: North American Datum 1927 (NAD27)
     DATUM_NAD27 = "NAD27"
 
+    #: the quantities of latitude and longitude which define the position of a
+    #: point on the Earth's surface with respect to a reference spheroid.
     TYPE_GEOGRAPHIC = "GEOGRAPHIC"
+
+    #: a plane-rectangular coordinate system usually based on, and
+    #: mathematically adjusted to, a map projection so that geographic
+    #: positions can be readily transformed to and from plane coordinates.
     TYPE_PLANAR_GRID = "PLANAR_GRID"
+
+    #: any right-handed planar coordinate system of which the z-axis
+    #: coincides with a plumb line through the origin that locally is aligned with the surface of the Earth.
     TYPE_PLANAR_LOCAL = "PLANAR_LOCAL"
+
+    #: the systematic representation of all or part of the surface of the Earth on a plane or developable surface.
     TYPE_PLANAR_MAP_PROJECTION = "PLANAR_MAP_PROJECTION"
+
+    #: a description of any coordinate system that is not aligned with the surface of the Earth.
     TYPE_LOCAL = "LOCAL"
 
     def __init__(self, **kwargs):
-        self.x = None
-        self.y = None
-        self.datum = None
-        self.type = None
+        self._x = None
+        self._y = None
+        self._datum = None
+        self._type = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
+
+    @property
+    def x(self) -> float:
+        """X Coordinate"""
+        return self._x
+
+    @x.setter
+    def x(self, value: float):
+        self._x = value
+
+    @property
+    def y(self) -> float:
+        """Y Coordinate"""
+        return self._y
+
+    @y.setter
+    def y(self, value: float):
+        self._y = value
+
+    @property
+    def datum(self):
+        """
+        The reference coordinate system. Use constants prefixed with `DATUM_`
+        """
+        return self._datum
+
+    @datum.setter
+    def datum(self, value) -> str:
+        self._datum = value
+
+    @property
+    def type(self) -> str:
+        """The type of coordinates.  Use constants prefixed with `TYPE_`"""
+        return self._type
+
+    @type.setter
+    def type(self, value):
+        self._type = value
 
 
 class GeographicCoordinate(HorizontalCoordinate):
     """
     The quantities of latitude and longitude which define the position of a point on
-    the Earth's surface with respect to a reference spheroid. (https://www.fgdc.gov/csdgmgraphical/spref.htm)
-
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Inherited attributes (:class:`HorizontalCoordinate`):
-        - *x:* float
-        - *y:* float
-        - *datum:* enum (WGS84, NAD27, NAD83)
-        - *type:* enum (GEOGRAPHIC, PLANAR_GRID, PLANAR_LOCAL, PLANAR_MAP_PROJECTION, LOCAL)
-
-    Attributes:
-        - *latitude:*
-        - *longitude:*
-        - *units:* units determine the datatypes of latitude and longitude
-            + **DD** "Decimal degrees"
-            + **DM** "Decimal minutes"
-            + **DS** "Decimal seconds"
-            + **DDM** "Degrees and decimal minutes"
-            + **DMDS** "Degrees, minutes, and decimal seconds"
-            + **Radians** "Radians"
-            + **Grads** "Grads"
-
+    the Earth's surface with respect to a reference spheroid. (https://www.fgdc.gov/csdgmgraphical/spref.htm)\
     """
 
+    #: Decimal degrees
     UNITS_DEC_DEGREES = "DD"
+
+    #: Decimal minutes
     UNITS_DEC_MINUTES = "DM"
+
+    #: Decimal seconds
     UNITS_DEC_SECONDS = "DS"
+
+    #: Degrees and decimal minutes
     UNITS_DEGREES_DEC_MINUTES = "DDM"
+
+    #: Degrees, minutes, and decimal second
     UNITS_DEGREES_MIN_DEC_SECS = "DMDS"
+
+    #: Radians
     UNITS_RADIANS = "Radians"
+
+    #: Grads
     UNITS_GRADS = "Grads"
 
     UNITS = {UNITS_DEC_DEGREES: "Decimal degrees",
@@ -416,7 +546,7 @@ class GeographicCoordinate(HorizontalCoordinate):
                         }
 
     def __init__(self, **kwargs):
-        self.units = None
+        self._units = None
 
         if "longitude" in kwargs:
             kwargs["x"] = kwargs["longitude"]
@@ -478,35 +608,36 @@ class GeographicCoordinate(HorizontalCoordinate):
                                                                                                value).__name__))
 
     @property
-    def latitude(self):
+    def latitude(self) -> float:
+        """Alias for Y Coordinate"""
         return self.y
 
     @property
-    def longitude(self):
+    def longitude(self) -> float:
+        """Alias for X Coordinate"""
         return self.x
+
+    @property
+    def units(self) -> str:
+        """units determine the datatypes of latitude and longitude. Use constants prefixed with `UNTIS_`"""
+        return self._units
+
+    @units.setter
+    def units(self, value):
+        self._units = value
 
 
 class Feature(Base):
     """
     A general feature upon which an observation can be made. Loosely after GF_Feature (ISO).
-
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Attributes:
-        - *id:* string
-        - *name:* string
-        - *description:* string
-        - *feature_type:* enum FeatureTypes
-        - *observed_property_variables:* list
     """
 
     def __init__(self, datasource, **kwargs):
-        self.id = None
-        self.name = None
-        self.description = None
-        self.feature_type = None
-        self.observed_property_variables = None
+        self._id = None
+        self._name = None
+        self._description = None
+        self._feature_type = None
+        self._observed_property_variables = None
 
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
@@ -530,29 +661,59 @@ class Feature(Base):
         if self.feature_type is not None and self.feature_type not in FeatureTypes.TYPES.keys():
             raise AttributeError("Feature attr feature_type must be FeatureTypes.")
 
+    @property
+    def id(self) -> str:
+        """Unique identifier for the feature"""
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id = value
+
+    @property
+    def name(self) -> str:
+        """A name for the feature"""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def description(self) -> str:
+        """The feature description"""
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        self._description = value
+
+    @property
+    def feature_type(self) -> str:
+        """The feature type.  For a list of feature types see :class:`basin3d.models.FeatureTypes`."""
+        return self._feature_type
+
+    @feature_type.setter
+    def feature_type(self, value):
+        self._feature_type = value
+
+    @property
+    def observed_property_variables(self) -> List[str]:
+        """List of observed property variables"""
+        return self._observed_property_variables
+
+    @observed_property_variables.setter
+    def observed_property_variables(self, value: List[str]):
+        self._observed_property_variables = value
+
 
 class SamplingFeature(Feature):
     """
     A feature where sampling is conducted. OGC Observation & Measurements SF_SamplingFeature.
-
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Inherited attributes (:class:`Feature):
-        - *id:* string
-        - *name:* string
-        - *description:* string
-        - *feature_type:* enum FeatureTypes
-        - *observed_property_variables:* list
-
-    Attributes:
-        - *related_sampling_feature_complex:* list
-
-    Possible extension: sampled_feature(s)
     """
 
     def __init__(self, datasource, **kwargs):
-        self.related_sampling_feature_complex = []
+        self._related_sampling_feature_complex = []
 
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
@@ -563,32 +724,24 @@ class SamplingFeature(Feature):
         if not isinstance(self.related_sampling_feature_complex, (list, tuple, set)):  # check for better not iterable
             self.related_sampling_feature_complex = [self.related_sampling_feature_complex]
 
+    @property
+    def related_sampling_feature_complex(self) -> List['SamplingFeature']:
+        """List of sampling features"""
+        return self._related_sampling_feature_complex
+
+    @related_sampling_feature_complex.setter
+    def related_sampling_feature_complex(self, value):
+        self._related_sampling_feature_complex = value
+
 
 class SpatialSamplingFeature(SamplingFeature):
     """
     A spatially-defined feature where sampling is conducted. OGC Observation & Measurements SF_SpatialSamplingFeature.
-
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Inherited attributes (:class:`Feature`):
-        - *id:* string
-        - *name:* string
-        - *description:* string
-        - *feature_type:* enum FeatureTypes
-        - *observed_property_variable_complex:* list
-
-    Inherited attributes (:class:`SamplingFeature`):
-        - *related_sampling_feature_complex:* list
-
-    Attributes:
-        - *shape:* string
-        - *coordinates:* Coordinate instance
     """
 
     def __init__(self, datasource, **kwargs):
-        self.shape = None
-        self.coordinates = None
+        self._shape = None
+        self._coordinates = None
 
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
@@ -646,40 +799,62 @@ class SpatialSamplingFeature(SamplingFeature):
                     return
             # ToDo: distinguish solid from curve when altitude is included
 
+    @property
+    def coordinates(self) -> Coordinate:
+        """Instance of :class:`Coordinate`"""
+        return self._coordinates
+
+    @coordinates.setter
+    def coordinates(self, value: Coordinate):
+        self._coordinates = value
+
+    @property
+    def shape(self) -> str:
+        """The shape of the feature. See :class:`basin3d.models.SpatialSamplingShapes`"""
+        return self._shape
+
+    @shape.setter
+    def shape(self, value):
+        self._shape = value
+
 
 class MonitoringFeature(SpatialSamplingFeature):
     """
     A feature upon which monitoring is made. OGC Timeseries Profile OM_MonitoringFeature.
-
-    Inherited attributes (:class:`Base`):
-        - *datasource*: string
-
-    Inherited attributes (:class:`Feature`):
-        - *id:* string
-        - *name:* string
-        - *description:* string
-        - *feature_type:* enum FeatureTypes
-        - *observed_property_variables:* list
-
-    Inherited attributes (:class:`SamplingFeature`):
-        - *related_sampling_feature_complex:* list
-
-    Inherited attributes (:class:`SpatialSamplingFeature`):
-        - *shape:* string
-        - *coordinates:* Coordinate instance
-
-    Attributes:
-        - *description_reference:* string, Extra information about the Monitoring Feature
-        - *related_party:* list of Person, people or organizations responsible for Feature.
-            To be extended in future to full OGC Responsible_Party
-        - *utc_offset:* int
-
     """
 
     def __init__(self, datasource, **kwargs):
-        self.description_reference = None
-        self.related_party = []
-        self.utc_offset = None
+        self._description_reference = None
+        self._related_party = []
+        self._utc_offset = None
 
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
+
+    @property
+    def description_reference(self)  -> str:
+        """Extra information about the Monitoring Feature"""
+        return self._description_reference
+
+    @description_reference.setter
+    def description_reference(self, value):
+        self._description_reference = value
+
+    @property
+    def related_party(self):
+        """list of Person, people or organizations responsible for Feature.
+            To be extended in future to full OGC Responsible_Party"""
+        return self._related_party
+
+    @related_party.setter
+    def related_party(self, value):
+        self._related_party = value
+
+    @property
+    def utc_offset(self) -> int:
+        """Offset in hours referenced to UTC (e.g. +/-9)"""
+        return self._utc_offset
+
+    @utc_offset.setter
+    def utc_offset(self, value):
+        self._utc_offset = value

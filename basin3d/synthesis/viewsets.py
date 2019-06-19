@@ -4,15 +4,10 @@
 
 .. currentmodule:: basin3d.synthesis.viewsets
 
-:synopsis: The BASIN-3D Synthesis Model Viewsets that support the REST api
+:synopsis: The BASIN-3D Synthesis Model Viewsets that support the REST API
 :module author: Val Hendrix <vhendrix@lbl.gov>
 
 View Controllers for BASIN-3D REST api
-
-* :class:`DataSourcePluginViewSet` - Base ViewSet for all synthesized model views.
-* :class:`MeasurementTVPObservationViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.MeasurementTVPObservation` objects
-* :class:`MonitoringFeatureViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.MonitoringFeature` objects
-
 ----------------------------------
 
 """
@@ -97,8 +92,9 @@ class DataSourcePluginViewSet(ViewSet):
     def retrieve(self, request, pk=None):
         """
         Retrieve a single synthesized value
-        :param request:
-        :param pk:
+
+        :param request: The request object
+        :param pk: The primary key
         :return:
         """
 
@@ -192,6 +188,14 @@ class MonitoringFeatureViewSet(DataSourcePluginViewSet):
         return query_params
 
     def extract_type(self, request):
+        """
+        Extract the feature types from the request
+
+        :param request: The Request object
+        :return: Tuple `(feature_type_code, feature_type_name)`. (e.g (0, 'REGION')
+        :rtype: tuple
+
+        """
         k = get_request_feature_type(request)
         if k:
             return k, FeatureTypes.TYPES[k]

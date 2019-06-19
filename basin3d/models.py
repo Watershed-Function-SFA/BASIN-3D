@@ -14,6 +14,9 @@
 
 """
 from __future__ import unicode_literals
+
+from typing import List
+
 from django.db import models
 from django_extensions.db.fields.encrypted import EncryptedTextField
 from importlib import import_module
@@ -26,9 +29,16 @@ class SpatialSamplingShapes(object):
     Controlled CV list as defined by OGC Observation & Measurement GM_Shape.
     """
 
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_SOLID = "SOLID"
+
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_SURFACE = "SURFACE"
+
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_CURVE = "CURVE"
+
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_POINT = "POINT"
 
 
@@ -77,7 +87,7 @@ class FeatureTypes(object):
     }
 
 
-def get_feature_types():
+def get_feature_types() -> List[str]:
     """
     Helper function for FeatureTypes
     :return list of feature_types as strings
