@@ -1,0 +1,17 @@
+<map id="inheritance046bf08be4" name="inheritance046bf08be4">
+<area shape="rect" id="node1" href="#basin3d.synthesis.models.field.AbsoluteCoordinate" target="_top" title="Absolute coordinate class." alt="" coords="137,3,265,18"/>
+<area shape="rect" id="node2" href="#basin3d.synthesis.models.Base" target="_top" title="Base synthesis model class. &#160;All classes that extend this are immutable" alt="" coords="3,104,97,118"/>
+<area shape="rect" id="node4" href="#basin3d.synthesis.models.field.VerticalCoordinate" target="_top" title="The reference frame or system from which vertical distances (altitudes or depths) are measured." alt="" coords="140,32,263,46"/>
+<area shape="rect" id="node5" href="#basin3d.synthesis.models.field.Coordinate" target="_top" title="Top level coordinate class that holds absolute or representative coordinates" alt="" coords="153,61,249,75"/>
+<area shape="rect" id="node7" href="#basin3d.synthesis.models.field.Feature" target="_top" title="A general feature upon which an observation can be made. Loosely after GF_Feature (ISO)." alt="" coords="159,89,244,104"/>
+<area shape="rect" id="node9" href="#basin3d.synthesis.models.field.HorizontalCoordinate" target="_top" title="Generic XY coordinates for a point on earth (https://www.fgdc.gov/csdgmgraphical/spref.htm)" alt="" coords="135,118,267,132"/>
+<area shape="rect" id="node12" href="#basin3d.synthesis.models.field.RelatedSamplingFeature" target="_top" title="Class that represents a related sampling feature and it&#39;s role relative to" alt="" coords="128,147,274,161"/>
+<area shape="rect" id="node13" href="#basin3d.synthesis.models.field.RepresentativeCoordinate" target="_top" title="Representative coordinates" alt="" coords="126,175,276,190"/>
+<area shape="rect" id="node15" title="A person" alt="" coords="151,204,252,218"/>
+<area shape="rect" id="node3" href="#basin3d.synthesis.models.field.AltitudeCoordinate" target="_top" title="The reference frame or system from which altitudes (elevations) are measured. The term" alt="" coords="312,18,435,32"/>
+<area shape="rect" id="node6" href="#basin3d.synthesis.models.field.DepthCoordinate" target="_top" title="The reference frame or system from which depths are measured." alt="" coords="315,46,433,61"/>
+<area shape="rect" id="node14" href="#basin3d.synthesis.models.field.SamplingFeature" target="_top" title="A feature where sampling is conducted. OGC Observation &amp; Measurements SF_SamplingFeature." alt="" coords="315,89,433,104"/>
+<area shape="rect" id="node8" href="#basin3d.synthesis.models.field.GeographicCoordinate" target="_top" title="The quantities of latitude and longitude which define the position of a point on" alt="" coords="305,118,443,132"/>
+<area shape="rect" id="node10" href="#basin3d.synthesis.models.field.MonitoringFeature" target="_top" title="A feature upon which monitoring is made. OGC Timeseries Profile OM_MonitoringFeature." alt="" coords="643,89,765,104"/>
+<area shape="rect" id="node11" href="#basin3d.synthesis.models.field.SpatialSamplingFeature" target="_top" title="A spatially&#45;defined feature where sampling is conducted. OGC Observation &amp; Measurements SF_SpatialSamplingFeature." alt="" coords="471,89,614,104"/>
+</map>
