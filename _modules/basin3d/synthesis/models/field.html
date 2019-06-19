@@ -1,0 +1,943 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>basin3d.synthesis.models.field &#8212; BASIN-3D v2.0.0-rc1-2-g2348a06 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">BASIN-3D v2.0.0-rc1-2-g2348a06</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../basin3d.html" >basin3d</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="../models.html" accesskey="U">basin3d.synthesis.models</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for basin3d.synthesis.models.field</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">`basin3d.synthesis.models.field`</span>
+<span class="sd">********************************</span>
+
+<span class="sd">.. currentmodule:: basin3d.synthesis.models.field</span>
+
+<span class="sd">:synopsis: Classes to represent Multi-scale Spatial Hierarchy for Field Observations</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">basin3d.plugins</span> <span class="k">import</span> <span class="n">get_datasource_observed_property_variables</span>
+<span class="kn">from</span> <span class="nn">basin3d.synthesis.models</span> <span class="k">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">Person</span>  <span class="c1"># pass Person for plugins</span>
+<span class="kn">from</span> <span class="nn">basin3d.models</span> <span class="k">import</span> <span class="n">FeatureTypes</span><span class="p">,</span> <span class="n">SpatialSamplingShapes</span>
+
+
+<div class="viewcode-block" id="RelatedSamplingFeature"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.RelatedSamplingFeature">[docs]</a><span class="k">class</span> <span class="nc">RelatedSamplingFeature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class that represents a related sampling feature and it&#39;s role relative to</span>
+<span class="sd">    the sampling feature to which it is related.</span>
+
+<span class="sd">    See OGC Observations and Measurements</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Sampling Feature is a parent</span>
+    <span class="n">ROLE_PARENT</span> <span class="o">=</span> <span class="s2">&quot;PARENT&quot;</span>
+
+    <span class="n">ROLE_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="n">ROLE_PARENT</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasource</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_related_sampling_feature</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_related_sampling_feature_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_role</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="n">datasource_ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;related_sampling_feature&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__validate__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__validate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate attributes</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ToDo: refactor this to not require type</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_sampling_feature_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">related_sampling_feature_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">FeatureTypes</span><span class="o">.</span><span class="n">TYPES</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;RelatedSamplingFeature related_sampling_feature_type must be FeatureTypes&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;RelatedSamplingFeature role is required.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">RelatedSamplingFeature</span><span class="o">.</span><span class="n">ROLE_TYPES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;RelatedSamplingFeature role must be one of predefined roles.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">related_sampling_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;SamplingFeature&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;A sampling feature relation&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_related_sampling_feature</span>
+
+    <span class="nd">@related_sampling_feature</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">related_sampling_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;SamplingFeature&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_related_sampling_feature</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">related_sampling_feature_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;This is a feature type. See :class:`FeatureTypes` for a list of types&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_related_sampling_feature_type</span>
+
+    <span class="nd">@related_sampling_feature_type</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">related_sampling_feature_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_related_sampling_feature_type</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Currently the only Related Sampling Feature role is a :class:`RelatedSamplingFeature.PARENT`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_role</span>
+
+    <span class="nd">@role</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_role</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="Coordinate"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.Coordinate">[docs]</a><span class="k">class</span> <span class="nc">Coordinate</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Top level coordinate class that holds absolute or representative coordinates</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_absolute</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_representative</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__validate__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__validate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate the attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># enforce absolute is class AbsoluteCoordinate</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">absolute</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">absolute</span><span class="p">,</span> <span class="n">AbsoluteCoordinate</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Coordinate.absolute attribute must be AbsoluteCoordinate object&quot;</span><span class="p">)</span>
+
+        <span class="c1"># enforce representative class is RepresentativeCoordinate</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">representative</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">representative</span><span class="p">,</span> <span class="n">RepresentativeCoordinate</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Coordinate.representative attribute must be RepresentativeCoordinate object&quot;</span><span class="p">)</span>
+
+        <span class="c1"># enforce required coordinates: if only representative, then representative.representative_point is required</span>
+        <span class="c1"># if self.absolute is None:</span>
+        <span class="c1">#     if self.representative.representative_point is None:</span>
+        <span class="c1">#         raise AttributeError(&quot;Representative_point is required if only representative coordinates are provided.&quot;)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">absolute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;AbsoluteCoordinate&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The absolute coordinate&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_absolute</span>
+
+    <span class="nd">@absolute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">absolute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;AbsoluteCoordinate&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_absolute</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">representative</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;RepresentativeCoordinate&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The representative coordinate&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representative</span>
+
+    <span class="nd">@representative</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">representative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;RepresentativeCoordinate&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_representative</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="AbsoluteCoordinate"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.AbsoluteCoordinate">[docs]</a><span class="k">class</span> <span class="nc">AbsoluteCoordinate</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Absolute coordinate class.</span>
+
+<span class="sd">    Planned extension to better check point, curve, surface, solid shape-specific coordinates.</span>
+<span class="sd">    May want to include a type attribute akin to GeoJSON type</span>
+<span class="sd">    In future, reconsider the format of attributes to allow for more types of description (meshes, solids, etc)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_horizontal_position</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vertical_extent</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__validate__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__validate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># require horizontal position and vertical extent to be lists</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">)):</span>  <span class="c1"># check for better not iterable</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_position</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_extent</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vertical_extent</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_extent</span><span class="p">]</span>
+
+        <span class="c1"># ToDo: validate obj types</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">GeographicCoordinate</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Horizontal position must be instance of GeographicCoordinate&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_extent</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertical_extent</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">AltitudeCoordinate</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Vertical extent must be instance of AltitudeCoordinate&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_extent</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Lengths of horizontal positions and vertical extent must be equal.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># ToDo: add validation for shape coordinates.</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">horizontal_position</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;GeographicCoordinate&#39;</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;list of obj :class:`GeographicCoordinate`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_horizontal_position</span>
+
+    <span class="nd">@horizontal_position</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">horizontal_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;GeographicCoordinate&#39;</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_horizontal_position</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vertical_extent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;AltitudeCoordinate&#39;</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;list of obj :class:`AltitudeCoordinate`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertical_extent</span>
+
+    <span class="nd">@vertical_extent</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">vertical_extent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;AltitudeCoordinate&#39;</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vertical_extent</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="RepresentativeCoordinate"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.RepresentativeCoordinate">[docs]</a><span class="k">class</span> <span class="nc">RepresentativeCoordinate</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representative coordinates</span>
+
+<span class="sd">    Extendable to other forms of representing (e.g., diameter, area, side_length)</span>
+<span class="sd">    Representative point types are also expandable as use cases require.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Placement of the representative point is the center of a local surface</span>
+    <span class="n">REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE</span> <span class="o">=</span> <span class="s2">&quot;CENTER LOCAL SURFACE&quot;</span>
+
+    <span class="c1">#: Placement of the representative point is the upper left corner (northwest)</span>
+    <span class="n">REPRESENTATIVE_POINT_TYPE_UPPER_LEFT_CORNER</span> <span class="o">=</span> <span class="s2">&quot;UPPER LEFT CORNER&quot;</span>
+
+    <span class="c1">#: Placement of the representative point is the upper right corner (northeast)</span>
+    <span class="n">REPRESENTATIVE_POINT_TYPE_UPPER_RIGHT_CORNER</span> <span class="o">=</span> <span class="s2">&quot;UPPER RIGHT CORNER&quot;</span>
+
+    <span class="c1">#: Placement of the representative point is the lower left corner (southhwest)</span>
+    <span class="n">REPRESENTATIVE_POINT_TYPE_LOWER_LEFT_CORNER</span> <span class="o">=</span> <span class="s2">&quot;LOWER LEFT CORNER&quot;</span>
+
+    <span class="c1">#: Placement of the representative point is the lower right corner (northeast)</span>
+    <span class="n">REPRESENTATIVE_POINT_TYPE_LOWER_RIGHT_CORNER</span> <span class="o">=</span> <span class="s2">&quot;LOWER RIGHT CORNER&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_representative_point</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_representative_point_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vertical_position</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__validate__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__validate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if representative point, require representative point type</span>
+        <span class="c1"># if self.representative_point is not None:</span>
+        <span class="c1">#     if self.representative_point_type is None:</span>
+        <span class="c1">#         raise AttributeError(&quot;representative_point_type is required if representative_point provided.&quot;)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">representative_point</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbsoluteCoordinate</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;obj :class:`AbsoluteCoordinate` for POINT&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representative_point</span>
+
+    <span class="nd">@representative_point</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">representative_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">AbsoluteCoordinate</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_representative_point</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">representative_point_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The assumption is that the coordinate is at the local surface (CV).</span>
+<span class="sd">           Use constants prefixed with `REPRESENTATIVE_POINT_TYPE_` &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representative_point_type</span>
+
+    <span class="nd">@representative_point_type</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">representative_point_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_representative_point_type</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vertical_position</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DepthCoordinate&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;obj :class:`DepthCoordinate`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertical_position</span>
+
+    <span class="nd">@vertical_position</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">vertical_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;DepthCoordinate&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vertical_position</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="VerticalCoordinate"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.VerticalCoordinate">[docs]</a><span class="k">class</span> <span class="nc">VerticalCoordinate</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The reference frame or system from which vertical distances (altitudes or depths) are measured.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#: The distance above or below sea level (elevation)</span>
+    <span class="n">TYPE_ALTITUDE</span> <span class="o">=</span> <span class="s2">&quot;ALTITUDE&quot;</span>
+
+    <span class="c1">#: The distance above (height) or below (depth) of the local surface</span>
+    <span class="n">TYPE_DEPTH</span> <span class="o">=</span> <span class="s2">&quot;DEPTH&quot;</span>
+
+    <span class="c1">#: Distance in meters</span>
+    <span class="n">DISTANCE_UNITS_METERS</span> <span class="o">=</span> <span class="s2">&quot;meters&quot;</span>
+
+    <span class="c1">#: Distance in feet</span>
+    <span class="n">DISTANCE_UNITS_FEET</span> <span class="o">=</span> <span class="s2">&quot;feet&quot;</span>
+
+    <span class="c1">#: Explicit coordinate included with horizontal coordinates</span>
+    <span class="n">ENCODING_EXPLICIT</span> <span class="o">=</span> <span class="s2">&quot;EXPLICIT&quot;</span>
+
+    <span class="c1">#: Implicit coordinate</span>
+    <span class="n">ENCODING_IMPLICIT</span> <span class="o">=</span> <span class="s2">&quot;IMPLICIT&quot;</span>
+
+    <span class="c1">#: Attribute values</span>
+    <span class="n">ENCODING_ATTRIBUTE</span> <span class="o">=</span> <span class="s2">&quot;ATTRIBUTE&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_distance_units</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_encoding_method</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;This can either be :class:`VerticalCoordinate.TYPE_ALTITUDE` or :class:`VerticalCoordinate.TYPE_DEPTH`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span>
+
+    <span class="nd">@type</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">datum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The reference coordinate system. Use constants prefixed with `DATUM_`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span>
+
+    <span class="nd">@datum</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">datum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">encoding_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The method for encoding the units of measure. Use constants prefixed with `ENCODING_` &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_units</span>
+
+    <span class="nd">@encoding_method</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">encoding_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_encoding_method</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">distance_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The unit of measuring distance. It uses constants prefixed with `DISTANCE_UNITS_`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_units</span>
+
+    <span class="nd">@distance_units</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">distance_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_distance_units</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;the minimum distance possible between two adjacent</span>
+<span class="sd">           depth values, expressed in Depth Distance Units of measure&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span>
+
+    <span class="nd">@resolution</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        *The coordinate value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
+
+    <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The coordinate value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="AltitudeCoordinate"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.AltitudeCoordinate">[docs]</a><span class="k">class</span> <span class="nc">AltitudeCoordinate</span><span class="p">(</span><span class="n">VerticalCoordinate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The reference frame or system from which altitudes (elevations) are measured. The term</span>
+<span class="sd">    &quot;altitude&quot; is used instead of the common term &quot;elevation&quot; to conform to the terminology</span>
+<span class="sd">    in Federal Information Processing Standards 70-1 and 173.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: National Geodetic Vertical Datum of 1929</span>
+    <span class="n">DATUM_NGVD29</span> <span class="o">=</span> <span class="s2">&quot;NGVD29&quot;</span>
+
+    <span class="c1">#: North American Vertical Datum of 1988</span>
+    <span class="n">DATUM_NAVD88</span> <span class="o">=</span> <span class="s2">&quot;NAVD88&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TYPE_ALTITUDE</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">datum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The reference coordinate system. Use constants prefixed with `DATUM_`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span>
+
+    <span class="nd">@datum</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">datum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span><span class="o">=</span><span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="DepthCoordinate"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.DepthCoordinate">[docs]</a><span class="k">class</span> <span class="nc">DepthCoordinate</span><span class="p">(</span><span class="n">VerticalCoordinate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The reference frame or system from which depths are measured.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Local surface</span>
+    <span class="n">DATUM_LOCAL_SURFACE</span> <span class="o">=</span> <span class="s2">&quot;LS&quot;</span>
+
+    <span class="c1">#: Mean sea level</span>
+    <span class="n">DATUM_MEAN_SEA_LEVEL</span> <span class="o">=</span> <span class="s2">&quot;MSL&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TYPE_DEPTH</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">datum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The reference coordinate system. Use constants prefixed with `DATUM_`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span>
+
+    <span class="nd">@datum</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">datum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="HorizontalCoordinate"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.HorizontalCoordinate">[docs]</a><span class="k">class</span> <span class="nc">HorizontalCoordinate</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generic XY coordinates for a point on earth (https://www.fgdc.gov/csdgmgraphical/spref.htm)&quot;&quot;&quot;</span>
+
+    <span class="c1">#: World Geodetic System 1984 (WGS84)</span>
+    <span class="n">DATUM_WGS84</span> <span class="o">=</span> <span class="s2">&quot;WGS84&quot;</span>
+
+    <span class="c1">#: North American Datum of 1983 (NAD 83)</span>
+    <span class="n">DATUM_NAD83</span> <span class="o">=</span> <span class="s2">&quot;NAD83&quot;</span>
+
+    <span class="c1">#: North American Datum 1927 (NAD27)</span>
+    <span class="n">DATUM_NAD27</span> <span class="o">=</span> <span class="s2">&quot;NAD27&quot;</span>
+
+    <span class="c1">#: the quantities of latitude and longitude which define the position of a</span>
+    <span class="c1">#: point on the Earth&#39;s surface with respect to a reference spheroid.</span>
+    <span class="n">TYPE_GEOGRAPHIC</span> <span class="o">=</span> <span class="s2">&quot;GEOGRAPHIC&quot;</span>
+
+    <span class="c1">#: a plane-rectangular coordinate system usually based on, and</span>
+    <span class="c1">#: mathematically adjusted to, a map projection so that geographic</span>
+    <span class="c1">#: positions can be readily transformed to and from plane coordinates.</span>
+    <span class="n">TYPE_PLANAR_GRID</span> <span class="o">=</span> <span class="s2">&quot;PLANAR_GRID&quot;</span>
+
+    <span class="c1">#: any right-handed planar coordinate system of which the z-axis</span>
+    <span class="c1">#: coincides with a plumb line through the origin that locally is aligned with the surface of the Earth.</span>
+    <span class="n">TYPE_PLANAR_LOCAL</span> <span class="o">=</span> <span class="s2">&quot;PLANAR_LOCAL&quot;</span>
+
+    <span class="c1">#: the systematic representation of all or part of the surface of the Earth on a plane or developable surface.</span>
+    <span class="n">TYPE_PLANAR_MAP_PROJECTION</span> <span class="o">=</span> <span class="s2">&quot;PLANAR_MAP_PROJECTION&quot;</span>
+
+    <span class="c1">#: a description of any coordinate system that is not aligned with the surface of the Earth.</span>
+    <span class="n">TYPE_LOCAL</span> <span class="o">=</span> <span class="s2">&quot;LOCAL&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;X Coordinate&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span>
+
+    <span class="nd">@x</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Y Coordinate&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span>
+
+    <span class="nd">@y</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">datum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The reference coordinate system. Use constants prefixed with `DATUM_`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span>
+
+    <span class="nd">@datum</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">datum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datum</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The type of coordinates.  Use constants prefixed with `TYPE_`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
+
+    <span class="nd">@type</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="GeographicCoordinate"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.GeographicCoordinate">[docs]</a><span class="k">class</span> <span class="nc">GeographicCoordinate</span><span class="p">(</span><span class="n">HorizontalCoordinate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The quantities of latitude and longitude which define the position of a point on</span>
+<span class="sd">    the Earth&#39;s surface with respect to a reference spheroid. (https://www.fgdc.gov/csdgmgraphical/spref.htm)\</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Decimal degrees</span>
+    <span class="n">UNITS_DEC_DEGREES</span> <span class="o">=</span> <span class="s2">&quot;DD&quot;</span>
+
+    <span class="c1">#: Decimal minutes</span>
+    <span class="n">UNITS_DEC_MINUTES</span> <span class="o">=</span> <span class="s2">&quot;DM&quot;</span>
+
+    <span class="c1">#: Decimal seconds</span>
+    <span class="n">UNITS_DEC_SECONDS</span> <span class="o">=</span> <span class="s2">&quot;DS&quot;</span>
+
+    <span class="c1">#: Degrees and decimal minutes</span>
+    <span class="n">UNITS_DEGREES_DEC_MINUTES</span> <span class="o">=</span> <span class="s2">&quot;DDM&quot;</span>
+
+    <span class="c1">#: Degrees, minutes, and decimal second</span>
+    <span class="n">UNITS_DEGREES_MIN_DEC_SECS</span> <span class="o">=</span> <span class="s2">&quot;DMDS&quot;</span>
+
+    <span class="c1">#: Radians</span>
+    <span class="n">UNITS_RADIANS</span> <span class="o">=</span> <span class="s2">&quot;Radians&quot;</span>
+
+    <span class="c1">#: Grads</span>
+    <span class="n">UNITS_GRADS</span> <span class="o">=</span> <span class="s2">&quot;Grads&quot;</span>
+
+    <span class="n">UNITS</span> <span class="o">=</span> <span class="p">{</span><span class="n">UNITS_DEC_DEGREES</span><span class="p">:</span> <span class="s2">&quot;Decimal degrees&quot;</span><span class="p">,</span>
+             <span class="n">UNITS_DEC_MINUTES</span><span class="p">:</span> <span class="s2">&quot;Decimal minutes&quot;</span><span class="p">,</span>
+             <span class="n">UNITS_DEC_SECONDS</span><span class="p">:</span> <span class="s2">&quot;Decimal seconds&quot;</span><span class="p">,</span>
+             <span class="n">UNITS_DEGREES_DEC_MINUTES</span><span class="p">:</span> <span class="s2">&quot;Degrees and decimal minutes&quot;</span><span class="p">,</span>
+             <span class="n">UNITS_DEGREES_MIN_DEC_SECS</span><span class="p">:</span> <span class="s2">&quot;Degrees, minutes, and decimal seconds&quot;</span><span class="p">,</span>
+             <span class="n">UNITS_RADIANS</span><span class="p">:</span> <span class="n">UNITS_RADIANS</span><span class="p">,</span>
+             <span class="n">UNITS_GRADS</span><span class="p">:</span> <span class="n">UNITS_GRADS</span>
+             <span class="p">}</span>
+
+    <span class="n">UNITS_DATA_TYPES</span> <span class="o">=</span> <span class="p">{</span><span class="n">UNITS_DEC_DEGREES</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                        <span class="n">UNITS_DEC_MINUTES</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                        <span class="n">UNITS_DEC_SECONDS</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                        <span class="n">UNITS_DEGREES_DEC_MINUTES</span><span class="p">:</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                        <span class="n">UNITS_DEGREES_MIN_DEC_SECS</span><span class="p">:</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+                        <span class="n">UNITS_RADIANS</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                        <span class="n">UNITS_GRADS</span><span class="p">:</span> <span class="nb">float</span>
+                        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="s2">&quot;longitude&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;longitude&quot;</span><span class="p">]</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;longitude&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;latitude&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;latitude&quot;</span><span class="p">]</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;latitude&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TYPE_GEOGRAPHIC</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__validate__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__validate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate the attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Validate that the units are valid</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">UNITS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is not a valid unit. Must be in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
+                                                                                <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                                                                                    <span class="bp">self</span><span class="o">.</span><span class="n">UNITS</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+        <span class="c1"># Validate that the unit values for x and y are the correct type</span>
+        <span class="n">units_data_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">UNITS_DATA_TYPES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">}:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="ow">and</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">units_data_type</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">units_data_type</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Value </span><span class="si">{}</span><span class="s2"> for </span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">  must be type </span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span>
+                                                                                         <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                                                                         <span class="n">attribute</span><span class="p">,</span>
+                                                                                         <span class="nb">type</span><span class="p">(</span>
+                                                                                             <span class="n">units_data_type</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                                                                         <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                                                                                                      <span class="n">x</span><span class="o">.</span><span class="vm">__name__</span>
+                                                                                                      <span class="k">for</span>
+                                                                                                      <span class="n">x</span>
+                                                                                                      <span class="ow">in</span>
+                                                                                                      <span class="n">units_data_type</span><span class="p">])))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">units_data_type</span><span class="p">[</span><span class="n">idx</span><span class="p">]):</span>
+                                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Value </span><span class="si">{}</span><span class="s2"> for </span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">  must be type </span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                    <span class="n">value</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                    <span class="n">attribute</span><span class="p">,</span>
+                                    <span class="nb">type</span><span class="p">(</span><span class="n">units_data_type</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                    <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">units_data_type</span><span class="p">])))</span>
+
+                <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">units_data_type</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Value </span><span class="si">{}</span><span class="s2"> for </span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2"> must be type &#39;</span><span class="si">{}</span><span class="s2">&#39; not &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span>
+                                                                                           <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                                                                           <span class="n">attribute</span><span class="p">,</span>
+                                                                                           <span class="n">units_data_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                                                                           <span class="nb">type</span><span class="p">(</span>
+                                                                                               <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">latitude</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Alias for Y Coordinate&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">longitude</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Alias for X Coordinate&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;units determine the datatypes of latitude and longitude. Use constants prefixed with `UNTIS_`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
+
+    <span class="nd">@units</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="Feature"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.Feature">[docs]</a><span class="k">class</span> <span class="nc">Feature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A general feature upon which an observation can be made. Loosely after GF_Feature (ISO).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasource</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_observed_property_variables</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_property_variables</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observed_property_variables</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">enumerate</span><span class="p">)):</span>
+            <span class="c1"># synthesize measurement variables</span>
+            <span class="n">synth_params</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">synth_param</span> <span class="ow">in</span> <span class="n">get_datasource_observed_property_variables</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_property_variables</span><span class="p">):</span>
+                <span class="n">synth_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">synth_param</span><span class="o">.</span><span class="n">observed_property_variable_id</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">observed_property_variables</span> <span class="o">=</span> <span class="n">synth_params</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_property_variables</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">observed_property_variables</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">observed_property_variables</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__validate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">FeatureTypes</span><span class="o">.</span><span class="n">TYPES</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Feature attr feature_type must be FeatureTypes.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Unique identifier for the feature&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
+
+    <span class="nd">@id</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;A name for the feature&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@name</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The feature description&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span>
+
+    <span class="nd">@description</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">feature_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The feature type.  For a list of feature types see :class:`basin3d.models.FeatureTypes`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span>
+
+    <span class="nd">@feature_type</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">feature_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_type</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">observed_property_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;List of observed property variables&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed_property_variables</span>
+
+    <span class="nd">@observed_property_variables</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">observed_property_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_observed_property_variables</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="SamplingFeature"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.SamplingFeature">[docs]</a><span class="k">class</span> <span class="nc">SamplingFeature</span><span class="p">(</span><span class="n">Feature</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A feature where sampling is conducted. OGC Observation &amp; Measurements SF_SamplingFeature.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasource</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_related_sampling_feature_complex</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__validate__</span><span class="p">()</span>
+
+    <span class="c1"># ToDo: validate items in lists</span>
+    <span class="k">def</span> <span class="nf">__validate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">related_sampling_feature_complex</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">)):</span>  <span class="c1"># check for better not iterable</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">related_sampling_feature_complex</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">related_sampling_feature_complex</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">related_sampling_feature_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;SamplingFeature&#39;</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;List of sampling features&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_related_sampling_feature_complex</span>
+
+    <span class="nd">@related_sampling_feature_complex</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">related_sampling_feature_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_related_sampling_feature_complex</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="SpatialSamplingFeature"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.SpatialSamplingFeature">[docs]</a><span class="k">class</span> <span class="nc">SpatialSamplingFeature</span><span class="p">(</span><span class="n">SamplingFeature</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A spatially-defined feature where sampling is conducted. OGC Observation &amp; Measurements SF_SpatialSamplingFeature.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasource</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__validate__</span><span class="p">()</span>
+
+        <span class="c1"># Set the shape dependent on feature_type</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">FeatureTypes</span><span class="o">.</span><span class="n">SHAPE_TYPES</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_type</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="k">def</span> <span class="nf">__validate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Require that feature_type is set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Feature attr feature_type must be indicated&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">Coordinate</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;coordinates must be Coordinate instance.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify_coordinates_match_shape</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_verify_coordinates_match_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Consider: invert logic in so that the coordinates specify the shape.</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Absolute coordinates do not match specified shape </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_POINT</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">error_msg</span> <span class="o">+</span> <span class="s2">&quot;Shape </span><span class="si">{}</span><span class="s2"> must have only one point.&quot;</span>
+                                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_POINT</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_SURFACE</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> \
+                        <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">!=</span> \
+                        <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="ow">or</span> \
+                        <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="o">!=</span> \
+                        <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">error_msg</span> <span class="o">+</span> <span class="s2">&quot;Shape </span><span class="si">{}</span><span class="s2"> must have more than one point. &quot;</span>
+                                                     <span class="s2">&quot;The first and last points in the list must &quot;</span>
+                                                     <span class="s2">&quot;be the same point.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_SURFACE</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_CURVE</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> \
+                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> \
+                         <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="ow">and</span> \
+                         <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="o">==</span> \
+                         <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">absolute</span><span class="o">.</span><span class="n">horizontal_position</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">error_msg</span> <span class="o">+</span> <span class="s2">&quot;Shape </span><span class="si">{}</span><span class="s2"> must have more than one point. &quot;</span>
+                                                     <span class="s2">&quot;The first and last points in the list must &quot;</span>
+                                                     <span class="s2">&quot;NOT be the same point.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_CURVE</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span>
+            <span class="c1"># ToDo: distinguish solid from curve when altitude is included</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Coordinate</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Instance of :class:`Coordinate`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span>
+
+    <span class="nd">@coordinates</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Coordinate</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The shape of the feature. See :class:`basin3d.models.SpatialSamplingShapes`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span>
+
+    <span class="nd">@shape</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="MonitoringFeature"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.field.MonitoringFeature">[docs]</a><span class="k">class</span> <span class="nc">MonitoringFeature</span><span class="p">(</span><span class="n">SpatialSamplingFeature</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A feature upon which monitoring is made. OGC Timeseries Profile OM_MonitoringFeature.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasource</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_description_reference</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_related_party</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_utc_offset</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize after the attributes have been set</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Extra information about the Monitoring Feature&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description_reference</span>
+
+    <span class="nd">@description_reference</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">description_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_description_reference</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">related_party</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;list of Person, people or organizations responsible for Feature.</span>
+<span class="sd">            To be extended in future to full OGC Responsible_Party&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_related_party</span>
+
+    <span class="nd">@related_party</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">related_party</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_related_party</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">utc_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Offset in hours referenced to UTC (e.g. +/-9)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utc_offset</span>
+
+    <span class="nd">@utc_offset</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">utc_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_utc_offset</span> <span class="o">=</span> <span class="n">value</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">BASIN-3D v2.0.0-rc1-2-g2348a06</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../basin3d.html" >basin3d</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="../models.html" >basin3d.synthesis.models</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
+(subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+    </div>
+  </body>
+</html>

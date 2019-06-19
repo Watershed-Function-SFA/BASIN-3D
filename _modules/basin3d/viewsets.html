@@ -1,0 +1,329 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>basin3d.viewsets &#8212; BASIN-3D v2.0.0-rc1-2-g2348a06 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-2-g2348a06</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../basin3d.html" accesskey="U">basin3d</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for basin3d.viewsets</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">`basin3d.viewsets`</span>
+<span class="sd">******************</span>
+
+<span class="sd">.. currentmodule:: basin3d.viewsets</span>
+
+<span class="sd">:platform: Unix, Mac</span>
+<span class="sd">:synopsis: BASIN-3D ViewSets</span>
+<span class="sd">:module author: Val Hendrix &lt;vhendrix@lbl.gov&gt;</span>
+
+<span class="sd">.. contents:: Contents</span>
+<span class="sd">    :local:</span>
+<span class="sd">    :backlinks: top</span>
+
+<span class="sd">* :class:`DirectAPIViewSet` - supports REST ` `GET`` methods that list the direct datasource APIs</span>
+<span class="sd">* :class:`DataSourceViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.DataSource` objects</span>
+<span class="sd">* :class:`ObservedPropertyVariableViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.models.ObservedPropertyVariable` objects</span>
+<span class="sd">* :class:`ObservedPropertyViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.models.ObservedProperty` objects</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">basin3d</span> <span class="k">import</span> <span class="n">get_url</span>
+<span class="kn">from</span> <span class="nn">basin3d.models</span> <span class="k">import</span> <span class="n">DataSource</span><span class="p">,</span> <span class="n">ObservedProperty</span><span class="p">,</span> <span class="n">ObservedPropertyVariable</span><span class="p">,</span> \
+    <span class="n">DataSourceObservedPropertyVariable</span>
+
+<span class="kn">from</span> <span class="nn">basin3d.serializers</span> <span class="k">import</span> <span class="n">DataSourceSerializer</span><span class="p">,</span> \
+    <span class="n">ObservedPropertySerializer</span><span class="p">,</span> <span class="n">ObservedPropertyVariableSerializer</span>
+<span class="kn">import</span> <span class="nn">django_filters</span>
+<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="k">import</span> <span class="n">status</span>
+<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="k">import</span> <span class="n">viewsets</span>
+<span class="kn">from</span> <span class="nn">rest_framework.decorators</span> <span class="k">import</span> <span class="n">detail_route</span>
+<span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="k">import</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">rest_framework.reverse</span> <span class="k">import</span> <span class="n">reverse</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DirectAPIViewSet"><a class="viewcode-back" href="../../framework.html#basin3d.viewsets.DirectAPIViewSet">[docs]</a><span class="k">class</span> <span class="nc">DirectAPIViewSet</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">GenericViewSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Direct Access to data source APIs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">DataSource</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">DataSourceSerializer</span>
+    <span class="n">lookup_field</span> <span class="o">=</span> <span class="s1">&#39;id_prefix&#39;</span>
+
+<div class="viewcode-block" id="DirectAPIViewSet.list"><a class="viewcode-back" href="../../framework.html#basin3d.viewsets.DirectAPIViewSet.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build the list of Direct APIs that can be accessed</span>
+
+<span class="sd">        :param request:</span>
+<span class="sd">        :param args:</span>
+<span class="sd">        :param kwargs:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">direct_apis</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">datasource</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">queryset</span><span class="p">:</span>
+
+            <span class="n">direct_apis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span><span class="n">datasource</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">build_absolute_uri</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;direct-path-detail&#39;</span><span class="p">,</span>
+                                                                     <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+                                                                         <span class="s2">&quot;id_prefix&quot;</span><span class="p">:</span> <span class="n">datasource</span><span class="o">.</span><span class="n">id_prefix</span><span class="p">,</span>
+                                                                         <span class="s2">&quot;direct_path&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}))})</span>
+
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">direct_apis</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DirectAPIViewSet.retrieve"><a class="viewcode-back" href="../../framework.html#basin3d.viewsets.DirectAPIViewSet.retrieve">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; direct call to API&quot;&quot;&quot;</span>
+
+        <span class="n">datasource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">datasource</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+            <span class="n">direct_path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;direct_path&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">direct_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;direct_path&quot;</span><span class="p">]</span>
+
+            <span class="n">plugin</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">()</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">direct</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">direct_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+                        <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+                            <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">datasource</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+                                                                     <span class="n">request</span><span class="o">.</span><span class="n">build_absolute_uri</span><span class="p">(</span>
+                                                                         <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;direct-path-detail&#39;</span><span class="p">,</span>
+                                                                                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+                                                                                     <span class="s2">&quot;id_prefix&quot;</span><span class="p">:</span> <span class="n">datasource</span><span class="o">.</span><span class="n">id_prefix</span><span class="p">,</span>
+                                                                                     <span class="s2">&quot;direct_path&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">})))),</span>
+                        <span class="n">status</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">response</span>
+
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DataSourceViewSet"><a class="viewcode-back" href="../../framework.html#basin3d.viewsets.DataSourceViewSet">[docs]</a><span class="k">class</span> <span class="nc">DataSourceViewSet</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ReadOnlyModelViewSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of all Data Sources available to the BASIN-3D service</span>
+
+<span class="sd">        ** Properties **</span>
+
+<span class="sd">        * *name:* string, Unique name for the Data Source</span>
+<span class="sd">        * *id_prefix:* string, unique id prefix for all Data Source ids</span>
+<span class="sd">        * *location:* string, Location of the Data Source</span>
+<span class="sd">        * *url:* url, Endpoint for Data Source</span>
+<span class="sd">        * *direct_path:* url, A direct call to the data source itself</span>
+<span class="sd">        * *observed_property_variables:* url, Observed property variables for Data Source</span>
+<span class="sd">        * *check:* url, Validate the Data Source connection</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">DataSource</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">DataSourceSerializer</span>
+
+<div class="viewcode-block" id="DataSourceViewSet.check"><a class="viewcode-back" href="../../framework.html#basin3d.viewsets.DataSourceViewSet.check">[docs]</a>    <span class="nd">@detail_route</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine if Datasource is available</span>
+<span class="sd">        :param request:</span>
+<span class="sd">        :param pk:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">datasource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">datasource</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+            <span class="n">plugin</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(),</span> <span class="s2">&quot;connection_class&quot;</span><span class="p">):</span>
+                <span class="n">http_auth</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_meta</span><span class="p">()</span><span class="o">.</span><span class="n">connection_class</span><span class="p">(</span><span class="n">datasource</span><span class="p">)</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">http_auth</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Login to </span><span class="si">{}</span><span class="s2"> data source was successful&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datasource</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                                       <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                                 <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="s2">&quot;success&quot;</span><span class="p">:</span><span class="kc">False</span><span class="p">},</span>
+                                            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">)</span>
+
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="n">http_auth</span><span class="o">.</span><span class="n">logout</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">response</span> <span class="o">=</span> <span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datasource</span><span class="o">.</span><span class="n">location</span><span class="p">))</span>
+
+                    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+                            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Response from </span><span class="si">{}</span><span class="s2"> data source was successful&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datasource</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                                  <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+                            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Response from </span><span class="si">{}</span><span class="s2"> data source returns HTTP status </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datasource</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                                                                                          <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">),</span>
+                                  <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">)</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="s2">&quot;success&quot;</span><span class="p">:</span><span class="kc">False</span><span class="p">},</span>
+                                            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataSourceViewSet.observed_property_variables"><a class="viewcode-back" href="../../framework.html#basin3d.viewsets.DataSourceViewSet.observed_property_variables">[docs]</a>    <span class="nd">@detail_route</span><span class="p">()</span>  <span class="c1"># Custom Route for an association</span>
+    <span class="k">def</span> <span class="nf">observed_property_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the DataSource Parameters for a broker parameter.</span>
+
+<span class="sd">        Maps to  /datasources/{pk}/observedpropertyvariables/</span>
+
+<span class="sd">        :param request:</span>
+<span class="sd">        :param pk:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">DataSourceObservedPropertyVariable</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">datasource</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dsmv</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dsmv</span><span class="o">.</span><span class="n">observed_property_variable</span><span class="p">)</span>
+
+        <span class="c1"># `HyperlinkedRelatedField` requires the request in the</span>
+        <span class="c1"># serializer context. Add `context={&#39;request&#39;: request}`</span>
+        <span class="c1"># when instantiating the serializer.</span>
+
+        <span class="c1"># Then just serialize and return it!</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">ObservedPropertyVariableSerializer</span><span class="p">(</span>
+            <span class="n">v</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;request&#39;</span><span class="p">:</span> <span class="n">request</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ObservedPropertyVariableViewSet"><a class="viewcode-back" href="../../framework.html#basin3d.viewsets.ObservedPropertyVariableViewSet">[docs]</a><span class="k">class</span> <span class="nc">ObservedPropertyVariableViewSet</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ReadOnlyModelViewSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of available Observed Property Variables. A observed property variable defines what is</span>
+<span class="sd">        being measured. See http://vocabulary.odm2.org/variablename/ for controlled vocabulary.</span>
+
+<span class="sd">        **Properties**</span>
+
+<span class="sd">        * *id:* string, Unique observed property variable identifier</span>
+<span class="sd">        * *full_name:* string, Descriptive name</span>
+<span class="sd">        * *categories:* list of strings, Categories of which the variable is a member, listed in hierarchical order</span>
+<span class="sd">        * *datasources:* url, Retrieves the datasources that define the current variable</span>
+<span class="sd">        * *url:* url, Endpoint for the observed property variable</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">ObservedPropertyVariable</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">ObservedPropertyVariableSerializer</span>
+    <span class="n">filter_backends</span> <span class="o">=</span> <span class="p">(</span><span class="n">django_filters</span><span class="o">.</span><span class="n">rest_framework</span><span class="o">.</span><span class="n">DjangoFilterBackend</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="ObservedPropertyVariableViewSet.datasources"><a class="viewcode-back" href="../../framework.html#basin3d.viewsets.ObservedPropertyVariableViewSet.datasources">[docs]</a>    <span class="nd">@detail_route</span><span class="p">()</span>  <span class="c1"># Custom Route for an association</span>
+    <span class="k">def</span> <span class="nf">datasources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the DataSource Parameters for a broker parameter.</span>
+
+<span class="sd">        Maps to  /observed_property_variables/{pk}/datasources/</span>
+
+<span class="sd">        :param request:</span>
+<span class="sd">        :param pk: observed_property_variables primary key</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">DataSourceObservedPropertyVariable</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">observed_property_variable</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dsmv</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dsmv</span><span class="o">.</span><span class="n">datasource</span><span class="p">)</span>
+
+        <span class="c1"># `HyperlinkedRelatedField` requires the request in the</span>
+        <span class="c1"># serializer context. Add `context={&#39;request&#39;: request}`</span>
+        <span class="c1"># when instantiating the serializer.</span>
+
+        <span class="c1"># Then just serialize and return it!</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">DataSourceSerializer</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                          <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;request&#39;</span><span class="p">:</span> <span class="n">request</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ObservedPropertyViewSet"><a class="viewcode-back" href="../../framework.html#basin3d.viewsets.ObservedPropertyViewSet">[docs]</a><span class="k">class</span> <span class="nc">ObservedPropertyViewSet</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ReadOnlyModelViewSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of available Observation Properties</span>
+
+<span class="sd">        **Properties**</span>
+
+<span class="sd">        * *observed_property_variable:* string, observed property variable assigned to the observed property</span>
+<span class="sd">        * *datasource:* string, data source defining the observed property</span>
+<span class="sd">        * *sampling_medium:* enum, medium in which the observed property is observed</span>
+<span class="sd">            (WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE)</span>
+<span class="sd">        * *description:* string, additional information about the observed property</span>
+<span class="sd">        * *url:* url, endpoint for observed property</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">ObservedProperty</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">ObservedPropertySerializer</span>
+    <span class="n">filter_backends</span> <span class="o">=</span> <span class="p">(</span><span class="n">django_filters</span><span class="o">.</span><span class="n">rest_framework</span><span class="o">.</span><span class="n">DjangoFilterBackend</span><span class="p">,)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-2-g2348a06</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../basin3d.html" >basin3d</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
+(subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+    </div>
+  </body>
+</html>

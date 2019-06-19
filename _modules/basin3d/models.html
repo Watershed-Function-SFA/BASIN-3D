@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>basin3d.models &#8212; BASIN-3D v2.0.0-rc1-2-g2348a06 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-2-g2348a06</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../basin3d.html" accesskey="U">basin3d</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for basin3d.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">`basin3d.models`</span>
+<span class="sd">****************</span>
+
+<span class="sd">.. currentmodule:: basin3d.models</span>
+
+<span class="sd">:synopsis: The BASIN-3D  Models</span>
+<span class="sd">:module author: Val Hendrix &lt;vhendrix@lbl.gov&gt;</span>
+
+<span class="sd">.. contents:: Contents</span>
+<span class="sd">    :local:</span>
+<span class="sd">    :backlinks: top</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django_extensions.db.fields.encrypted</span> <span class="k">import</span> <span class="n">EncryptedTextField</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
+
+
+<div class="viewcode-block" id="SpatialSamplingShapes"><a class="viewcode-back" href="../../framework.html#basin3d.models.SpatialSamplingShapes">[docs]</a><span class="k">class</span> <span class="nc">SpatialSamplingShapes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spatial sampling shape describing a spatial sampling feature</span>
+
+<span class="sd">    Controlled CV list as defined by OGC Observation &amp; Measurement GM_Shape.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The shape of a spatially extensive sampling feature which provides a complete sampling domain.</span>
+    <span class="n">SHAPE_SOLID</span> <span class="o">=</span> <span class="s2">&quot;SOLID&quot;</span>
+
+    <span class="c1">#: The shape of a spatially extensive sampling feature which provides a complete sampling domain.</span>
+    <span class="n">SHAPE_SURFACE</span> <span class="o">=</span> <span class="s2">&quot;SURFACE&quot;</span>
+
+    <span class="c1">#: The shape of a spatially extensive sampling feature which provides a complete sampling domain.</span>
+    <span class="n">SHAPE_CURVE</span> <span class="o">=</span> <span class="s2">&quot;CURVE&quot;</span>
+
+    <span class="c1">#: The shape of a spatially extensive sampling feature which provides a complete sampling domain.</span>
+    <span class="n">SHAPE_POINT</span> <span class="o">=</span> <span class="s2">&quot;POINT&quot;</span></div>
+
+
+<div class="viewcode-block" id="FeatureTypes"><a class="viewcode-back" href="../../framework.html#basin3d.models.FeatureTypes">[docs]</a><span class="k">class</span> <span class="nc">FeatureTypes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Feature Types where an Observation can be made.</span>
+
+<span class="sd">    Controlled CV list that is maintained. USGS Watershed Boundry Dataset is used.</span>
+<span class="sd">    The goal is to strike a balance between commonly used hierarchical levels and features</span>
+<span class="sd">    versus a runaway list of FeatureTypes. OGC O&amp;M suggests that Features should be</span>
+<span class="sd">    determined as needed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">REGION</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">SUBREGION</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">BASIN</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">SUBBASIN</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">WATERSHED</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">SUBWATERSHED</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">SITE</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">PLOT</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="n">HORIZONTAL_PATH</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c1"># Rivers, Transects</span>
+    <span class="n">VERTICAL_PATH</span> <span class="o">=</span> <span class="mi">9</span>  <span class="c1"># Towers, Boreholes, Trees, Pits</span>
+    <span class="n">POINT</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="n">TYPES</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">REGION</span><span class="p">:</span> <span class="s2">&quot;REGION&quot;</span><span class="p">,</span>
+        <span class="n">SUBREGION</span><span class="p">:</span> <span class="s2">&quot;SUBREGION&quot;</span><span class="p">,</span>
+        <span class="n">BASIN</span><span class="p">:</span> <span class="s2">&quot;BASIN&quot;</span><span class="p">,</span>
+        <span class="n">SUBBASIN</span><span class="p">:</span> <span class="s2">&quot;SUBBASIN&quot;</span><span class="p">,</span>
+        <span class="n">WATERSHED</span><span class="p">:</span> <span class="s2">&quot;WATERSHED&quot;</span><span class="p">,</span>
+        <span class="n">SUBWATERSHED</span><span class="p">:</span> <span class="s2">&quot;SUBWATERSHED&quot;</span><span class="p">,</span>
+        <span class="n">SITE</span><span class="p">:</span> <span class="s2">&quot;SITE&quot;</span><span class="p">,</span>
+        <span class="n">PLOT</span><span class="p">:</span> <span class="s2">&quot;PLOT&quot;</span><span class="p">,</span>
+        <span class="n">HORIZONTAL_PATH</span><span class="p">:</span> <span class="s2">&quot;HORIZONTAL PATH&quot;</span><span class="p">,</span>
+        <span class="n">VERTICAL_PATH</span><span class="p">:</span> <span class="s2">&quot;VERTICAL PATH&quot;</span><span class="p">,</span>
+        <span class="n">POINT</span><span class="p">:</span> <span class="s2">&quot;POINT&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">SHAPE_TYPES</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_POINT</span><span class="p">:</span> <span class="p">[</span><span class="n">POINT</span><span class="p">],</span>
+        <span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_CURVE</span><span class="p">:</span> <span class="p">[</span><span class="n">HORIZONTAL_PATH</span><span class="p">,</span> <span class="n">VERTICAL_PATH</span><span class="p">],</span>
+        <span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_SURFACE</span><span class="p">:</span> <span class="p">[</span><span class="n">REGION</span><span class="p">,</span> <span class="n">SUBREGION</span><span class="p">,</span> <span class="n">BASIN</span><span class="p">,</span> <span class="n">SUBBASIN</span><span class="p">,</span> <span class="n">WATERSHED</span><span class="p">,</span>
+                               <span class="n">SUBWATERSHED</span><span class="p">,</span> <span class="n">SITE</span><span class="p">,</span> <span class="n">PLOT</span><span class="p">],</span>
+        <span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_SOLID</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="get_feature_types"><a class="viewcode-back" href="../../framework.html#basin3d.models.get_feature_types">[docs]</a><span class="k">def</span> <span class="nf">get_feature_types</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function for FeatureTypes</span>
+<span class="sd">    :return list of feature_types as strings</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">FeatureTypes</span><span class="o">.</span><span class="n">TYPES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
+
+
+<div class="viewcode-block" id="StringListField"><a class="viewcode-back" href="../../framework.html#basin3d.models.StringListField">[docs]</a><span class="k">class</span> <span class="nc">StringListField</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    StringListField stored delimited strings in the database.</span>
+
+<span class="sd">    :param: delimiter</span>
+<span class="sd">    :type: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;delimiter&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;delimiter&quot;</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">StringListField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StringListField.to_python"><a class="viewcode-back" href="../../framework.html#basin3d.models.StringListField.to_python">[docs]</a>    <span class="k">def</span> <span class="nf">to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delimiter</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ListField must be  delimited string&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StringListField.get_prep_value"><a class="viewcode-back" href="../../framework.html#basin3d.models.StringListField.get_prep_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_prep_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="StringListField.value_to_string"><a class="viewcode-back" href="../../framework.html#basin3d.models.StringListField.value_to_string">[docs]</a>    <span class="k">def</span> <span class="nf">value_to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_prep_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DataSource"><a class="viewcode-back" href="../../framework.html#basin3d.models.DataSource">[docs]</a><span class="k">class</span> <span class="nc">DataSource</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Data Source definition</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        - *id:* string (inherited)</span>
+<span class="sd">        - *name:* string</span>
+<span class="sd">        - *id_prefix:* string, prefix that is added to all data source ids</span>
+<span class="sd">        - *plugin_module:*</span>
+<span class="sd">        - *plugin_class:*</span>
+<span class="sd">        - *credentials:*</span>
+<span class="sd">        - *enabled:*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">id_prefix</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">plugin_module</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">plugin_class</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">credentials</span> <span class="o">=</span> <span class="n">EncryptedTextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">enabled</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;id_prefix&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__unicode__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;DataSource </span><span class="si">%r</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DataSource.get_plugin"><a class="viewcode-back" href="../../framework.html#basin3d.models.DataSource.get_plugin">[docs]</a>    <span class="k">def</span> <span class="nf">get_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the plugin</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_module</span><span class="p">)</span>
+        <span class="n">plugin_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_class</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">plugin_class</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="ObservedProperty"><a class="viewcode-back" href="../../framework.html#basin3d.models.ObservedProperty">[docs]</a><span class="k">class</span> <span class="nc">ObservedProperty</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defining the attributes for a single/multiple Observed Properties</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        - *id:* string, e.g., Cs137 MID</span>
+<span class="sd">        - *description:* id, e.g., Cs 137 air dose rate car survey campaigns</span>
+<span class="sd">        - *observed_property_variable_id:* string, e.g., Cs137MVID</span>
+<span class="sd">        - *sampling_medium:* enum (WATER, GAS, SOLID PHASE, OTHER, NOT APPLICABLE)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">observed_property_variable</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;ObservedPropertyVariable&#39;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">sampling_medium</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;SamplingMedium&#39;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">datasource</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;DataSource&#39;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;observed_property_variable&#39;</span><span class="p">,</span> <span class="s1">&#39;datasource&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__unicode__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;ObservedProperty </span><span class="si">%r</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ObservedPropertyVariable"><a class="viewcode-back" href="../../framework.html#basin3d.models.ObservedPropertyVariable">[docs]</a><span class="k">class</span> <span class="nc">ObservedPropertyVariable</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defining the properties being observed (measured). See http://vocabulary.odm2.org/variablename/ for controlled vocabulary</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        - *id:* string,</span>
+<span class="sd">        - *full_name:* string,</span>
+<span class="sd">        - *abbreviation:* string,</span>
+<span class="sd">        - *categories:* Array of strings (in order of priority).</span>
+
+<span class="sd">    See http://vocabulary.odm2.org/variabletype/ for options, although I think we should have our own list (theirs is a bit funky).</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Unique string Identifier for the Observed Property Variable</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Long name of the Observed Property Variable</span>
+    <span class="n">full_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+
+    <span class="c1"># Ordered list of categories</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="n">StringListField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__unicode__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_name</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;ObservedPropertyVariable </span><span class="si">{}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataSourceObservedPropertyVariable"><a class="viewcode-back" href="../../framework.html#basin3d.models.DataSourceObservedPropertyVariable">[docs]</a><span class="k">class</span> <span class="nc">DataSourceObservedPropertyVariable</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Synthesis of Data Source Observed Property Variables with BASIN-3D Observed Property Variables</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">datasource</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">DataSource</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;basin3d_datasource&#39;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">observed_property_variable</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ObservedPropertyVariable</span><span class="p">,</span>
+                                                   <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;basin3d_observedpropertyvariable&#39;</span><span class="p">,</span>
+                                                   <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;datasource&quot;</span><span class="p">,</span> <span class="s2">&quot;observed_property_variable&quot;</span><span class="p">),)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__unicode__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;DataSourceObservedPropertyVariable </span><span class="si">%r</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SamplingMedium"><a class="viewcode-back" href="../../framework.html#basin3d.models.SamplingMedium">[docs]</a><span class="k">class</span> <span class="nc">SamplingMedium</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Types of sampling mediums for Observed Properties</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">SOLID_PHASE</span> <span class="o">=</span> <span class="s2">&quot;SOLID PHASE&quot;</span>
+    <span class="n">WATER</span> <span class="o">=</span> <span class="s2">&quot;WATER&quot;</span>
+    <span class="n">GAS</span> <span class="o">=</span> <span class="s2">&quot;GAS&quot;</span>
+    <span class="n">OTHER</span> <span class="o">=</span> <span class="s2">&quot;OTHER&quot;</span>
+    <span class="n">NOT_APPLICABLE</span> <span class="o">=</span> <span class="s2">&quot;N/A&quot;</span>
+    <span class="n">SAMPLING_MEDIUMS</span> <span class="o">=</span> <span class="p">[</span><span class="n">WATER</span><span class="p">,</span> <span class="n">GAS</span><span class="p">,</span> <span class="n">SOLID_PHASE</span><span class="p">,</span> <span class="n">OTHER</span><span class="p">,</span> <span class="n">NOT_APPLICABLE</span><span class="p">]</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__unicode__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;SamplingMedium </span><span class="si">%r</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-2-g2348a06</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../basin3d.html" >basin3d</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
+(subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+    </div>
+  </body>
+</html>
