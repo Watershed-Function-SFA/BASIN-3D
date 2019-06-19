@@ -17,7 +17,6 @@ class Base(object):
     """
     Base synthesis model class.  All classes that extend this are immutable
     """
-    __attributes = {}
 
     def __init__(self, datasource, **kwargs):
 

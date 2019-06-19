@@ -1,6 +1,7 @@
 *.pyc
 .DS_Store
 .idea
+.mypy_cache/
 .venv
 BASIN_3D.egg-info/
 _build

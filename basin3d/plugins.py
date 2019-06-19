@@ -18,11 +18,7 @@ import logging
 # Python 3.5 compatibility
 import six
 
-try:
-    from json import JSONDecodeError
-except ImportError:
-    JSONDecodeError = ValueError
-
+from json import JSONDecodeError
 
 import yaml
 from basin3d import synthesis, get_url, post_url

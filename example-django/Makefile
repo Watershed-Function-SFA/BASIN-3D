@@ -9,7 +9,7 @@ develop:
 
 bin/python:
 	$(PYTHON) -m venv .
-	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt pytest-flake8 pytest-django pytest-cov $(CURDIR)/..
+	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt pytest-mypy pytest-flake8 pytest-django pytest-cov $(CURDIR)/..
 
 db.sqlite3:
 	$(CURDIR)/bin/python manage.py migrate
@@ -27,7 +27,7 @@ run:
 .PHONY: test
 test:
 	$(CURDIR)/bin/pytest -v --flake8 --cov basin3d  $(CURDIR)/tests && cd $(CURDIR)
-
+	cd $(CURDIR)/.. && mypy basin3d && cd $(CURDIR)
 
 .PHONY: clean
 clean:

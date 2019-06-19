@@ -28,9 +28,9 @@ class RelatedSamplingFeature(Base):
     ROLE_TYPES = [ROLE_PARENT]
 
     def __init__(self, datasource, **kwargs):
-        self._related_sampling_feature = None
-        self._related_sampling_feature_type = None
-        self._role = None
+        self._related_sampling_feature: 'SamplingFeature' = None
+        self._related_sampling_feature_type: str = None
+        self._role: str = None
 
         # Initialize after the attributes have been set
         super().__init__(datasource, datasource_ids=['related_sampling_feature'], **kwargs)
@@ -85,8 +85,8 @@ class Coordinate(Base):
     """
 
     def __init__(self, **kwargs):
-        self._absolute = None
-        self._representative = None
+        self._absolute: AbsoluteCoordinate = None
+        self._representative: RepresentativeCoordinate = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
@@ -139,8 +139,8 @@ class AbsoluteCoordinate(Base):
     """
 
     def __init__(self, **kwargs):
-        self._horizontal_position = []
-        self._vertical_extent = []
+        self._horizontal_position: List[GeographicCoordinate] = []
+        self._vertical_extent: List[AltitudeCoordinate] = []
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
@@ -212,9 +212,9 @@ class RepresentativeCoordinate(Base):
     REPRESENTATIVE_POINT_TYPE_LOWER_RIGHT_CORNER = "LOWER RIGHT CORNER"
 
     def __init__(self, **kwargs):
-        self._representative_point = None
-        self._representative_point_type = None
-        self._vertical_position = None
+        self._representative_point: AbsoluteCoordinate = None
+        self._representative_point_type: str = None
+        self._vertical_position: DepthCoordinate = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
@@ -286,12 +286,12 @@ class VerticalCoordinate(Base):
     ENCODING_ATTRIBUTE = "ATTRIBUTE"
 
     def __init__(self, **kwargs):
-        self._value = None
-        self._resolution = None
-        self._distance_units = None
-        self._encoding_method = None
-        self._datum = None
-        self._type = None
+        self._value: float = None
+        self._resolution: float = None
+        self._distance_units: str = None
+        self._encoding_method: str = None
+        self._datum:str = None
+        self._type:str = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
@@ -375,7 +375,7 @@ class AltitudeCoordinate(VerticalCoordinate):
     DATUM_NAVD88 = "NAVD88"
 
     def __init__(self, **kwargs):
-        self._datum = None
+        self._datum: str = None
 
         # Initialize after the attributes have been set
         super().__init__(type=self.TYPE_ALTITUDE, **kwargs)
@@ -453,10 +453,10 @@ class HorizontalCoordinate(Base):
     TYPE_LOCAL = "LOCAL"
 
     def __init__(self, **kwargs):
-        self._x = None
-        self._y = None
-        self._datum = None
-        self._type = None
+        self._x: float = None
+        self._y: float = None
+        self._datum: str = None
+        self._type: str = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
@@ -480,14 +480,14 @@ class HorizontalCoordinate(Base):
         self._y = value
 
     @property
-    def datum(self):
+    def datum(self) -> str:
         """
         The reference coordinate system. Use constants prefixed with `DATUM_`
         """
         return self._datum
 
     @datum.setter
-    def datum(self, value) -> str:
+    def datum(self, value):
         self._datum = value
 
     @property
@@ -546,7 +546,7 @@ class GeographicCoordinate(HorizontalCoordinate):
                         }
 
     def __init__(self, **kwargs):
-        self._units = None
+        self._units: str = None
 
         if "longitude" in kwargs:
             kwargs["x"] = kwargs["longitude"]
@@ -633,11 +633,11 @@ class Feature(Base):
     """
 
     def __init__(self, datasource, **kwargs):
-        self._id = None
-        self._name = None
-        self._description = None
-        self._feature_type = None
-        self._observed_property_variables = None
+        self._id: str = None
+        self._name: str = None
+        self._description: str = None
+        self._feature_type: str = None
+        self._observed_property_variables: List[str] = None
 
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
@@ -713,7 +713,7 @@ class SamplingFeature(Feature):
     """
 
     def __init__(self, datasource, **kwargs):
-        self._related_sampling_feature_complex = []
+        self._related_sampling_feature_complex: List[SamplingFeature] = []
 
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
@@ -740,8 +740,8 @@ class SpatialSamplingFeature(SamplingFeature):
     """
 
     def __init__(self, datasource, **kwargs):
-        self._shape = None
-        self._coordinates = None
+        self._shape: str = None
+        self._coordinates: Coordinate = None
 
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
@@ -824,9 +824,9 @@ class MonitoringFeature(SpatialSamplingFeature):
     """
 
     def __init__(self, datasource, **kwargs):
-        self._description_reference = None
+        self._description_reference: str = None
         self._related_party = []
-        self._utc_offset = None
+        self._utc_offset: int = None
 
         # Initialize after the attributes have been set
         super().__init__(datasource, **kwargs)
