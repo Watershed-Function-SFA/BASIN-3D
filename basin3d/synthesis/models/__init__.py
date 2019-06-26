@@ -6,8 +6,6 @@
 
 :synopsis: Classes to represent generic observation data concepts
 
-* :class:`Base` - The base model class that all synthesis extend from
-
 ----------------------------------
 
 """
@@ -15,7 +13,7 @@
 
 class Base(object):
     """
-    Base synthesis model class.  All classes that extend this are immutable
+    Base synthesis model class. All classes that extend this are immutable.
     """
 
     def __init__(self, datasource, **kwargs):
@@ -102,27 +100,62 @@ class Base(object):
 
 
 class Person(Base):
-    """A person
-
-    Attributes:
-        *id:* string
-        *first_name:* string
-        *last_name:* string
-        *email:* string
-        *institution:* string
-        *role:* string
-    """
+    """A person or organization"""
 
     def __init__(self, **kwargs):
-        self.id = None
-        self.first_name = None
-        self.last_name = None
-        self.email = None
-        self.institution = None
-        self.role = None
+        self._first_name = None
+        self._last_name = None
+        self._email = None
+        self._institution = None
+        self._role = None
 
         # Initialize after the attributes have been set
         super().__init__(None, **kwargs)
+
+    @property
+    def first_name(self) -> str:
+        """First (given) name of person"""
+        return self._first_name
+
+    @first_name.setter
+    def first_name(self, value: str):
+        self._first_name = value
+
+    @property
+    def last_name(self) -> str:
+        """Last (family) name"""
+        return self._last_name
+
+    @last_name.setter
+    def last_name(self, value: str):
+        self._last_name = value
+
+    @property
+    def email(self) -> str:
+        """Email address"""
+        return self._email
+
+    @email.setter
+    def email(self, value: str):
+        self._email = value
+
+    @property
+    def institution(self) -> str:
+        """Institution or organization name"""
+        return self._institution
+
+    @institution.setter
+    def institution(self, value: str):
+        self._institution = value
+
+    @property
+    def role(self) -> str:
+        """Role of person in relation to responsibility"""
+        return self._role
+
+    @role.setter
+    def role(self, value: str):
+        self._role = value
 
 
 __all__ = ['field', 'measurement', 'Base']

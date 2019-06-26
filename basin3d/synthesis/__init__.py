@@ -5,7 +5,7 @@
 .. currentmodule:: basin3d.synthesis
 
 :synopsis: The high level BASIN-3D synthesis models.
-:module author: Val Hendrix <vhendrix@lbl.gov>, Charuleka Varadharajan <cvaradharajan@lbl.gov>
+:module author: Val Hendrix <vhendrix@lbl.gov>, Danielle Svehla Christianson <dschristianson@lbl.gov>, Charuleka Varadharajan <cvaradharajan@lbl.gov>
 
 
 * :py:mod:`~basin3d.synthesis.models` - defines the synthesis domain models that are brokered and synthesized by the custom :class:`~basin3d.plugins.DataSourcePluginPoint`.
