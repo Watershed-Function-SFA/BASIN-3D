@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-import string
 
 from basin3d.models import DataSource, get_feature_types
 from basin3d.synthesis.viewsets import MonitoringFeatureViewSet, \
@@ -37,7 +36,8 @@ def get_synthesis_router():
     if settings.BASIN3D["SYNTHESIS"]:
 
         router.register(r'datasources', DataSourceViewSet, base_name='datasource')
-        router.register(r'observedpropertyvariables', ObservedPropertyVariableViewSet, base_name='observedpropertyvariable')
+        router.register(r'observedpropertyvariables', ObservedPropertyVariableViewSet,
+                        base_name='observedpropertyvariable')
         router.register(r'observedproperty', ObservedPropertyViewSet, base_name='observedproperty')
         try:
             # iterate over the Datasources and register ViewSets to the router
@@ -110,6 +110,7 @@ def get_monitoring_feature_urls():
         print(e)
     return urls
 
+
 # Wire up our API using automatic URL routing.
 
 # Additionally, we include login URLs for the browsable API.
@@ -125,7 +126,7 @@ if settings.BASIN3D["SYNTHESIS"]:
     urlpatterns.append(url(r'^synthesis/', include(router.urls)))
 
 if settings.BASIN3D["DIRECT_API"]:
-    urlpatterns.append(url(r'^direct/$', DirectAPIViewSet.as_view({'get':'list'}), name='direct-api-list'))
+    urlpatterns.append(url(r'^direct/$', DirectAPIViewSet.as_view({'get': 'list'}), name='direct-api-list'))
     urlpatterns.append(url(r'^direct/(?P<id_prefix>[a-zA-Z0-9]+)/(?P<direct_path>[a-zA-Z/_\-?&0-9]*)$',
-                           DirectAPIViewSet.as_view({'get': 'retrieve', 'post':'retrieve'}),
+                           DirectAPIViewSet.as_view({'get': 'retrieve', 'post': 'retrieve'}),
                            name='direct-path-detail'))

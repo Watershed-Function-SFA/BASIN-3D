@@ -14,9 +14,12 @@
 
 """
 from __future__ import unicode_literals
+
+from importlib import import_module
+from typing import List
+
 from django.db import models
 from django_extensions.db.fields.encrypted import EncryptedTextField
-from importlib import import_module
 
 
 class SpatialSamplingShapes(object):
@@ -26,9 +29,16 @@ class SpatialSamplingShapes(object):
     Controlled CV list as defined by OGC Observation & Measurement GM_Shape.
     """
 
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_SOLID = "SOLID"
+
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_SURFACE = "SURFACE"
+
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_CURVE = "CURVE"
+
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_POINT = "POINT"
 
 
@@ -72,12 +82,12 @@ class FeatureTypes(object):
         SpatialSamplingShapes.SHAPE_POINT: [POINT],
         SpatialSamplingShapes.SHAPE_CURVE: [HORIZONTAL_PATH, VERTICAL_PATH],
         SpatialSamplingShapes.SHAPE_SURFACE: [REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED,
-                               SUBWATERSHED, SITE, PLOT],
+                                              SUBWATERSHED, SITE, PLOT],
         SpatialSamplingShapes.SHAPE_SOLID: []
     }
 
 
-def get_feature_types():
+def get_feature_types() -> List[str]:
     """
     Helper function for FeatureTypes
     :return list of feature_types as strings
@@ -143,7 +153,6 @@ class DataSource(models.Model):
     plugin_class = models.TextField(blank=True)
     credentials = EncryptedTextField(blank=True)
     enabled = models.BooleanField(default=True)
-
 
     class Meta:
         ordering = ['id_prefix']

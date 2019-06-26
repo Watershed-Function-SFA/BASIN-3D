@@ -21,13 +21,12 @@
 import json
 import logging
 
+import django_filters
 from basin3d import get_url
 from basin3d.models import DataSource, ObservedProperty, ObservedPropertyVariable, \
     DataSourceObservedPropertyVariable
-
 from basin3d.serializers import DataSourceSerializer, \
     ObservedPropertySerializer, ObservedPropertyVariableSerializer
-import django_filters
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
@@ -35,6 +34,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 logger = logging.getLogger(__name__)
+
 
 class DirectAPIViewSet(viewsets.GenericViewSet):
     """
@@ -56,7 +56,6 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
 
         direct_apis = []
         for datasource in self.queryset:
-
             direct_apis.append(
                 {datasource.name: request.build_absolute_uri(reverse('direct-path-detail',
                                                                      kwargs={
@@ -88,7 +87,7 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
                                                                                      "id_prefix": datasource.id_prefix,
                                                                                      "direct_path": ""})))),
                         status=response.status_code)
-                except:
+                except Exception:
                     return response
 
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -113,7 +112,7 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DataSourceSerializer
 
     @detail_route()
-    def check(self,request, pk=None):
+    def check(self, request, pk=None):
         """
         Determine if Datasource is available
         :param request:
@@ -131,11 +130,11 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
                 try:
                     http_auth.login()
                     return Response(data={"message": "Login to {} data source was successful".format(datasource.name),
-                                       "success": True},
-                                 status=status.HTTP_200_OK)
+                                          "success": True},
+                                    status=status.HTTP_200_OK)
                 except Exception as e:
-                    return Response(data={"message": str(e), "success":False},
-                                            status=status.HTTP_200_OK)
+                    return Response(data={"message": str(e), "success": False},
+                                    status=status.HTTP_200_OK)
 
                 finally:
                     http_auth.logout()
@@ -150,14 +149,15 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
                             status=status.HTTP_200_OK)
                     else:
                         return Response(
-                            data={"message": "Response from {} data source returns HTTP status {}".format(datasource.name,
-                                                                                                          response.status_code),
-                                  "success": True},
+                            data={
+                                "message": "Response from {} data source returns HTTP status {}".format(datasource.name,
+                                                                                                        response.status_code),
+                                "success": True},
                             status=status.HTTP_200_OK)
 
                 except Exception as e:
-                    return Response(data={"message": str(e), "success":False},
-                                            status=status.HTTP_200_OK)
+                    return Response(data={"message": str(e), "success": False},
+                                    status=status.HTTP_200_OK)
 
     @detail_route()  # Custom Route for an association
     def observed_property_variables(self, request, pk=None):
@@ -181,7 +181,7 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
 
         # Then just serialize and return it!
         serializer = ObservedPropertyVariableSerializer(
-            v, many=True,context={'request': request})
+            v, many=True, context={'request': request})
         return Response(serializer.data)
 
 

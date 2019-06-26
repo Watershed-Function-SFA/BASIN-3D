@@ -1,13 +1,11 @@
 import json
+from unittest import mock
 
 import rest_framework
 from basin3d.viewsets import DirectAPIViewSet
-
 from django.test import TestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
-
-from unittest import mock
 
 
 def get_direct_api():
@@ -121,79 +119,76 @@ class TestSiteAPI(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-    """
-    # KEEP until replacement test is built
-    
-    def test_get(self):
-        self.maxDiff = None
-        response = self.client.get('/synthesis/sites/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         [
-                             {
-                                 "id": "A-1",
-                                 "name": "Foo",
-                                 "description": "Foo Bar Site",
-                                 "type": "site",
-                                 "country": "US",
-                                 "state_province": "California",
-                                 "utc_offset": -6,
-                                 "center_coordinates": {
-                                     "datum": "WGS84",
-                                     "type": "geographic",
-                                     "latitude": 90.0,
-                                     "longitude": 90.0,
-                                     "units": "DS"
-                                 },
-                                 "contacts": [
-                                     {
-                                         "first_name": "Barry",
-                                         "last_name": "Allen",
-                                         "email": "ballen@foo.bar",
-                                         "institution": "DC Comics",
-                                         "role": None
-                                     }
-                                 ],
-                                 "pi": {
-                                     "first_name": "Jessica",
-                                     "last_name": "Jones",
-                                     "email": "jjones@foo.bar",
-                                     "institution": "DC Comics",
-                                     "role": None
-                                 },
-                                 "urls": [
-                                     "http://foo.bar"
-                                 ],
-                                 "url": "http://testserver/synthesis/sites/A-1/"
-                             }
-                         ]
-
-                         )
-
-    def test_get_detail(self):
-        response = self.client.get('/synthesis/regions/A-SI123/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {"id": "A-SI123", "geom": None,
-                          "description": "This is for my site description",
-                          'name': 'a site',
-                          "url": "http://testserver/synthesis/regions/A-SI123/"})
-
-    def test_get_detail_missing(self):
-        response = self.client.get('/synthesis/regions/A-FOO/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {'content': 'There is no detail for A-FOO', 'success': False})
-
-    def test_get_bad_id_prefix(self):
-        response = self.client.get('/synthesis/regions/B-FOO/', format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {
-                             'detail': 'There is no detail for datasource object B-FOO. The datasource id '
-                                       "'B' is invalid.",
-                             'success': False})
-    """
+    # # KEEP until replacement test is built
+    # def test_get(self):
+    #     self.maxDiff = None
+    #     response = self.client.get('/synthesis/sites/', format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(json.loads(response.content.decode('utf-8')),
+    #                      [
+    #                          {
+    #                              "id": "A-1",
+    #                              "name": "Foo",
+    #                              "description": "Foo Bar Site",
+    #                              "type": "site",
+    #                              "country": "US",
+    #                              "state_province": "California",
+    #                              "utc_offset": -6,
+    #                              "center_coordinates": {
+    #                                  "datum": "WGS84",
+    #                                  "type": "geographic",
+    #                                  "latitude": 90.0,
+    #                                  "longitude": 90.0,
+    #                                  "units": "DS"
+    #                              },
+    #                              "contacts": [
+    #                                  {
+    #                                      "first_name": "Barry",
+    #                                      "last_name": "Allen",
+    #                                      "email": "ballen@foo.bar",
+    #                                      "institution": "DC Comics",
+    #                                      "role": None
+    #                                  }
+    #                              ],
+    #                              "pi": {
+    #                                  "first_name": "Jessica",
+    #                                  "last_name": "Jones",
+    #                                  "email": "jjones@foo.bar",
+    #                                  "institution": "DC Comics",
+    #                                  "role": None
+    #                              },
+    #                              "urls": [
+    #                                  "http://foo.bar"
+    #                              ],
+    #                              "url": "http://testserver/synthesis/sites/A-1/"
+    #                          }
+    #                      ]
+    #
+    #                      )
+    #
+    # def test_get_detail(self):
+    #     response = self.client.get('/synthesis/regions/A-SI123/', format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(json.loads(response.content.decode('utf-8')),
+    #                      {"id": "A-SI123", "geom": None,
+    #                       "description": "This is for my site description",
+    #                       'name': 'a site',
+    #                       "url": "http://testserver/synthesis/regions/A-SI123/"})
+    #
+    # def test_get_detail_missing(self):
+    #     response = self.client.get('/synthesis/regions/A-FOO/', format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    #     self.assertEqual(json.loads(response.content.decode('utf-8')),
+    #                      {'content': 'There is no detail for A-FOO', 'success': False})
+    #
+    # def test_get_bad_id_prefix(self):
+    #     response = self.client.get('/synthesis/regions/B-FOO/', format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    #     self.assertEqual(json.loads(response.content.decode('utf-8')),
+    #                      {
+    #                          'detail': 'There is no detail for datasource object B-FOO. The datasource id '
+    #                                    "'B' is invalid.",
+    #                          'success': False})
 
 
 class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
@@ -230,8 +225,8 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                                      "representative": {
                                          "representative_point_type": None, "representative_point": None,
                                          "vertical_position": {
-                                              "datum": "LS", "value": -0.6, "distance_units": "meters",
-                                              "type": "DEPTH", "resolution": None
+                                             "datum": "LS", "value": -0.6, "distance_units": "meters",
+                                             "type": "DEPTH", "resolution": None
                                          }
                                      }
                                  },
@@ -244,7 +239,7 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                                                                        "related_sampling_feature_type": "REGION",
                                                                        "role": "PARENT",
                                                                        "url": "http://testserver/synthesis/monitoringfeatures/regions/A-Region1/"}],
-                                 },
+                             },
                              "feature_of_interest_type": "POINT",
                              "utc_offset": -9,
                              "result_points": [["2016-02-01", 0.3454],
@@ -273,37 +268,37 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                 "unit_of_measurement": "nm",
                 "observed_property": "http://testserver/synthesis/observedproperty/1/",
                 "feature_of_interest": {
-                     "id": "A-1", "name": "Point Location 1",
-                     "description": "The point.",
-                     "feature_type": "POINT", "shape": "POINT",
-                     "coordinates": {
-                         "absolute": {
-                             "horizontal_position": [{
-                                 "units": "DD", "latitude": 70.4657, "y": 70.4657, "x": -20.4567,
-                                 "longitude": -20.4567, "datum": None, "type": "GEOGRAPHIC"
-                             }],
-                             "vertical_extent": [{
-                                 "datum": "NAVD88", "value": 1500.0,
-                                 "distance_units": "feet", "resolution": None, "type": "ALTITUDE"
-                             }]
-                         },
-                         "representative": {
-                             "representative_point_type": None, "representative_point": None,
-                             "vertical_position": {
-                                  "datum": "LS", "value": -0.6, "distance_units": "meters",
-                                  "type": "DEPTH", "resolution": None
-                             }
-                         }
-                     },
-                     "description_reference": None,
-                     "observed_property_variables": ["ACT", "Ag"],
-                     "related_party": [],
-                     "url": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
-                     "utc_offset": None,
-                     "related_sampling_feature_complex": [{"related_sampling_feature": "A-Region1",
-                                                           "related_sampling_feature_type": "REGION",
-                                                           "role": "PARENT",
-                                                           "url": "http://testserver/synthesis/monitoringfeatures/regions/A-Region1/"}],
+                    "id": "A-1", "name": "Point Location 1",
+                    "description": "The point.",
+                    "feature_type": "POINT", "shape": "POINT",
+                    "coordinates": {
+                        "absolute": {
+                            "horizontal_position": [{
+                                "units": "DD", "latitude": 70.4657, "y": 70.4657, "x": -20.4567,
+                                "longitude": -20.4567, "datum": None, "type": "GEOGRAPHIC"
+                            }],
+                            "vertical_extent": [{
+                                "datum": "NAVD88", "value": 1500.0,
+                                "distance_units": "feet", "resolution": None, "type": "ALTITUDE"
+                            }]
+                        },
+                        "representative": {
+                            "representative_point_type": None, "representative_point": None,
+                            "vertical_position": {
+                                "datum": "LS", "value": -0.6, "distance_units": "meters",
+                                "type": "DEPTH", "resolution": None
+                            }
+                        }
+                    },
+                    "description_reference": None,
+                    "observed_property_variables": ["ACT", "Ag"],
+                    "related_party": [],
+                    "url": "http://testserver/synthesis/monitoringfeatures/points/A-1/",
+                    "utc_offset": None,
+                    "related_sampling_feature_complex": [{"related_sampling_feature": "A-Region1",
+                                                          "related_sampling_feature_type": "REGION",
+                                                          "role": "PARENT",
+                                                          "url": "http://testserver/synthesis/monitoringfeatures/regions/A-Region1/"}],
                 },
                 "feature_of_interest_type": "POINT",
                 "utc_offset": -9,
@@ -326,37 +321,37 @@ class TestMeasurementTimeseriesTVPObservationAPI(TestCase):
                 "id": "A-2",
                 "observed_property": "http://testserver/synthesis/observedproperty/1/",
                 "feature_of_interest": {
-                     "id": "A-2", "name": "Point Location 2",
-                     "description": "The point.",
-                     "feature_type": "POINT", "shape": "POINT",
-                     "coordinates": {
-                         "absolute": {
-                             "horizontal_position": [{
-                                 "units": "DD", "latitude": 70.4657, "y": 70.4657, "x": -20.4567,
-                                 "longitude": -20.4567, "datum": None, "type": "GEOGRAPHIC"
-                             }],
-                             "vertical_extent": [{
-                                 "datum": "NAVD88", "value": 1500.0,
-                                 "distance_units": "feet", "resolution": None, "type": "ALTITUDE"
-                             }]
-                         },
-                         "representative": {
-                             "representative_point_type": None, "representative_point": None,
-                             "vertical_position": {
-                                  "datum": "LS", "value": -0.7, "distance_units": "meters",
-                                  "type": "DEPTH", "resolution": None
-                             }
-                         }
-                     },
-                     "description_reference": None,
-                     "observed_property_variables": ["ACT", "Ag"],
-                     "related_party": [],
-                     "url": "http://testserver/synthesis/monitoringfeatures/points/A-2/",
-                     "utc_offset": None,
-                     "related_sampling_feature_complex": [{"related_sampling_feature": "A-Region1",
-                                                           "related_sampling_feature_type": "REGION",
-                                                           "role": "PARENT",
-                                                           "url": "http://testserver/synthesis/monitoringfeatures/regions/A-Region1/"}],
+                    "id": "A-2", "name": "Point Location 2",
+                    "description": "The point.",
+                    "feature_type": "POINT", "shape": "POINT",
+                    "coordinates": {
+                        "absolute": {
+                            "horizontal_position": [{
+                                "units": "DD", "latitude": 70.4657, "y": 70.4657, "x": -20.4567,
+                                "longitude": -20.4567, "datum": None, "type": "GEOGRAPHIC"
+                            }],
+                            "vertical_extent": [{
+                                "datum": "NAVD88", "value": 1500.0,
+                                "distance_units": "feet", "resolution": None, "type": "ALTITUDE"
+                            }]
+                        },
+                        "representative": {
+                            "representative_point_type": None, "representative_point": None,
+                            "vertical_position": {
+                                "datum": "LS", "value": -0.7, "distance_units": "meters",
+                                "type": "DEPTH", "resolution": None
+                            }
+                        }
+                    },
+                    "description_reference": None,
+                    "observed_property_variables": ["ACT", "Ag"],
+                    "related_party": [],
+                    "url": "http://testserver/synthesis/monitoringfeatures/points/A-2/",
+                    "utc_offset": None,
+                    "related_sampling_feature_complex": [{"related_sampling_feature": "A-Region1",
+                                                          "related_sampling_feature_type": "REGION",
+                                                          "role": "PARENT",
+                                                          "url": "http://testserver/synthesis/monitoringfeatures/regions/A-Region1/"}],
                 },
                 "feature_of_interest_type": "POINT",
                 "utc_offset": -10,

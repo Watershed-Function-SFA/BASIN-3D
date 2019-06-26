@@ -6,6 +6,7 @@ Welcome to BASIN-3D |release| documentation!
    quickstart
    rest_api
    synthesis_models
+   synthesis_views
    framework
 
 Indices and tables
