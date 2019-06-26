@@ -6,7 +6,7 @@
 
 :platform: Unix, Mac
 :synopsis: BASIN-3D Views
-:module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Val Hendrix <vhendrix@lbl.gov>, Danielle Svehla Christianson <dschristianson@lbl.gov>
 
 .. contents:: Contents
     :local:

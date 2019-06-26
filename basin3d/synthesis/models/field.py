@@ -4,22 +4,24 @@
 
 .. currentmodule:: basin3d.synthesis.models.field
 
-:synopsis: Classes to represent Multi-scale Spatial Hierarchy for Field Observations
+:synopsis: Classes to represent multi-scale feature hierarchy on which Observations are made
 
+---------------------
 """
 from typing import List
 
 from basin3d.models import FeatureTypes, SpatialSamplingShapes
 from basin3d.plugins import get_datasource_observed_property_variables
-from basin3d.synthesis.models import Base  # pass Person for plugins
+from basin3d.synthesis.models import Base, Person  # pass Person for plugins
 
 
 class RelatedSamplingFeature(Base):
     """
-    Class that represents a related sampling feature and it's role relative to
-    the sampling feature to which it is related.
+    Class that represents a related sampling feature and its role relative to
+    the sampling feature to which it is related. Spatial hierarchies of features
+    are built by specifying related sampling features.
 
-    See OGC Observations and Measurements
+    Data model from OGC Observations and Measurements.
     """
 
     #: Sampling Feature is a parent
@@ -62,7 +64,7 @@ class RelatedSamplingFeature(Base):
 
     @property
     def related_sampling_feature_type(self) -> str:
-        """This is a feature type. See :class:`FeatureTypes` for a list of types"""
+        """Feature type of the related sampling feature. See :class:`FeatureTypes` for a list of types"""
         return self._related_sampling_feature_type
 
     @related_sampling_feature_type.setter
@@ -81,7 +83,7 @@ class RelatedSamplingFeature(Base):
 
 class Coordinate(Base):
     """
-    Top level coordinate class that holds absolute or representative coordinates
+    Top level coordinate class that holds :class:`AbsoluteCoordinate` or :class:`RepresentativeCoordinate`
     """
 
     def __init__(self, **kwargs):
@@ -112,7 +114,7 @@ class Coordinate(Base):
 
     @property
     def absolute(self) -> 'AbsoluteCoordinate':
-        """The absolute coordinate"""
+        """Absolute coordinate"""
         return self._absolute
 
     @absolute.setter
@@ -121,7 +123,7 @@ class Coordinate(Base):
 
     @property
     def representative(self) -> 'RepresentativeCoordinate':
-        """The representative coordinate"""
+        """Representative coordinate"""
         return self._representative
 
     @representative.setter
@@ -131,12 +133,14 @@ class Coordinate(Base):
 
 class AbsoluteCoordinate(Base):
     """
-    Absolute coordinate class.
+    Absolute coordinate describes the geo-referenced location of a feature.
+    Coordinates match the feature's shape. For example, a curve is a list of points.
+    Currently collections of discrete points describing a feature are supported.
 
-    Planned extension to better check point, curve, surface, solid shape-specific coordinates.
-    May want to include a type attribute akin to GeoJSON type
-    In future, reconsider the format of attributes to allow for more types of description (meshes, solids, etc)
     """
+    # Planned extension to better check point, curve, surface, solid shape-specific coordinates.
+    # May want to include a type attribute akin to GeoJSON type
+    # In future, reconsider the format of attributes to allow for more types of description (meshes, solids, etc)
 
     def __init__(self, **kwargs):
         self._horizontal_position: List[GeographicCoordinate] = []
@@ -190,9 +194,11 @@ class AbsoluteCoordinate(Base):
 
 class RepresentativeCoordinate(Base):
     """
-    Representative coordinates
-
-    Extendable to other forms of representing (e.g., diameter, area, side_length)
+    Representative coordinates describe the location of a feature by a representative shape / location.
+    For example, a study area may be represented by the center point.
+    The veritical position from a reference position (e.g., height, depth) is also described in this class.
+    Currently representative points are supported. The class is extendable to other forms of representing
+    (e.g., diameter, area, side_length)
     Representative point types are also expandable as use cases require.
     """
 
@@ -232,7 +238,8 @@ class RepresentativeCoordinate(Base):
 
     @property
     def representative_point(self) -> AbsoluteCoordinate:
-        """obj :class:`AbsoluteCoordinate` for POINT"""
+        """A point representation of the feature.
+           obj :class:`AbsoluteCoordinate` for POINT"""
         return self._representative_point
 
     @representative_point.setter
@@ -241,7 +248,8 @@ class RepresentativeCoordinate(Base):
 
     @property
     def representative_point_type(self) -> str:
-        """The assumption is that the coordinate is at the local surface (CV).
+        """The type of representative point relative to the feature's geometry
+           Currently the point is assumed to be located at the local surface (CV).
            Use constants prefixed with `REPRESENTATIVE_POINT_TYPE_` """
         return self._representative_point_type
 
@@ -251,7 +259,8 @@ class RepresentativeCoordinate(Base):
 
     @property
     def vertical_position(self) -> 'DepthCoordinate':
-        """obj :class:`DepthCoordinate`"""
+        """The vertical position of the feature from a reference position (e.g., height or depth).
+           obj :class:`DepthCoordinate`"""
         return self._vertical_position
 
     @vertical_position.setter
@@ -261,7 +270,8 @@ class RepresentativeCoordinate(Base):
 
 class VerticalCoordinate(Base):
     """
-    The reference frame or system from which vertical distances (altitudes or depths) are measured.
+    The vertical position of the feature (altitudes or depths).
+    The reference frame or system is specified.
 
     """
     #: The distance above or below sea level (elevation)
@@ -298,11 +308,12 @@ class VerticalCoordinate(Base):
 
     @property
     def type(self) -> str:
-        """This can either be :class:`VerticalCoordinate.TYPE_ALTITUDE` or :class:`VerticalCoordinate.TYPE_DEPTH`"""
+        """The type of veritical position :class:`VerticalCoordinate.TYPE_ALTITUDE` or
+           :class:`VerticalCoordinate.TYPE_DEPTH`"""
         return self._type
 
     @type.setter
-    def type(self, value):
+    def type(self, value: str):
         self._type = value
 
     @property
@@ -313,31 +324,31 @@ class VerticalCoordinate(Base):
         return self._datum
 
     @datum.setter
-    def datum(self, value):
+    def datum(self, value: str):
         self._datum = value
 
     @property
     def encoding_method(self) -> str:
-        """The method for encoding the units of measure. Use constants prefixed with `ENCODING_` """
+        """The method for encoding the units of distance. Use constants prefixed with `ENCODING_` """
         return self._distance_units
 
     @encoding_method.setter
-    def encoding_method(self, value):
+    def encoding_method(self, value: str):
         self._encoding_method = value
 
     @property
     def distance_units(self) -> str:
-        """The unit of measuring distance. It uses constants prefixed with `DISTANCE_UNITS_`"""
+        """The unit of distance. It uses constants prefixed with `DISTANCE_UNITS_`"""
         return self._distance_units
 
     @distance_units.setter
-    def distance_units(self, value):
+    def distance_units(self, value: str):
         self._distance_units = value
 
     @property
     def resolution(self) -> float:
-        """the minimum distance possible between two adjacent
-           depth values, expressed in Depth Distance Units of measure"""
+        """The minimum distance possible between two adjacent
+           depth values, expressed in Distance Units used for Depth"""
         return self._resolution
 
     @resolution.setter
@@ -346,24 +357,18 @@ class VerticalCoordinate(Base):
 
     @property
     def value(self) -> float:
-        """
-        *The coordinate value
-
-        """
+        """The vertical position value"""
         return self._value
 
     @value.setter
     def value(self, value: float):
-        """
-        The coordinate value
-
-        """
         self._value = value
 
 
 class AltitudeCoordinate(VerticalCoordinate):
     """
-    The reference frame or system from which altitudes (elevations) are measured. The term
+    An altitudinal vertical position (i.e., distance from sea level).
+    The reference frame or system is specified. The term
     "altitude" is used instead of the common term "elevation" to conform to the terminology
     in Federal Information Processing Standards 70-1 and 173.
     """
@@ -382,19 +387,18 @@ class AltitudeCoordinate(VerticalCoordinate):
 
     @property
     def datum(self) -> str:
-        """
-        The reference coordinate system. Use constants prefixed with `DATUM_`
-        """
+        """The reference coordinate system. Use constants prefixed with `DATUM_`"""
         return self._datum
 
     @datum.setter
-    def datum(self, value):
+    def datum(self, value: str):
         self._datum = value
 
 
 class DepthCoordinate(VerticalCoordinate):
     """
-    The reference frame or system from which depths are measured.
+    A depth vertical position (i.e., the height or depth from the specified reference position)
+    The reference frame or system is specified.
     """
 
     #: Local surface
@@ -410,14 +414,12 @@ class DepthCoordinate(VerticalCoordinate):
         super().__init__(type=self.TYPE_DEPTH, **kwargs)
 
     @property
-    def datum(self):
-        """
-        The reference coordinate system. Use constants prefixed with `DATUM_`
-        """
+    def datum(self) -> str:
+        """The reference coordinate system. Use constants prefixed with `DATUM_`"""
         return self._datum
 
     @datum.setter
-    def datum(self, value):
+    def datum(self, value: str):
         self._datum = value
 
 
@@ -433,23 +435,23 @@ class HorizontalCoordinate(Base):
     #: North American Datum 1927 (NAD27)
     DATUM_NAD27 = "NAD27"
 
-    #: the quantities of latitude and longitude which define the position of a
+    #: The quantities of latitude and longitude which define the position of a
     #: point on the Earth's surface with respect to a reference spheroid.
     TYPE_GEOGRAPHIC = "GEOGRAPHIC"
 
-    #: a plane-rectangular coordinate system usually based on, and
+    #: T plane-rectangular coordinate system usually based on, and
     #: mathematically adjusted to, a map projection so that geographic
     #: positions can be readily transformed to and from plane coordinates.
     TYPE_PLANAR_GRID = "PLANAR_GRID"
 
-    #: any right-handed planar coordinate system of which the z-axis
+    #: Any right-handed planar coordinate system of which the z-axis
     #: coincides with a plumb line through the origin that locally is aligned with the surface of the Earth.
     TYPE_PLANAR_LOCAL = "PLANAR_LOCAL"
 
-    #: the systematic representation of all or part of the surface of the Earth on a plane or developable surface.
+    #: The systematic representation of all or part of the surface of the Earth on a plane or developable surface.
     TYPE_PLANAR_MAP_PROJECTION = "PLANAR_MAP_PROJECTION"
 
-    #: a description of any coordinate system that is not aligned with the surface of the Earth.
+    #: A description of any coordinate system that is not aligned with the surface of the Earth.
     TYPE_LOCAL = "LOCAL"
 
     def __init__(self, **kwargs):
@@ -481,29 +483,28 @@ class HorizontalCoordinate(Base):
 
     @property
     def datum(self) -> str:
-        """
-        The reference coordinate system. Use constants prefixed with `DATUM_`
-        """
+        """The reference coordinate system. Use constants prefixed with `DATUM_`"""
         return self._datum
 
     @datum.setter
-    def datum(self, value):
+    def datum(self, value: str):
         self._datum = value
 
     @property
     def type(self) -> str:
-        """The type of coordinates.  Use constants prefixed with `TYPE_`"""
+        """The type of horizontal coordinates. Use constants prefixed with `TYPE_`"""
         return self._type
 
     @type.setter
-    def type(self, value):
+    def type(self, value: str):
         self._type = value
 
 
 class GeographicCoordinate(HorizontalCoordinate):
     """
-    The quantities of latitude and longitude which define the position of a point on
-    the Earth's surface with respect to a reference spheroid. (https://www.fgdc.gov/csdgmgraphical/spref.htm)\
+    The latitude and longitude which define the position of a point on
+    the Earth's surface with respect to a reference spheroid.
+    (https://www.fgdc.gov/csdgmgraphical/spref.htm)\
     """
 
     #: Decimal degrees
@@ -619,11 +620,11 @@ class GeographicCoordinate(HorizontalCoordinate):
 
     @property
     def units(self) -> str:
-        """units determine the datatypes of latitude and longitude. Use constants prefixed with `UNTIS_`"""
+        """Latitude and longitude units. Use constants prefixed with `UNTIS_`"""
         return self._units
 
     @units.setter
-    def units(self, value):
+    def units(self, value: str):
         self._units = value
 
 
@@ -667,7 +668,7 @@ class Feature(Base):
         return self._id
 
     @id.setter
-    def id(self, value):
+    def id(self, value: str):
         self._id = value
 
     @property
@@ -676,7 +677,7 @@ class Feature(Base):
         return self._name
 
     @name.setter
-    def name(self, value):
+    def name(self, value: str):
         self._name = value
 
     @property
@@ -685,16 +686,16 @@ class Feature(Base):
         return self._description
 
     @description.setter
-    def description(self, value):
+    def description(self, value: str):
         self._description = value
 
     @property
     def feature_type(self) -> str:
-        """The feature type.  For a list of feature types see :class:`basin3d.models.FeatureTypes`."""
+        """The feature type. For a list of feature types see :class:`basin3d.models.FeatureTypes`."""
         return self._feature_type
 
     @feature_type.setter
-    def feature_type(self, value):
+    def feature_type(self, value: str):
         self._feature_type = value
 
     @property
@@ -726,11 +727,12 @@ class SamplingFeature(Feature):
 
     @property
     def related_sampling_feature_complex(self) -> List['SamplingFeature']:
-        """List of sampling features"""
+        """List of related sampling features
+           obj :class:`RelatedSamplingFeature`"""
         return self._related_sampling_feature_complex
 
     @related_sampling_feature_complex.setter
-    def related_sampling_feature_complex(self, value):
+    def related_sampling_feature_complex(self, value: List['SamplingFeature']):
         self._related_sampling_feature_complex = value
 
 
@@ -801,7 +803,7 @@ class SpatialSamplingFeature(SamplingFeature):
 
     @property
     def coordinates(self) -> Coordinate:
-        """Instance of :class:`Coordinate`"""
+        """Description of feature location. An instance of :class:`Coordinate`"""
         return self._coordinates
 
     @coordinates.setter
@@ -814,7 +816,7 @@ class SpatialSamplingFeature(SamplingFeature):
         return self._shape
 
     @shape.setter
-    def shape(self, value):
+    def shape(self, value: str):
         self._shape = value
 
 
@@ -841,20 +843,20 @@ class MonitoringFeature(SpatialSamplingFeature):
         self._description_reference = value
 
     @property
-    def related_party(self):
+    def related_party(self) -> List['Person']:
         """list of Person, people or organizations responsible for Feature.
-            To be extended in future to full OGC Responsible_Party"""
+           To be extended in future to full OGC Responsible_Party"""
         return self._related_party
 
     @related_party.setter
-    def related_party(self, value):
+    def related_party(self, value: List['Person']):
         self._related_party = value
 
     @property
     def utc_offset(self) -> int:
-        """Offset in hours referenced to UTC (e.g. +/-9)"""
+        """Coordinated Universal Time (UTC) offset in hours (e.g. +/-9)"""
         return self._utc_offset
 
     @utc_offset.setter
-    def utc_offset(self, value):
+    def utc_offset(self, value: int):
         self._utc_offset = value

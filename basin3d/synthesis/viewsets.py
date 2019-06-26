@@ -4,10 +4,9 @@
 
 .. currentmodule:: basin3d.synthesis.viewsets
 
-:synopsis: The BASIN-3D Synthesis Model Viewsets that support the REST API
-:module author: Val Hendrix <vhendrix@lbl.gov>
+:synopsis: BASIN-3D Synthesis Model Viewsets (View Controllers) that support the REST API
+:module author: Val Hendrix <vhendrix@lbl.gov>, Danielle Svehla Christianson <dschristianson@lbl.gov>
 
-View Controllers for BASIN-3D REST api
 ----------------------------------
 
 """
@@ -129,26 +128,26 @@ class DataSourcePluginViewSet(ViewSet):
 
 class MonitoringFeatureViewSet(DataSourcePluginViewSet):
     """
-    MonitoringFeature
+    MonitoringFeature: A feature upon which monitoring is made. OGC Timeseries Profile OM_MonitoringFeature.
 
     **Properties**
 
-    * *id:* string
-    * *name:* string
-    * *description:* string
-    * *feature_type:* enum (FeatureTypes: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED,
-        SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT)
-    * * observed_property_variables:* list of observed variables made at the Feature.
-        Variables are configured via the plugins.
-    * *related_sampling_feature_comples:* list of related_sampling_features. PARENT features are currently supported.
-    * *shape:* enum (POINT, CURVE, SURFACE, SOLID)
-    * *coordinates:* location of Feature in absolute and/or representative datum
+    * *id:* string, Unique feature identifier
+    * *name:* string, Feature name
+    * *description:* string, Description of the feature
+    * *feature_type:* sting, FeatureType: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED,
+        SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT
+    * * observed_property_variables:* list of observed variables made at the feature.
+        Observed property variables are configured via the plugins.
+    * *related_sampling_feature_complex:* list of related_sampling features. PARENT features are currently supported.
+    * *shape:* string, Shape of the feature: POINT, CURVE, SURFACE, SOLID
+    * *coordinates:* location of feature in absolute and/or representative datum
     * *description_reference:* string, additional information about the Feature
     * *related_party:* (optional) list of people or organizations responsible for the Feature
-    * *utc_offset:* float (offset in hours), e.g., +9
-    * *url:* url
+    * *utc_offset:* float, Coordinate Universal Time offset in hours (offset in hours), e.g., +9
+    * *url:* url, URL with details for the feature
 
-    ** Filter results** by the following attributes
+    ** Filter ** by the following attributes (/?attribute=parameter&attribute=parameter&...)
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
 
     ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
@@ -247,35 +246,36 @@ class MonitoringFeatureViewSet(DataSourcePluginViewSet):
 
 class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
     """
-    Retrieve MeasurementTimeseriesTVPObservation Groups
+    MeasurementTimeseriesTVPObservation: Series of measurement (numerical) observations in
+    TVP (time value pair) format grouped by time (i.e., a timeseries).
 
     ** Properties **
 
     * *id:* string, Observation identifier (optional)
-    * *type:* enum = MEASUREMENT_TVP_TIMESERIES
-    * *observed_property:* url, url for the observation's observed property
-    * *phenomenon_time:* datetime
-    * *utc_offset:* float (offset in hours), e.g., +9
-    * *feature_of_interest:* feature on which the observation is being made
-    * *feature_of_interest_type:* enum (FeatureTypes)
-    * *result_points:* TimeValuePair, observed values of the observed property being assessed
+    * *type:* enum, MEASUREMENT_TVP_TIMESERIES
+    * *observed_property:* url, URL for the observation's observed property
+    * *phenomenon_time:* datetime, datetime of the observation, for a timeseries the start and end times can be provided
+    * *utc_offset:* float, Coordinate Universal Time offset in hours (offset in hours), e.g., +9
+    * *feature_of_interest:* MonitoringFeature obj, feature on which the observation is being made
+    * *feature_of_interest_type:* enum (FeatureTypes), feature type of the feature of interest
+    * *result_points:* list of TimeValuePair obj, observed values of the observed property being assessed
     * *time_reference_position:* enum, position of timestamp in aggregated_duration (START, MIDDLE, END)
     * *aggregation_duration:* enum, time period represented by observation
         (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)
     * *unit_of_measurement:* string, units in which the observation is reported
-    * *statistic:* enum (MEAN, MIN, MAX, TOTAL)
-    * *result_quality:* enum, (CHECKED, UNCHECKED)
+    * *statistic:* enum, statistical property of the observation result (MEAN, MIN, MAX, TOTAL)
+    * *result_quality:* enum, quality assessment of the result (CHECKED, UNCHECKED)
 
-    ** Filter results** by the following attributes:
+    ** Filter ** by the following attributes (?attribute=parameter&attribute=parameter&...):
 
+    * *monitoring_features (required):* comma separated list of monitoring_features ids
+    * *observed_property_variables (required):* comma separated list of observed property variable ids
+    * *start_date (required):* date YYYY-MM-DD
+    * *end_date (optional):* date YYYY-MM-DD
+    * *aggregation_duration: (default: DAY): enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
-    * *monitoring_features (required)* comma separated list of monitoring_features ids
-    * *observed_property_variables (required)* comma separated list of observed property variable ids
-    * *start_date (required)* date YYYY-MM-DD
-    * *end_date* date YYYY-MM-DD
-    * *aggregation_duration:* (default: DAY) enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)
 
-    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
+    ** Restrict fields** with query parameter ‘fields’. (e.g. ?fields=id,name)
 
 
     """

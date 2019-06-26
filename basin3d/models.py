@@ -5,7 +5,7 @@
 .. currentmodule:: basin3d.models
 
 :synopsis: The BASIN-3D  Models
-:module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Val Hendrix <vhendrix@lbl.gov>, Danielle Svehla Christianson <dschristianson@lbl.gov>
 
 .. contents:: Contents
     :local:

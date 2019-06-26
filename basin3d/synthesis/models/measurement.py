@@ -1,20 +1,19 @@
 """
-
-
 `basin3d.synthesis.models.measurement`
 **************************************
 
 .. currentmodule:: basin3d.synthesis.models.measurement
 
-:synopsis: Classes to represent Measurements & Results
-
+:synopsis: Classes to represent Observations
 
 ---------------------
 """
 from collections import namedtuple
 from numbers import Number
+from typing import List
 
-from basin3d.models import FeatureTypes
+from basin3d.models import FeatureTypes, ObservedPropertyVariable
+from basin3d.synthesis.models.field import MonitoringFeature
 from basin3d.plugins import get_datasource_observed_property, \
     get_datasource_observed_property_variable
 from basin3d.synthesis.models import Base
@@ -45,7 +44,7 @@ class TimeValuePair(namedtuple('TimeValuePair', ['timestamp', 'value'])):
 
 class ResultQuality(object):
     """
-    Controlled Vocabulary for result quality
+    Controlled Vocabulary for result quality assessment
     """
 
     #: The result has been checked for quality
@@ -95,74 +94,76 @@ class Observation(Base):
             raise AttributeError("feature_of_interest_type must be FeatureType")
 
     @property
-    def id(self):
-        """Unique identifier"""
+    def id(self) -> str:
+        """Unique observation identifier"""
         return self._id
 
     @id.setter
-    def id(self, value):
+    def id(self, value: str):
         self._id = value
 
     @property
-    def type(self):
-        """This can be either :class:`TYPE_MEASUREMENT` or :class:`TYPE_MEASUREMENT_TVP_TIMESERIES`"""
+    def type(self) -> str:
+        """Type of observation. Use constants prefixed with `TYPE_`"""
         return self._type
 
     @type.setter
-    def type(self, value):
+    def type(self, value: str):
         self._type = value
 
     @property
-    def utc_offset(self):
-        """offset in hours referenced to UTC (e.g. +/-9)"""
+    def utc_offset(self) -> int:
+        """Coordinated Universal Time (UTC) offset in hours (e.g. +/-9)"""
         return self._utc_offset
 
     @utc_offset.setter
-    def utc_offset(self, value):
+    def utc_offset(self, value: int):
         self._utc_offset = value
 
     @property
-    def phenomenon_time(self):
-        """datetime (required OGC attribute timePhenomenon)"""
+    def phenomenon_time(self) -> str:
+        """datetime of the observation (required OGC attribute timePhenomenon).
+           For timeseries, start and end datetimes can be provided."""
         return self._phenomenon_time
 
     @phenomenon_time.setter
-    def phenomenon_time(self, value):
+    def phenomenon_time(self, value: str):
         self._phenomenon_time = value
 
     @property
-    def observed_property(self):
+    def observed_property(self) -> str:
         """The property that was observed"""
         return self._observed_property
 
     @observed_property.setter
-    def observed_property(self, value):
+    def observed_property(self, value: str):
         self._observed_property = value
 
     @property
-    def feature_of_interest(self):
-        """The feature that was observed"""
+    def feature_of_interest(self) -> 'MonitoringFeature':
+        """The feature on which the observed property was observed"""
         return self._feature_of_interest
 
     @feature_of_interest.setter
-    def feature_of_interest(self, value):
+    def feature_of_interest(self, value: 'MonitoringFeature'):
         self._feature_of_interest = value
 
     @property
-    def feature_of_interest_type(self):
+    def feature_of_interest_type(self) -> 'FeatureTypes':
         """The type of feature that was observed. See :class:`basin3d.models.FeatureTypes`"""
         return self._feature_of_interest_type
 
     @feature_of_interest_type.setter
-    def feature_of_interest_type(self, value):
+    def feature_of_interest_type(self, value: 'FeatureTypes'):
         self._feature_of_interest_type = value
 
     @property
-    def result_quality(self):
+    def result_quality(self) -> 'ResultQuality':
+        """The result quality assessment. See :class:`ResultQuality`"""
         return self._result_quality
 
     @result_quality.setter
-    def result_quality(self, value):
+    def result_quality(self, value: 'ResultQuality'):
         self._result_quality = value
 
 
@@ -171,31 +172,31 @@ class TimeMetadataMixin(object):
     Metadata attributes for Observations with a time
     """
 
-    #: Measurements aggregated by year
+    #: Observations aggregated by year
     AGGREGATION_DURATION_YEAR = "YEAR"
 
-    #: Measurements aggregated by month
+    #: Observations aggregated by month
     AGGREGATION_DURATION_MONTH = "MONTH"
 
-    #: Measurements aggregated by day
+    #: Observations aggregated by day
     AGGREGATION_DURATION_DAY = "DAY"
 
-    #: Measurements aggregated by hour
+    #: Observations aggregated by hour
     AGGREGATION_DURATION_HOUR = "HOUR"
 
-    #: Measurements aggregated by minute
+    #: Observations aggregated by minute
     AGGREGATION_DURATION_MINUTE = "MINUTE"
 
-    #: Measurements aggregated by second
+    #: Observations aggregated by second
     AGGREGATION_DURATION_SECOND = "SECOND"
 
-    #: Measurement taken at the start
+    #: Observation taken at the start
     TIME_REFERENCE_START = "START"
 
-    #: Measurement taken in the middle
+    #: Observation taken in the middle
     TIME_REFERENCE_MIDDLE = "MIDDLE"
 
-    #: Measurement taken at the end
+    #: Observation taken at the end
     TIME_REFERENCE_END = "END"
 
     def __init__(self, *args, **kwargs):
@@ -206,21 +207,23 @@ class TimeMetadataMixin(object):
         super(TimeMetadataMixin, self).__init__(*args, **kwargs)
 
     @property
-    def aggregation_duration(self):
-        """Follows OGC TM_PeriodDuration"""
+    def aggregation_duration(self) -> str:
+        """Time period represented by the observation. Follows OGC TM_PeriodDuration.
+           Use constants prefixed with `AGGREGATION_DURATION`"""
         return self._aggregation_duration
 
     @aggregation_duration.setter
-    def aggregation_duration(self, value):
+    def aggregation_duration(self, value: str):
         self._aggregation_duration = value
 
     @property
-    def time_reference_position(self):
+    def time_reference_position(self) -> str:
+        """Position of timestamp in aggregated_duration. Encompassed as part of OGC interpolationType.
+           Use constants prefixed with `TIME_REFERENCE`"""
         return self._time_reference_position
 
     @time_reference_position.setter
-    def time_reference_position(self, value):
-        """Encompassed as part of OGC interpolationType"""
+    def time_reference_position(self, value: str):
         self._time_reference_position = value
 
 
@@ -249,66 +252,52 @@ class MeasurementMetadataMixin(object):
         super(MeasurementMetadataMixin, self).__init__(*args, **kwargs)
 
     @property
-    def observed_property_variable(self):
+    def observed_property_variable(self) -> 'ObservedPropertyVariable':
         """The observed property that was measured"""
         return self._observed_property_variable
 
     @observed_property_variable.setter
-    def observed_property_variable(self, value):
+    def observed_property_variable(self, value: 'ObservedPropertyVariable'):
         self._observed_property_variable = value
 
     @property
-    def statistic(self):
-        """The statisctic being used.  Use constants prefixed with `STATISTIC_`"""
+    def statistic(self) -> str:
+        """The statistical property of the observation result. Use constants prefixed with `STATISTIC_`"""
         return self._statistic
 
     @statistic.setter
-    def statistic(self, value):
+    def statistic(self, value: str):
         self._statistic = value
 
 
 class MeasurementTimeseriesTVPResultMixin(object):
     """
     Result Mixin: Measurement Timeseries TimeValuePair
-
-    Attributes:
-        - *result_points:* list of TimeValuePair
-        - *unit_of_measurement:* string
     """
     def __init__(self, *args, **kwargs):
         self._result_points = []
         self._unit_of_measurement = None
-        self._tvp = TimeValuePair
 
         # Instantiate the serializer superclass
         super(MeasurementTimeseriesTVPResultMixin, self).__init__(*args, **kwargs)
 
     @property
-    def result_points(self):
+    def result_points(self) -> List['TimeValuePair']:
         """A list of results """
         return self._result_points
 
     @result_points.setter
-    def result_points(self, value):
+    def result_points(self, value: List['TimeValuePair']):
         self._result_points = value
 
     @property
-    def unit_of_measurement(self):
-        """The unit of measurement"""
+    def unit_of_measurement(self) -> str:
+        """Unit of measurement"""
         return self._unit_of_measurement
 
     @unit_of_measurement.setter
-    def unit_of_measurement(self, value):
+    def unit_of_measurement(self, value: str):
         self._unit_of_measurement = value
-
-    @property
-    def tvp(self):
-        """Time value Pair. See :class:`TimeValuePair`"""
-        return self._tvp
-
-    @tvp.setter
-    def tvp(self, value):
-        self._tvp = value
 
 
 class MeasurementResultMixin(object):
@@ -324,7 +313,7 @@ class MeasurementResultMixin(object):
 
     @property
     def result_value(self):
-        """a Numeric"""
+        """Numeric value that was measured"""
         return self._result_value
 
     @result_value.setter
@@ -333,7 +322,7 @@ class MeasurementResultMixin(object):
 
     @property
     def unit_of_measurement(self):
-        """The unit of measurement"""
+        """Unit of measurement"""
         return self._unit_of_measurement
 
     @unit_of_measurement.setter
@@ -344,10 +333,10 @@ class MeasurementResultMixin(object):
 class MeasurementTimeseriesTVPObservation(TimeMetadataMixin, MeasurementMetadataMixin,
                                           MeasurementTimeseriesTVPResultMixin, Observation):
     """
-    Series of measurement data points grouped by time (i.e., a timeseries).
-    Anything specified at the group level automatically applies to the individual data point.
-    Position Observation (the one inheriting from Base) last in the inheritance list.
+    Series of measurement (numerical) observations in TVP format grouped by time (i.e., a timeseries).
+    Anything specified at the group level automatically applies to the individual observation.
     """
+    # NOTE: Position Observation (the one inheriting from Base) last in the inheritance list.
     def __init__(self, datasource, **kwargs):
         kwargs["type"] = self.TYPE_MEASUREMENT_TVP_TIMESERIES
 
