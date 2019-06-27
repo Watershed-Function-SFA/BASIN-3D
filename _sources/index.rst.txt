@@ -7,7 +7,7 @@ Welcome to BASIN-3D |release| documentation!
    rest_api
    synthesis_models
    synthesis_views
-   framework
+   django_framework
 
 Indices and tables
 ==================

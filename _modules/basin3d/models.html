@@ -69,7 +69,7 @@
 <span class="kn">from</span> <span class="nn">django_extensions.db.fields.encrypted</span> <span class="k">import</span> <span class="n">EncryptedTextField</span>
 
 
-<div class="viewcode-block" id="SpatialSamplingShapes"><a class="viewcode-back" href="../../framework.html#basin3d.models.SpatialSamplingShapes">[docs]</a><span class="k">class</span> <span class="nc">SpatialSamplingShapes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SpatialSamplingShapes"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.SpatialSamplingShapes">[docs]</a><span class="k">class</span> <span class="nc">SpatialSamplingShapes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spatial sampling shape describing a spatial sampling feature</span>
 
@@ -89,7 +89,7 @@
     <span class="n">SHAPE_POINT</span> <span class="o">=</span> <span class="s2">&quot;POINT&quot;</span></div>
 
 
-<div class="viewcode-block" id="FeatureTypes"><a class="viewcode-back" href="../../framework.html#basin3d.models.FeatureTypes">[docs]</a><span class="k">class</span> <span class="nc">FeatureTypes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="FeatureTypes"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.FeatureTypes">[docs]</a><span class="k">class</span> <span class="nc">FeatureTypes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Feature Types where an Observation can be made.</span>
 
@@ -134,7 +134,7 @@
     <span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="get_feature_types"><a class="viewcode-back" href="../../framework.html#basin3d.models.get_feature_types">[docs]</a><span class="k">def</span> <span class="nf">get_feature_types</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="get_feature_types"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.get_feature_types">[docs]</a><span class="k">def</span> <span class="nf">get_feature_types</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function for FeatureTypes</span>
 <span class="sd">    :return list of feature_types as strings</span>
@@ -142,7 +142,7 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">FeatureTypes</span><span class="o">.</span><span class="n">TYPES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
 
 
-<div class="viewcode-block" id="StringListField"><a class="viewcode-back" href="../../framework.html#basin3d.models.StringListField">[docs]</a><span class="k">class</span> <span class="nc">StringListField</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">):</span>
+<div class="viewcode-block" id="StringListField"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.StringListField">[docs]</a><span class="k">class</span> <span class="nc">StringListField</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    StringListField stored delimited strings in the database.</span>
 
@@ -157,7 +157,7 @@
 
         <span class="nb">super</span><span class="p">(</span><span class="n">StringListField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="StringListField.to_python"><a class="viewcode-back" href="../../framework.html#basin3d.models.StringListField.to_python">[docs]</a>    <span class="k">def</span> <span class="nf">to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="StringListField.to_python"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.StringListField.to_python">[docs]</a>    <span class="k">def</span> <span class="nf">to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -168,18 +168,18 @@
 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ListField must be  delimited string&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="StringListField.get_prep_value"><a class="viewcode-back" href="../../framework.html#basin3d.models.StringListField.get_prep_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_prep_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="StringListField.get_prep_value"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.StringListField.get_prep_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_prep_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="StringListField.value_to_string"><a class="viewcode-back" href="../../framework.html#basin3d.models.StringListField.value_to_string">[docs]</a>    <span class="k">def</span> <span class="nf">value_to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="StringListField.value_to_string"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.StringListField.value_to_string">[docs]</a>    <span class="k">def</span> <span class="nf">value_to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_prep_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="DataSource"><a class="viewcode-back" href="../../framework.html#basin3d.models.DataSource">[docs]</a><span class="k">class</span> <span class="nc">DataSource</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<div class="viewcode-block" id="DataSource"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.DataSource">[docs]</a><span class="k">class</span> <span class="nc">DataSource</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Data Source definition</span>
 
@@ -213,7 +213,7 @@
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;&lt;DataSource </span><span class="si">%r</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DataSource.get_plugin"><a class="viewcode-back" href="../../framework.html#basin3d.models.DataSource.get_plugin">[docs]</a>    <span class="k">def</span> <span class="nf">get_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataSource.get_plugin"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.DataSource.get_plugin">[docs]</a>    <span class="k">def</span> <span class="nf">get_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the plugin class</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -223,7 +223,7 @@
         <span class="k">return</span> <span class="n">plugin_class</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="ObservedProperty"><a class="viewcode-back" href="../../framework.html#basin3d.models.ObservedProperty">[docs]</a><span class="k">class</span> <span class="nc">ObservedProperty</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<div class="viewcode-block" id="ObservedProperty"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.ObservedProperty">[docs]</a><span class="k">class</span> <span class="nc">ObservedProperty</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defining the attributes for a single/multiple Observed Properties</span>
 
@@ -252,7 +252,7 @@
         <span class="k">return</span> <span class="s1">&#39;&lt;ObservedProperty </span><span class="si">%r</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ObservedPropertyVariable"><a class="viewcode-back" href="../../framework.html#basin3d.models.ObservedPropertyVariable">[docs]</a><span class="k">class</span> <span class="nc">ObservedPropertyVariable</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<div class="viewcode-block" id="ObservedPropertyVariable"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.ObservedPropertyVariable">[docs]</a><span class="k">class</span> <span class="nc">ObservedPropertyVariable</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defining the properties being observed (measured). See http://vocabulary.odm2.org/variablename/ for controlled vocabulary</span>
 
@@ -289,7 +289,7 @@
         <span class="k">return</span> <span class="s2">&quot;&lt;ObservedPropertyVariable </span><span class="si">{}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DataSourceObservedPropertyVariable"><a class="viewcode-back" href="../../framework.html#basin3d.models.DataSourceObservedPropertyVariable">[docs]</a><span class="k">class</span> <span class="nc">DataSourceObservedPropertyVariable</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<div class="viewcode-block" id="DataSourceObservedPropertyVariable"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.DataSourceObservedPropertyVariable">[docs]</a><span class="k">class</span> <span class="nc">DataSourceObservedPropertyVariable</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Synthesis of Data Source Observed Property Variables with BASIN-3D Observed Property Variables</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -312,7 +312,7 @@
         <span class="k">return</span> <span class="s1">&#39;&lt;DataSourceObservedPropertyVariable </span><span class="si">%r</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SamplingMedium"><a class="viewcode-back" href="../../framework.html#basin3d.models.SamplingMedium">[docs]</a><span class="k">class</span> <span class="nc">SamplingMedium</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<div class="viewcode-block" id="SamplingMedium"><a class="viewcode-back" href="../../django_framework.html#basin3d.models.SamplingMedium">[docs]</a><span class="k">class</span> <span class="nc">SamplingMedium</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Types of sampling mediums for Observed Properties</span>
 <span class="sd">    &quot;&quot;&quot;</span>
