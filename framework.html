@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Framework &#8212; BASIN-3D v2.0.0-rc1-3-g532905e documentation</title>
+    <title>Django Framework &#8212; BASIN-3D v2.0.0-rc1-10-g7d4a7e7 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -29,7 +29,7 @@
         <li class="right" >
           <a href="synthesis_views.html" title="Synthesis Views"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -39,7 +39,7 @@
           <div class="body" role="main">
             
   <div class="section" id="module-basin3d.models">
-<span id="framework"></span><span id="apireference"></span><h1>Framework<a class="headerlink" href="#module-basin3d.models" title="Permalink to this headline">¶</a></h1>
+<span id="django-framework"></span><span id="apireference"></span><h1>Django Framework<a class="headerlink" href="#module-basin3d.models" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="basin3d-models">
 <h2><cite>basin3d.models</cite><a class="headerlink" href="#basin3d-models" title="Permalink to this headline">¶</a></h2>
 <dl class="field-list simple">
@@ -49,8 +49,24 @@
 <dt class="field-even">module author</dt>
 <dd class="field-even"><p>Val Hendrix &lt;<a class="reference external" href="mailto:vhendrix&#37;&#52;&#48;lbl&#46;gov">vhendrix<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
 </dd>
+<dt class="field-odd">module author</dt>
+<dd class="field-odd"><p>Danielle Svehla Christianson &lt;<a class="reference external" href="mailto:dschristianson&#37;&#52;&#48;lbl&#46;gov">dschristianson<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
+</dd>
 </dl>
-<dl class="class">
+<p>Below is the inheritance diagram for BASIN-3D generic models and supporting classes.  All of the models are based on
+<code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.Model</span></code> which provide the object relational mapping technology for building and managing
+relational database tables.</p>
+<div class="graphviz"><img src="_images/inheritance-3b716cbbb376331eea8ccf3a9cbb94b8b9d504db.png" alt="Inheritance diagram of basin3d.models" usemap="#inheritance96b6f7351e" class="inheritance graphviz" /></div>
+<map id="inheritance96b6f7351e" name="inheritance96b6f7351e">
+<area shape="rect" id="node1" href="#basin3d.models.DataSource" target="_top" title="Data Source definition" alt="" coords="391,53,580,77"/>
+<area shape="rect" id="node3" href="#basin3d.models.DataSourceObservedPropertyVariable" target="_top" title="Synthesis of Data Source Observed Property Variables with BASIN&#45;3D Observed Property Variables" alt="" coords="313,101,658,125"/>
+<area shape="rect" id="node5" href="#basin3d.models.ObservedProperty" target="_top" title="Defining the attributes for a single/multiple Observed Properties" alt="" coords="373,149,599,173"/>
+<area shape="rect" id="node6" href="#basin3d.models.ObservedPropertyVariable" target="_top" title="Defining the properties being observed (measured). See http://vocabulary.odm2.org/variablename/ for controlled vocabulary" alt="" coords="349,197,623,221"/>
+<area shape="rect" id="node7" href="#basin3d.models.SamplingMedium" target="_top" title="Types of sampling mediums for Observed Properties" alt="" coords="375,245,597,269"/>
+<area shape="rect" id="node4" href="#basin3d.models.FeatureTypes" target="_top" title="Feature Types where an Observation can be made." alt="" coords="35,101,235,125"/>
+<area shape="rect" id="node8" href="#basin3d.models.SpatialSamplingShapes" target="_top" title="Spatial sampling shape describing a spatial sampling feature" alt="" coords="5,53,265,77"/>
+<area shape="rect" id="node9" href="#basin3d.models.StringListField" target="_top" title="StringListField stored delimited strings in the database." alt="" coords="384,5,587,29"/>
+</map><dl class="class">
 <dt id="basin3d.models.DataSource">
 <em class="property">class </em><code class="sig-prename descclassname">basin3d.models.</code><code class="sig-name descname">DataSource</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#DataSource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.DataSource" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
@@ -111,8 +127,7 @@ object the first time, the query is executed.</p>
 <dl class="method">
 <dt id="basin3d.models.DataSource.get_plugin">
 <code class="sig-name descname">get_plugin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#DataSource.get_plugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.DataSource.get_plugin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the plugin
-:return:</p>
+<dd><p>Return the plugin class</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -696,39 +711,6 @@ This is used by the serialization framework.</p>
 </dd></dl>
 
 </div>
-<span class="target" id="module-basin3d.plugins"></span><div class="section" id="basin3d-plugins">
-<h2><cite>basin3d.plugins</cite><a class="headerlink" href="#basin3d-plugins" title="Permalink to this headline">¶</a></h2>
-<dl class="field-list simple">
-<dt class="field-odd">platform</dt>
-<dd class="field-odd"><p>Unix, Mac</p>
-</dd>
-<dt class="field-even">synopsis</dt>
-<dd class="field-even"><p>BASIN-3D <code class="docutils literal notranslate"><span class="pre">DataSource</span></code> plugin classes</p>
-</dd>
-<dt class="field-odd">module author</dt>
-<dd class="field-odd"><p>Val Hendrix &lt;<a class="reference external" href="mailto:vhendrix&#37;&#52;&#48;lbl&#46;gov">vhendrix<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
-</dd>
-</dl>
-<dl class="function">
-<dt id="basin3d.plugins.get_url">
-<code class="sig-prename descclassname">basin3d.plugins.</code><code class="sig-name descname">get_url</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">params=None</em>, <em class="sig-param">headers=None</em>, <em class="sig-param">verify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d.html#get_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.plugins.get_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send a GET request to the specified URL</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>url</strong> – </p></li>
-<li><p><strong>params</strong> – request parameters</p></li>
-<li><p><strong>headers</strong> – request headers</p></li>
-<li><p><strong>verify</strong> – verify SSL connection</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Response</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
 <span class="target" id="module-basin3d.viewsets"></span><div class="section" id="basin3d-viewsets">
 <h2><cite>basin3d.viewsets</cite><a class="headerlink" href="#basin3d-viewsets" title="Permalink to this headline">¶</a></h2>
 <dl class="field-list simple">
@@ -741,19 +723,24 @@ This is used by the serialization framework.</p>
 <dt class="field-odd">module author</dt>
 <dd class="field-odd"><p>Val Hendrix &lt;<a class="reference external" href="mailto:vhendrix&#37;&#52;&#48;lbl&#46;gov">vhendrix<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
 </dd>
+<dt class="field-even">module author</dt>
+<dd class="field-even"><p>Danielle Svehla Christianson &lt;<a class="reference external" href="mailto:dschristianson&#37;&#52;&#48;lbl&#46;gov">dschristianson<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
+</dd>
 </dl>
-<ul class="simple">
-<li><p><a class="reference internal" href="#basin3d.viewsets.DirectAPIViewSet" title="basin3d.viewsets.DirectAPIViewSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DirectAPIViewSet</span></code></a> - supports REST ` <cite>GET`</cite> methods that list the direct datasource APIs</p></li>
-<li><p><a class="reference internal" href="#basin3d.viewsets.DataSourceViewSet" title="basin3d.viewsets.DataSourceViewSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSourceViewSet</span></code></a> - supports REST ` <cite>GET`</cite> methods that synthesize <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSource</span></code> objects</p></li>
-<li><p><a class="reference internal" href="#basin3d.viewsets.ObservedPropertyVariableViewSet" title="basin3d.viewsets.ObservedPropertyVariableViewSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservedPropertyVariableViewSet</span></code></a> - supports REST ` <cite>GET`</cite> methods that synthesize <a class="reference internal" href="#basin3d.models.ObservedPropertyVariable" title="basin3d.models.ObservedPropertyVariable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservedPropertyVariable</span></code></a> objects</p></li>
-<li><p><a class="reference internal" href="#basin3d.viewsets.ObservedPropertyViewSet" title="basin3d.viewsets.ObservedPropertyViewSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservedPropertyViewSet</span></code></a> - supports REST ` <cite>GET`</cite> methods that synthesize <a class="reference internal" href="#basin3d.models.ObservedProperty" title="basin3d.models.ObservedProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObservedProperty</span></code></a> objects</p></li>
-</ul>
-<dl class="class">
+<p>Below is the inheritance diagram for BASIN-3D Viewsets.  All of the views are based on viewsets from
+<code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets</span></code> which provide functionality for controlling access to the REST API.</p>
+<div class="graphviz"><img src="_images/inheritance-7176a91dd0d73813576af790d77c29bc5d764199.png" alt="Inheritance diagram of basin3d.viewsets" usemap="#inheritance4490d5084e" class="inheritance graphviz" /></div>
+<map id="inheritance4490d5084e" name="inheritance4490d5084e">
+<area shape="rect" id="node1" href="#basin3d.viewsets.DataSourceViewSet" target="_top" title="Returns a list of all Data Sources available to the BASIN&#45;3D service" alt="" coords="412,53,658,77"/>
+<area shape="rect" id="node5" href="#basin3d.viewsets.ObservedPropertyVariableViewSet" target="_top" title="Returns a list of available Observed Property Variables. A observed property variable defines what is" alt="" coords="369,101,701,125"/>
+<area shape="rect" id="node6" href="#basin3d.viewsets.ObservedPropertyViewSet" target="_top" title="Returns a list of available Observation Properties" alt="" coords="393,149,677,173"/>
+<area shape="rect" id="node3" href="#basin3d.viewsets.DirectAPIViewSet" target="_top" title="Direct Access to data source APIs. Supports REST &#160;``GET`` methods that list the direct datasource APIs" alt="" coords="419,5,651,29"/>
+</map><dl class="class">
 <dt id="basin3d.viewsets.DataSourceViewSet">
 <em class="property">class </em><code class="sig-prename descclassname">basin3d.viewsets.</code><code class="sig-name descname">DataSourceViewSet</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#DataSourceViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.DataSourceViewSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets.ReadOnlyModelViewSet</span></code></p>
 <p>Returns a list of all Data Sources available to the BASIN-3D service</p>
-<p>** Properties **</p>
+<p><strong>Properties</strong></p>
 <ul class="simple">
 <li><p><em>name:</em> string, Unique name for the Data Source</p></li>
 <li><p><em>id_prefix:</em> string, unique id prefix for all Data Source ids</p></li>
@@ -807,7 +794,7 @@ This is used by the serialization framework.</p>
 <dt id="basin3d.viewsets.DirectAPIViewSet">
 <em class="property">class </em><code class="sig-prename descclassname">basin3d.viewsets.</code><code class="sig-name descname">DirectAPIViewSet</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#DirectAPIViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.DirectAPIViewSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets.GenericViewSet</span></code></p>
-<p>Direct Access to data source APIs</p>
+<p>Direct Access to data source APIs. Supports REST  <code class="docutils literal notranslate"><span class="pre">GET</span></code> methods that list the direct datasource APIs</p>
 <dl class="method">
 <dt id="basin3d.viewsets.DirectAPIViewSet.list">
 <code class="sig-name descname">list</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#DirectAPIViewSet.list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.DirectAPIViewSet.list" title="Permalink to this definition">¶</a></dt>
@@ -946,9 +933,8 @@ being measured. See <a class="reference external" href="http://vocabulary.odm2.o
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Framework</a><ul>
+<li><a class="reference internal" href="#">Django Framework</a><ul>
 <li><a class="reference internal" href="#basin3d-models"><cite>basin3d.models</cite></a></li>
-<li><a class="reference internal" href="#basin3d-plugins"><cite>basin3d.plugins</cite></a></li>
 <li><a class="reference internal" href="#basin3d-viewsets"><cite>basin3d.viewsets</cite></a></li>
 </ul>
 </li>
@@ -990,13 +976,13 @@ being measured. See <a class="reference external" href="http://vocabulary.odm2.o
         <li class="right" >
           <a href="synthesis_views.html" title="Synthesis Views"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

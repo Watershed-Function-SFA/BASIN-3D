@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>BASIN-3D Data Source REST APIs &#8212; BASIN-3D v2.0.0-rc1-3-g532905e documentation</title>
+    <title>BASIN-3D Data Source REST APIs &#8212; BASIN-3D v2.0.0-rc1-10-g7d4a7e7 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Synthesis Packages" href="synthesis_models.html" />
+    <link rel="next" title="Synthesis Models" href="synthesis_models.html" />
     <link rel="prev" title="BASIN-3D Quickstart" href="quickstart.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -28,12 +28,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="synthesis_models.html" title="Synthesis Packages"
+          <a href="synthesis_models.html" title="Synthesis Models"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="quickstart.html" title="BASIN-3D Quickstart"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -52,7 +52,7 @@
 <dd class="field-even"><p>All BASIN-3D REST api calls are read-only (GET). The browsable API may be accessed at the root URL of the application.</p>
 </dd>
 <dt class="field-odd">module author</dt>
-<dd class="field-odd"><p>Val Hendrix &lt;<a class="reference external" href="mailto:vhendrix&#37;&#52;&#48;lbl&#46;gov">vhendrix<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
+<dd class="field-odd"><p>Val Hendrix &lt;<a class="reference external" href="mailto:vhendrix&#37;&#52;&#48;lbl&#46;gov">vhendrix<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;, Danielle Svehla Christianson &lt;<a class="reference external" href="mailto:dschristianson&#37;&#52;&#48;lbl&#46;gov">dschristianson<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
 </dd>
 </dl>
 <div class="contents local topic" id="contents">
@@ -61,156 +61,172 @@
 <li><p><a class="reference internal" href="#synthesis-api" id="id1">Synthesis API</a></p>
 <ul>
 <li><p><a class="reference internal" href="#data-sources" id="id2">Data Sources</a></p></li>
-<li><p><a class="reference internal" href="#variables" id="id3">Variables</a></p></li>
-<li><p><a class="reference internal" href="#regions" id="id4">Regions</a></p></li>
-<li><p><a class="reference internal" href="#observed-properties-and-results" id="id5">Observed Properties and Results</a></p>
-<ul>
-<li><p><a class="reference internal" href="#observed-properties" id="id6">Observed Properties</a></p></li>
-<li><p><a class="reference internal" href="#data-point-groups" id="id7">Data Point Groups</a></p></li>
-<li><p><a class="reference internal" href="#data-points" id="id8">Data Points</a></p></li>
+<li><p><a class="reference internal" href="#observed-property-variables" id="id3">Observed Property Variables</a></p></li>
+<li><p><a class="reference internal" href="#observed-properties" id="id4">Observed Properties</a></p></li>
+<li><p><a class="reference internal" href="#monitoring-features" id="id5">Monitoring Features</a></p></li>
+<li><p><a class="reference internal" href="#measurementtimeseriestvpobservation" id="id6">MeasurementTimeseriesTVPObservation</a></p></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><p><a class="reference internal" href="#direct-api" id="id9">Direct API</a></p></li>
+<li><p><a class="reference internal" href="#direct-api" id="id7">Direct API</a></p></li>
 </ul>
 </div>
 <div class="section" id="synthesis-api">
 <h2><a class="toc-backref" href="#contents">Synthesis API</a><a class="headerlink" href="#synthesis-api" title="Permalink to this headline">¶</a></h2>
-<p>Synthesis is  the process of converting multiple heterogeneous data sources into a single uniform format.
+<p>Synthesis is the process of converting multiple heterogeneous data sources into a single uniform format.
 This section describes BASIN-3D synthesis REST API.</p>
 <div class="section" id="data-sources">
 <h3><a class="toc-backref" href="#contents">Data Sources</a><a class="headerlink" href="#data-sources" title="Permalink to this headline">¶</a></h3>
 <p>BASIN-3D Data sources definitions.  All data sources defined are available for synthesis in the
-subesequent APIs</p>
+subesequent APIs.</p>
 <div class="line-block">
-<div class="line"><cite>/synthesis/datasources –</cite> Returns a list of data sources.</div>
+<div class="line"><cite>/synthesis/datasources –</cite> Returns a list of data sources</div>
 <div class="line"><cite>/synthesis/datasources/:id –</cite> Get a single data source</div>
 </div>
 <dl class="simple">
 <dt><strong>Attributes:</strong></dt><dd><ul class="simple">
-<li><p><em>name:</em> unique name for this data source</p></li>
-<li><p><em>location:</em> web resource location of the data source</p></li>
-<li><p><em>id_prefix:</em> a unique iset of characters to prefix ids for this data source</p></li>
+<li><p><em>name:</em> Unique name for the data source</p></li>
+<li><p><em>id_prefix:</em> A unique iset of characters to prefix ids for the data source</p></li>
+<li><p><em>location:</em> Location of the data source</p></li>
+<li><p><em>observed_property_variables:</em> Observed property variables for the data source</p></li>
 </ul>
 </dd>
 <dt><strong>URLs</strong></dt><dd><ul class="simple">
-<li><p>url – for detail on a single data source</p></li>
-<li><p>direct_path – Access the direct API for this data source</p></li>
+<li><p>url – URL with details for the data source</p></li>
+<li><p>direct_path – Access the direct API for the data source</p></li>
+<li><p>check – Validation URL for the data source connection</p></li>
 </ul>
 </dd>
 </dl>
 </div>
-<div class="section" id="variables">
-<h3><a class="toc-backref" href="#contents">Variables</a><a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h3>
-<p>Common names for measurement variables. Data source measurement variables are mapped thes synthesized
-variables.</p>
+<div class="section" id="observed-property-variables">
+<h3><a class="toc-backref" href="#contents">Observed Property Variables</a><a class="headerlink" href="#observed-property-variables" title="Permalink to this headline">¶</a></h3>
+<p>Common names for observed property variables. A observed property variable defines what is
+being measured. Data source observed property variables are mapped to these synthesized
+observed property variables.</p>
 <div class="line-block">
-<div class="line"><cite>/synthesis/variables –</cite> Returns a list of variables.</div>
-<div class="line"><cite>/synthesis/variables/:id –</cite> Get a single variable</div>
+<div class="line"><cite>/synthesis/observedpropertyvariables –</cite> Returns a list of observed property variables</div>
+<div class="line"><cite>/synthesis/observedpropertyvariables/:id –</cite> Get a single observed property variable</div>
 </div>
 <dl class="simple">
 <dt><strong>Attributes:</strong></dt><dd><ul class="simple">
-<li><p><em>full_name:</em> string</p></li>
-<li><p><em>categories:</em> ordered string list of categories</p></li>
+<li><p><em>id:</em> Unique observed property variable identifier</p></li>
+<li><p><em>full_name:</em> Descriptive name for the observed property variable</p></li>
+<li><p><em>categories:</em> Categories of which the variable is a member, listed in hierarchical order</p></li>
+<li><p><em>datasources:</em> List of the data sources that define the current observed property variable</p></li>
 </ul>
 </dd>
 <dt><strong>URLs</strong></dt><dd><ul class="simple">
-<li><p>url – for detail on a single measurement variable</p></li>
+<li><p>url – URL with details for the observed property variable</p></li>
 </ul>
 </dd>
 </dl>
 </div>
-<div class="section" id="regions">
-<h3><a class="toc-backref" href="#contents">Regions</a><a class="headerlink" href="#regions" title="Permalink to this headline">¶</a></h3>
-<p>A Region is any arbitrary area - not necessarily associated with any
-observations - e.g. a watershed, a city</p>
-<div class="line-block">
-<div class="line"><cite>/synthesis/regions –</cite> Returns a list of regions.</div>
-<div class="line"><cite>/synthesis/regions/:id –</cite> Get a single region</div>
-</div>
-<dl class="simple">
-<dt><strong>Attributes:</strong></dt><dd><ul class="simple">
-<li><p><em>id:</em> string</p></li>
-<li><p><em>name:</em> string</p></li>
-<li><p><em>description:</em> string</p></li>
-<li><p><em>url:</em> polygon</p></li>
-</ul>
-</dd>
-<dt><strong>URLs</strong></dt><dd><ul class="simple">
-<li><p>url – for detail on a single city</p></li>
-<li><p>model_domains – to list all river systems for a city</p></li>
-</ul>
-</dd>
-</dl>
-</div>
-<div class="section" id="observed-properties-and-results">
-<h3><a class="toc-backref" href="#contents">Observed Properties and Results</a><a class="headerlink" href="#observed-properties-and-results" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="observed-properties">
-<h4><a class="toc-backref" href="#contents">Observed Properties</a><a class="headerlink" href="#observed-properties" title="Permalink to this headline">¶</a></h4>
-<p>Defining the attributes for a single/multiple Observed Properties</p>
+<h3><a class="toc-backref" href="#contents">Observed Properties</a><a class="headerlink" href="#observed-properties" title="Permalink to this headline">¶</a></h3>
+<p>Definition of the attributes for an observed property</p>
+<div class="line-block">
+<div class="line"><cite>/synthesis/observedproperty –</cite> Returns a list of observed property variables</div>
+<div class="line"><cite>/synthesis/observedproperty/:id –</cite> Get a single observed property variable</div>
+</div>
 <dl class="simple">
 <dt><strong>Attributes:</strong></dt><dd><ul class="simple">
-<li><p><em>id:</em> string,</p></li>
-<li><p><em>description:</em> id</p></li>
-<li><p><em>observed_property_variable:</em> string</p></li>
-<li><p><em>sampling_medium:</em> enum (atmosphere, surface water, soil/sediment, soil gas, groundwater), atmosphere</p></li>
+<li><p><em>observed_property_variable:</em> Observed property variable assigned to the observed property</p></li>
+<li><p><em>datasource:</em> Data source defining the observed property</p></li>
+<li><dl class="simple">
+<dt><em>sampling_medium:</em> Medium in which the observed property is observed</dt><dd><p>(WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE)</p>
+</dd>
+</dl>
+</li>
+<li><p><em>description:</em> Additional information about the observed property</p></li>
 </ul>
 </dd>
 <dt><strong>URLs</strong></dt><dd><ul class="simple">
-<li><p>url – for detail on a single observed property</p></li>
+<li><p>url – URL with details for the observed property</p></li>
 </ul>
 </dd>
 </dl>
 </div>
-<div class="section" id="data-point-groups">
-<h4><a class="toc-backref" href="#contents">Data Point Groups</a><a class="headerlink" href="#data-point-groups" title="Permalink to this headline">¶</a></h4>
-<p>Series of data points grouped by time, space, model, sample  etc. Anything specified at the
-group  level automatically applies to the individual data point.</p>
+<div class="section" id="monitoring-features">
+<h3><a class="toc-backref" href="#contents">Monitoring Features</a><a class="headerlink" href="#monitoring-features" title="Permalink to this headline">¶</a></h3>
+<p>A feature on which an observation is made. Features organized into spatial
+hierarchies are described via the related_sampling_feature complex</p>
+<div class="line-block">
+<div class="line"><cite>/synthesis/monitoringfeatures –</cite> Returns a list of monitoring features types</div>
+<div class="line"><cite>/synthesis/monitoringfeatures/:featuretype –</cite> Returns a list of monitoring features of the specified feature type</div>
+<div class="line"><cite>/synthesis/monitoringfeatures/:featuretype/:id –</cite> Get a single monitoring feature</div>
+</div>
 <dl class="simple">
 <dt><strong>Attributes:</strong></dt><dd><ul class="simple">
-<li><p><em>id:</em> string</p></li>
-<li><p><em>start_time:</em> datetime,  survey start time (month/year)</p></li>
-<li><p><em>end_time:</em> datetime, units: survey end time (month/year)</p></li>
-<li><p><em>utc_offset:</em> float (offset in hours)</p></li>
-<li><p><em>results:</em> Array of DataPoint objects</p></li>
+<li><p><em>id:</em> Unique feature identifier</p></li>
+<li><p><em>name:</em> Feature name</p></li>
+<li><p><em>description:</em> Description of the feature</p></li>
+<li><dl class="simple">
+<dt><em>feature_type:</em> Type of feature, supported feature types: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED,</dt><dd><p>SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT)</p>
+</dd>
+</dl>
+</li>
+<li><ul>
+<li><p>observed_property_variables:* list of observed variables made at the feature.
+Observed property variables are configured via the plugins.</p></li>
+</ul>
+</li>
+<li><p><em>related_sampling_feature_complex:</em> List of related sampling_features. PARENT features are currently supported.</p></li>
+<li><p><em>shape:</em> Shape of the feature: POINT, CURVE, SURFACE, SOLID</p></li>
+<li><p><em>coordinates:</em> Location of feature in absolute and/or representative datum</p></li>
+<li><p><em>description_reference:</em> Additional information about the feature</p></li>
+<li><p><em>related_party:</em> List of people or organizations responsible for the feature</p></li>
+<li><p><em>utc_offset:</em> Coordinate Universal Time offset in hours</p></li>
 </ul>
 </dd>
 <dt><strong>URLs</strong></dt><dd><ul class="simple">
-<li><p>url – for detail on a single data point group</p></li>
-<li><p>data_points – The data points associated to the current data point group</p></li>
-<li><p>geographical_group – The geographical group associated to the current data point group</p></li>
-<li><p>measurement – The measurement associated to the current data point group</p></li>
+<li><p>url – URL with details for the feature</p></li>
 </ul>
 </dd>
 </dl>
 </div>
-<div class="section" id="data-points">
-<h4><a class="toc-backref" href="#contents">Data Points</a><a class="headerlink" href="#data-points" title="Permalink to this headline">¶</a></h4>
-<p>Data Point (what, where, when??)</p>
+<div class="section" id="measurementtimeseriestvpobservation">
+<h3><a class="toc-backref" href="#contents">MeasurementTimeseriesTVPObservation</a><a class="headerlink" href="#measurementtimeseriestvpobservation" title="Permalink to this headline">¶</a></h3>
+<p>MeasurementTimeseriesTVPObservation: Series of measurement (numerical) observations
+in TVP (time value pair) format grouped by time (i.e., a timeseries).
+Attributes specified at the group level apply to all observations.</p>
+<div class="line-block">
+<div class="line"><cite>/synthesis/measurementtvptimeseries/?filters –</cite> Get a single measurement timeseries TVP observation:</div>
+</div>
 <dl class="simple">
-<dt><strong>Generic Attributes:</strong></dt><dd><ul class="simple">
-<li><p><em>id:</em> string,</p></li>
-<li><p><em>unit:</em> Unit</p></li>
-</ul>
+<dt><strong>Attributes:</strong></dt><dd><ul class="simple">
+<li><p><em>id:</em> Observation identifier (optional)</p></li>
+<li><p><em>type:</em> type of observation = MEASUREMENT_TVP_TIMESERIES</p></li>
+<li><p><em>phenomenon_time:</em> Datetime of the observation, for a timeseries the start and end times can be provided</p></li>
+<li><p><em>utc_offset:</em> Coordinate Universal Time offset in hours (offset in hours), e.g., +9</p></li>
+<li><p><em>feature_of_interest:</em> feature on which the observation is being made</p></li>
+<li><p><em>feature_of_interest_type:</em> feature type of the feature of interest</p></li>
+<li><p><em>result_points:</em> observed values of the observed property being assessed in format of TVP (time value pair)</p></li>
+<li><p><em>time_reference_position:</em> position of timestamp in aggregated_duration (START, MIDDLE, END)</p></li>
+<li><dl class="simple">
+<dt><em>aggregation_duration:</em> time period represented by observation</dt><dd><p>(YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)</p>
 </dd>
-<dt><strong>Time Series Attributes:</strong></dt><dd><ul class="simple">
-<li><p><em>timestamp:</em> datetime,</p></li>
-<li><p><em>value:</em> float,</p></li>
-<li><p><em>units:</em> Unit  Cs137UID</p></li>
-<li><p><em>temporal_resolution:</em> enum(year, month, day, hour, minute, second, millisecond),</p></li>
-<li><p><em>reference:</em> string (start, middle, end),</p></li>
-<li><p><em>utc_offset:</em> float (offset in hours) - optional</p></li>
+</dl>
+</li>
+<li><p><em>unit_of_measurement:</em> units in which the observation is reported</p></li>
+<li><p><em>statistic:</em> statistical property of the observation result (MEAN, MIN, MAX, TOTAL)</p></li>
+<li><p><em>result_quality:</em> quality assessment of the result (CHECKED, UNCHECKED)</p></li>
 </ul>
 </dd>
 <dt><strong>URLs</strong></dt><dd><ul class="simple">
-<li><p>url – for detail on a single data point</p></li>
-<li><p>geographical_group – The geographical group associated to the current data point group</p></li>
-<li><p>measurement – The measurement associated to the current data point group</p></li>
+<li><p>url – URL with details for the feature</p></li>
+<li><p>observed_property – URL for the observation’s observed property</p></li>
+</ul>
+</dd>
+<dt><strong>Filters</strong></dt><dd><ul class="simple">
+<li><p><em>monitoring_features (required):</em> comma separated list of monitoring_features ids</p></li>
+<li><p><em>observed_property_variables (required):</em> comma separated list of observed property variable ids</p></li>
+<li><p><em>start_date (required):</em> date YYYY-MM-DD</p></li>
+<li><p><em>end_date (optional):</em> date YYYY-MM-DD</p></li>
+<li><p><em>aggregation_duration (default: DAY):</em> enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)</p></li>
+<li><p><em>datasource (optional):</em> a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)</p></li>
 </ul>
 </dd>
 </dl>
-</div>
 </div>
 </div>
 <div class="section" id="direct-api">
@@ -218,7 +234,7 @@ group  level automatically applies to the individual data point.</p>
 <p>Bypass synthesis by accessing the data source APIs directly</p>
 <div class="line-block">
 <div class="line"><cite>/direct/ –</cite> Returns a list of direct apis</div>
-<div class="line"><cite>/direct/:id_prefix –</cite> Access a direct api for a datasource with the <cite>:idprefix</cite></div>
+<div class="line"><cite>/direct/:id_prefix –</cite> Access a direct api for a datasource with the <cite>:id_prefix</cite></div>
 </div>
 </div>
 </div>
@@ -234,14 +250,10 @@ group  level automatically applies to the individual data point.</p>
 <li><a class="reference internal" href="#">BASIN-3D Data Source REST APIs</a><ul>
 <li><a class="reference internal" href="#synthesis-api">Synthesis API</a><ul>
 <li><a class="reference internal" href="#data-sources">Data Sources</a></li>
-<li><a class="reference internal" href="#variables">Variables</a></li>
-<li><a class="reference internal" href="#regions">Regions</a></li>
-<li><a class="reference internal" href="#observed-properties-and-results">Observed Properties and Results</a><ul>
+<li><a class="reference internal" href="#observed-property-variables">Observed Property Variables</a></li>
 <li><a class="reference internal" href="#observed-properties">Observed Properties</a></li>
-<li><a class="reference internal" href="#data-point-groups">Data Point Groups</a></li>
-<li><a class="reference internal" href="#data-points">Data Points</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#monitoring-features">Monitoring Features</a></li>
+<li><a class="reference internal" href="#measurementtimeseriestvpobservation">MeasurementTimeseriesTVPObservation</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#direct-api">Direct API</a></li>
@@ -254,7 +266,7 @@ group  level automatically applies to the individual data point.</p>
                         title="previous chapter">BASIN-3D Quickstart</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="synthesis_models.html"
-                        title="next chapter">Synthesis Packages</a></p>
+                        title="next chapter">Synthesis Models</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -286,18 +298,18 @@ group  level automatically applies to the individual data point.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="synthesis_models.html" title="Synthesis Packages"
+          <a href="synthesis_models.html" title="Synthesis Models"
              >next</a> |</li>
         <li class="right" >
           <a href="quickstart.html" title="BASIN-3D Quickstart"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>basin3d.models &#8212; BASIN-3D v2.0.0-rc1-3-g532905e documentation</title>
+    <title>basin3d.models &#8212; BASIN-3D v2.0.0-rc1-10-g7d4a7e7 documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
@@ -25,9 +25,8 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../basin3d.html" accesskey="U">basin3d</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -45,20 +44,29 @@
 
 <span class="sd">:synopsis: The BASIN-3D  Models</span>
 <span class="sd">:module author: Val Hendrix &lt;vhendrix@lbl.gov&gt;</span>
+<span class="sd">:module author: Danielle Svehla Christianson &lt;dschristianson@lbl.gov&gt;</span>
+
+<span class="sd">Below is the inheritance diagram for BASIN-3D generic models and supporting classes.  All of the models are based on</span>
+<span class="sd">:class:`django.db.models.Model` which provide the object relational mapping technology for building and managing</span>
+<span class="sd">relational database tables.</span>
+
+<span class="sd">.. inheritance-diagram:: basin3d.models</span>
+<span class="sd">    :top-classes: django.db.models.Model, django.db.models.fields.TextField</span>
 
 <span class="sd">.. contents:: Contents</span>
 <span class="sd">    :local:</span>
 <span class="sd">    :backlinks: top</span>
 
 
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
 
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
 
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">django_extensions.db.fields.encrypted</span> <span class="k">import</span> <span class="n">EncryptedTextField</span>
-<span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
 
 
 <div class="viewcode-block" id="SpatialSamplingShapes"><a class="viewcode-back" href="../../framework.html#basin3d.models.SpatialSamplingShapes">[docs]</a><span class="k">class</span> <span class="nc">SpatialSamplingShapes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -121,7 +129,7 @@
         <span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_POINT</span><span class="p">:</span> <span class="p">[</span><span class="n">POINT</span><span class="p">],</span>
         <span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_CURVE</span><span class="p">:</span> <span class="p">[</span><span class="n">HORIZONTAL_PATH</span><span class="p">,</span> <span class="n">VERTICAL_PATH</span><span class="p">],</span>
         <span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_SURFACE</span><span class="p">:</span> <span class="p">[</span><span class="n">REGION</span><span class="p">,</span> <span class="n">SUBREGION</span><span class="p">,</span> <span class="n">BASIN</span><span class="p">,</span> <span class="n">SUBBASIN</span><span class="p">,</span> <span class="n">WATERSHED</span><span class="p">,</span>
-                               <span class="n">SUBWATERSHED</span><span class="p">,</span> <span class="n">SITE</span><span class="p">,</span> <span class="n">PLOT</span><span class="p">],</span>
+                                              <span class="n">SUBWATERSHED</span><span class="p">,</span> <span class="n">SITE</span><span class="p">,</span> <span class="n">PLOT</span><span class="p">],</span>
         <span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_SOLID</span><span class="p">:</span> <span class="p">[]</span>
     <span class="p">}</span></div>
 
@@ -193,7 +201,6 @@
     <span class="n">credentials</span> <span class="o">=</span> <span class="n">EncryptedTextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">enabled</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;id_prefix&#39;</span><span class="p">]</span>
 
@@ -208,8 +215,7 @@
 
 <div class="viewcode-block" id="DataSource.get_plugin"><a class="viewcode-back" href="../../framework.html#basin3d.models.DataSource.get_plugin">[docs]</a>    <span class="k">def</span> <span class="nf">get_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the plugin</span>
-<span class="sd">        :return:</span>
+<span class="sd">        Return the plugin class</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_module</span><span class="p">)</span>
@@ -359,15 +365,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../basin3d.html" >basin3d</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

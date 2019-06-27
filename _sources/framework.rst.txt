@@ -1,7 +1,7 @@
 .. _apireference:
 
-Framework
-*********
+Django Framework
+****************
 
 .. automodule:: basin3d.models
     :members:

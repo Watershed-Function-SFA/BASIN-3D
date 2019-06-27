@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>basin3d.synthesis.viewsets &#8212; BASIN-3D v2.0.0-rc1-3-g532905e documentation</title>
+    <title>basin3d.synthesis.viewsets &#8212; BASIN-3D v2.0.0-rc1-10-g7d4a7e7 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -25,9 +25,8 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../basin3d.html" accesskey="U">basin3d</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -43,15 +42,24 @@
 
 <span class="sd">.. currentmodule:: basin3d.synthesis.viewsets</span>
 
-<span class="sd">:synopsis: The BASIN-3D Synthesis Model Viewsets that support the REST API</span>
+<span class="sd">:synopsis: BASIN-3D Synthesis Model Viewsets (View Controllers) that support the REST API</span>
 <span class="sd">:module author: Val Hendrix &lt;vhendrix@lbl.gov&gt;</span>
+<span class="sd">:module author: Danielle Svehla Christianson &lt;dschristianson@lbl.gov&gt;</span>
 
-<span class="sd">View Controllers for BASIN-3D REST api</span>
+
+<span class="sd">Below is the inheritance diagram for BASIN-3D Viewsets.  All of the views are based on</span>
+<span class="sd">:class:`DataSourcePluginViewSet` which provide all the synthesis logic for viewing data</span>
+<span class="sd">from the connected data sources.</span>
+
+<span class="sd">.. inheritance-diagram:: basin3d.synthesis.viewsets</span>
+<span class="sd">    :top-classes: basin3d.synthesis.viewsets.DataSourcePluginViewSet</span>
+<span class="sd">    :parts: 2</span>
+
 <span class="sd">----------------------------------</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">basin3d.models</span> <span class="k">import</span> <span class="n">DataSource</span><span class="p">,</span> <span class="n">FeatureTypes</span>
 <span class="kn">from</span> <span class="nn">basin3d.plugins</span> <span class="k">import</span> <span class="n">InvalidOrMissingCredentials</span><span class="p">,</span> <span class="n">get_request_feature_type</span>
@@ -66,6 +74,7 @@
     <span class="n">MeasurementTimeseriesTVPObservationSerializer</span>
 <span class="kn">from</span> <span class="nn">rest_framework</span> <span class="k">import</span> <span class="n">status</span>
 <span class="kn">from</span> <span class="nn">rest_framework</span> <span class="k">import</span> <span class="n">versioning</span>
+<span class="kn">from</span> <span class="nn">rest_framework.request</span> <span class="k">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="k">import</span> <span class="n">Response</span>
 <span class="kn">from</span> <span class="nn">rest_framework.viewsets</span> <span class="k">import</span> <span class="n">ViewSet</span>
 <span class="kn">from</span> <span class="nn">rest_framework.decorators</span> <span class="k">import</span> <span class="n">action</span>
@@ -76,25 +85,36 @@
 
 <div class="viewcode-block" id="DataSourcePluginViewSet"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.DataSourcePluginViewSet">[docs]</a><span class="k">class</span> <span class="nc">DataSourcePluginViewSet</span><span class="p">(</span><span class="n">ViewSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base ViewsSet for all DataSource plugins</span>
+<span class="sd">    Base ViewsSet for all DataSource plugins.  The inheritance diagram shows that this class extends the</span>
+<span class="sd">    `Django Rest Framework &lt;https://www.django-rest-framework.org/&gt;`_</span>
+<span class="sd">    class :class:`rest_framework.viewsets.ViewSet`. These are based on `Django generic views</span>
+<span class="sd">    &lt;https://docs.djangoproject.com/en/2.2/topics/class-based-views/generic-display/&gt;`_.</span>
+
+<span class="sd">    .. inheritance-diagram:: rest_framework.viewsets.ViewSet basin3d.synthesis.viewsets.DataSourcePluginViewSet</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">versioning_class</span> <span class="o">=</span> <span class="n">versioning</span><span class="o">.</span><span class="n">NamespaceVersioning</span>
 
-<div class="viewcode-block" id="DataSourcePluginViewSet.synthesize_query_params"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.DataSourcePluginViewSet.synthesize_query_params">[docs]</a>    <span class="k">def</span> <span class="nf">synthesize_query_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">plugin_view</span><span class="p">):</span>
+<div class="viewcode-block" id="DataSourcePluginViewSet.synthesize_query_params"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.DataSourcePluginViewSet.synthesize_query_params">[docs]</a>    <span class="k">def</span> <span class="nf">synthesize_query_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">plugin_view</span><span class="p">:</span> <span class="s1">&#39;DataSourcePluginViewSet&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Synthesizes query parameters, if necessary</span>
 
 <span class="sd">        :param request: the request to synthesize</span>
 <span class="sd">        :param plugin_view: The plugin view to synthesize query params for</span>
-<span class="sd">        :return:</span>
+<span class="sd">        :return: The query parameters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># do nothing, subclasses may override this</span>
         <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">query_params</span></div>
 
-<div class="viewcode-block" id="DataSourcePluginViewSet.list"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.DataSourcePluginViewSet.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DataSourcePluginViewSet.list"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.DataSourcePluginViewSet.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the synthesized plugin results</span>
+
+<span class="sd">        :param request: The incoming request object</span>
+<span class="sd">        :type request: :class:`rest_framework.request.Request`</span>
+<span class="sd">        :param format: The format to present the data (default is json)</span>
+<span class="sd">        :return: The HTTP Response</span>
+<span class="sd">        :rtype: :class:`rest_framework.request.Response`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -128,13 +148,15 @@
         <span class="n">serializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">serializer_class</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;request&#39;</span><span class="p">:</span> <span class="n">request</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataSourcePluginViewSet.retrieve"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.DataSourcePluginViewSet.retrieve">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DataSourcePluginViewSet.retrieve"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.DataSourcePluginViewSet.retrieve">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve a single synthesized value</span>
 
 <span class="sd">        :param request: The request object</span>
+<span class="sd">        :type request: :class:`rest_framework.request.Request`</span>
 <span class="sd">        :param pk: The primary key</span>
-<span class="sd">        :return:</span>
+<span class="sd">        :return: The HTTP Response</span>
+<span class="sd">        :rtype: :class:`rest_framework.request.Response`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># split the datasource id prefix from the primary key</span>
@@ -169,42 +191,43 @@
 
 <div class="viewcode-block" id="MonitoringFeatureViewSet"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.MonitoringFeatureViewSet">[docs]</a><span class="k">class</span> <span class="nc">MonitoringFeatureViewSet</span><span class="p">(</span><span class="n">DataSourcePluginViewSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    MonitoringFeature</span>
+<span class="sd">    MonitoringFeature: A feature upon which monitoring is made. OGC Timeseries Profile OM_MonitoringFeature.</span>
 
 <span class="sd">    **Properties**</span>
 
-<span class="sd">    * *id:* string</span>
-<span class="sd">    * *name:* string</span>
-<span class="sd">    * *description:* string</span>
-<span class="sd">    * *feature_type:* enum (FeatureTypes: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED,</span>
-<span class="sd">        SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT)</span>
-<span class="sd">    * * observed_property_variables:* list of observed variables made at the Feature.</span>
-<span class="sd">        Variables are configured via the plugins.</span>
-<span class="sd">    * *related_sampling_feature_comples:* list of related_sampling_features. PARENT features are currently supported.</span>
-<span class="sd">    * *shape:* enum (POINT, CURVE, SURFACE, SOLID)</span>
-<span class="sd">    * *coordinates:* location of Feature in absolute and/or representative datum</span>
+<span class="sd">    * *id:* string, Unique feature identifier</span>
+<span class="sd">    * *name:* string, Feature name</span>
+<span class="sd">    * *description:* string, Description of the feature</span>
+<span class="sd">    * *feature_type:* sting, FeatureType: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED,</span>
+<span class="sd">        SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT</span>
+<span class="sd">    * * observed_property_variables:* list of observed variables made at the feature.</span>
+<span class="sd">        Observed property variables are configured via the plugins.</span>
+<span class="sd">    * *related_sampling_feature_complex:* list of related_sampling features. PARENT features are currently supported.</span>
+<span class="sd">    * *shape:* string, Shape of the feature: POINT, CURVE, SURFACE, SOLID</span>
+<span class="sd">    * *coordinates:* location of feature in absolute and/or representative datum</span>
 <span class="sd">    * *description_reference:* string, additional information about the Feature</span>
 <span class="sd">    * *related_party:* (optional) list of people or organizations responsible for the Feature</span>
-<span class="sd">    * *utc_offset:* float (offset in hours), e.g., +9</span>
-<span class="sd">    * *url:* url</span>
+<span class="sd">    * *utc_offset:* float, Coordinate Universal Time offset in hours (offset in hours), e.g., +9</span>
+<span class="sd">    * *url:* url, URL with details for the feature</span>
 
-<span class="sd">    ** Filter results** by the following attributes</span>
+<span class="sd">    **Filter** by the following attributes (/?attribute=parameter&amp;attribute=parameter&amp;...)</span>
 <span class="sd">    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)</span>
 
-<span class="sd">    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)</span>
+<span class="sd">    **Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">MonitoringFeatureSerializer</span>
     <span class="n">synthesis_model</span> <span class="o">=</span> <span class="n">MonitoringFeature</span>
 
-<div class="viewcode-block" id="MonitoringFeatureViewSet.synthesize_query_params"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.MonitoringFeatureViewSet.synthesize_query_params">[docs]</a>    <span class="k">def</span> <span class="nf">synthesize_query_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">plugin_view</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitoringFeatureViewSet.synthesize_query_params"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.MonitoringFeatureViewSet.synthesize_query_params">[docs]</a>    <span class="k">def</span> <span class="nf">synthesize_query_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">plugin_view</span><span class="p">:</span> <span class="n">DataSourcePluginViewSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Synthesizes query parameters, if necessary</span>
 
 <span class="sd">        Parameters Synthesized:</span>
 
 <span class="sd">        :param request: the request to synthesize</span>
+<span class="sd">        :type request: :class:`rest_framework.request.Request`</span>
 <span class="sd">        :param plugin_view: The plugin view to synthesize query params for</span>
-<span class="sd">        :return:</span>
+<span class="sd">        :return: The query parameters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">query_params</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -287,42 +310,43 @@
 
 <div class="viewcode-block" id="MeasurementTimeseriesTVPObservationViewSet"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet">[docs]</a><span class="k">class</span> <span class="nc">MeasurementTimeseriesTVPObservationViewSet</span><span class="p">(</span><span class="n">DataSourcePluginViewSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Retrieve MeasurementTimeseriesTVPObservation Groups</span>
+<span class="sd">    MeasurementTimeseriesTVPObservation: Series of measurement (numerical) observations in</span>
+<span class="sd">    TVP (time value pair) format grouped by time (i.e., a timeseries).</span>
 
-<span class="sd">    ** Properties **</span>
+<span class="sd">    **Properties**</span>
 
 <span class="sd">    * *id:* string, Observation identifier (optional)</span>
-<span class="sd">    * *type:* enum = MEASUREMENT_TVP_TIMESERIES</span>
-<span class="sd">    * *observed_property:* url, url for the observation&#39;s observed property</span>
-<span class="sd">    * *phenomenon_time:* datetime</span>
-<span class="sd">    * *utc_offset:* float (offset in hours), e.g., +9</span>
-<span class="sd">    * *feature_of_interest:* feature on which the observation is being made</span>
-<span class="sd">    * *feature_of_interest_type:* enum (FeatureTypes)</span>
-<span class="sd">    * *result_points:* TimeValuePair, observed values of the observed property being assessed</span>
+<span class="sd">    * *type:* enum, MEASUREMENT_TVP_TIMESERIES</span>
+<span class="sd">    * *observed_property:* url, URL for the observation&#39;s observed property</span>
+<span class="sd">    * *phenomenon_time:* datetime, datetime of the observation, for a timeseries the start and end times can be provided</span>
+<span class="sd">    * *utc_offset:* float, Coordinate Universal Time offset in hours (offset in hours), e.g., +9</span>
+<span class="sd">    * *feature_of_interest:* MonitoringFeature obj, feature on which the observation is being made</span>
+<span class="sd">    * *feature_of_interest_type:* enum (FeatureTypes), feature type of the feature of interest</span>
+<span class="sd">    * *result_points:* list of TimeValuePair obj, observed values of the observed property being assessed</span>
 <span class="sd">    * *time_reference_position:* enum, position of timestamp in aggregated_duration (START, MIDDLE, END)</span>
 <span class="sd">    * *aggregation_duration:* enum, time period represented by observation</span>
 <span class="sd">        (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)</span>
 <span class="sd">    * *unit_of_measurement:* string, units in which the observation is reported</span>
-<span class="sd">    * *statistic:* enum (MEAN, MIN, MAX, TOTAL)</span>
-<span class="sd">    * *result_quality:* enum, (CHECKED, UNCHECKED)</span>
+<span class="sd">    * *statistic:* enum, statistical property of the observation result (MEAN, MIN, MAX, TOTAL)</span>
+<span class="sd">    * *result_quality:* enum, quality assessment of the result (CHECKED, UNCHECKED)</span>
 
-<span class="sd">    ** Filter results** by the following attributes:</span>
+<span class="sd">    **Filter** by the following attributes (?attribute=parameter&amp;attribute=parameter&amp;...):</span>
 
+<span class="sd">    * *monitoring_features (required):* comma separated list of monitoring_features ids</span>
+<span class="sd">    * *observed_property_variables (required):* comma separated list of observed property variable ids</span>
+<span class="sd">    * *start_date (required):* date YYYY-MM-DD</span>
+<span class="sd">    * *end_date (optional):* date YYYY-MM-DD</span>
+<span class="sd">    * *aggregation_duration: (default: DAY): enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)</span>
 <span class="sd">    * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)</span>
-<span class="sd">    * *monitoring_features (required)* comma separated list of monitoring_features ids</span>
-<span class="sd">    * *observed_property_variables (required)* comma separated list of observed property variable ids</span>
-<span class="sd">    * *start_date (required)* date YYYY-MM-DD</span>
-<span class="sd">    * *end_date* date YYYY-MM-DD</span>
-<span class="sd">    * *aggregation_duration:* (default: DAY) enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)</span>
 
-<span class="sd">    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)</span>
+<span class="sd">    **Restrict fields** with query parameter ‘fields’. (e.g. ?fields=id,name)</span>
 
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">MeasurementTimeseriesTVPObservationSerializer</span>
     <span class="n">synthesis_model</span> <span class="o">=</span> <span class="n">MeasurementTimeseriesTVPObservation</span>
 
-<div class="viewcode-block" id="MeasurementTimeseriesTVPObservationViewSet.synthesize_query_params"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet.synthesize_query_params">[docs]</a>    <span class="k">def</span> <span class="nf">synthesize_query_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">plugin_view</span><span class="p">):</span>
+<div class="viewcode-block" id="MeasurementTimeseriesTVPObservationViewSet.synthesize_query_params"><a class="viewcode-back" href="../../../synthesis_views.html#basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet.synthesize_query_params">[docs]</a>    <span class="k">def</span> <span class="nf">synthesize_query_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">plugin_view</span><span class="p">:</span> <span class="n">DataSourcePluginViewSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Synthesizes query parameters, if necessary</span>
 
@@ -333,8 +357,9 @@
 <span class="sd">          + quality_checked</span>
 
 <span class="sd">        :param request: the request to synthesize</span>
+<span class="sd">        :type request: :class:`rest_framework.request.Request`</span>
 <span class="sd">        :param plugin_view: The plugin view to synthesize query params for</span>
-<span class="sd">        :return:</span>
+<span class="sd">        :return: The query parameters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">id_prefix</span> <span class="o">=</span> <span class="n">plugin_view</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">id_prefix</span>
@@ -393,15 +418,14 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../basin3d.html" >basin3d</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

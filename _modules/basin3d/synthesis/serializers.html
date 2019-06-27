@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>basin3d.synthesis.serializers &#8212; BASIN-3D v2.0.0-rc1-3-g532905e documentation</title>
+    <title>basin3d.synthesis.serializers &#8212; BASIN-3D v2.0.0-rc1-10-g7d4a7e7 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -25,9 +25,8 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../basin3d.html" accesskey="U">basin3d</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -45,6 +44,7 @@
 
 <span class="sd">:synopsis: The BASIN-3D Synthesis Model Serializers</span>
 <span class="sd">:module author: Val Hendrix &lt;vhendrix@lbl.gov&gt;</span>
+<span class="sd">:module author: Danielle Svehla Christianson &lt;dschristianson@lbl.gov&gt;</span>
 
 <span class="sd">Serializers that render :mod:`basin.synthesis.models` from Python objects to `JSON` and back again.</span>
 
@@ -58,14 +58,14 @@
 <span class="kn">from</span> <span class="nn">rest_framework.reverse</span> <span class="k">import</span> <span class="n">reverse</span>
 
 
-<div class="viewcode-block" id="TimestampField"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.TimestampField">[docs]</a><span class="k">class</span> <span class="nc">TimestampField</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TimestampField</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extends :class:`rest_framework.serializers.DateTimeField` to handle</span>
 <span class="sd">    numeric epoch times.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TimestampField.to_representation"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.TimestampField.to_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If specified value is an epoch time, convert it first.</span>
 
@@ -84,10 +84,10 @@
         <span class="k">if</span> <span class="n">timestamp</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">value</span></div></div>
+        <span class="k">return</span> <span class="n">value</span>
 
 
-<div class="viewcode-block" id="ReadOnlySynthesisModelField"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.ReadOnlySynthesisModelField">[docs]</a><span class="k">class</span> <span class="nc">ReadOnlySynthesisModelField</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Field</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ReadOnlySynthesisModelField</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Field</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A generic field that can be used against any serializer</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -96,27 +96,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">serializer_class</span> <span class="o">=</span> <span class="n">serializer_class</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ReadOnlySynthesisModelField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ReadOnlySynthesisModelField.to_internal_value"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.ReadOnlySynthesisModelField.to_internal_value">[docs]</a>    <span class="k">def</span> <span class="nf">to_internal_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="bp">NotImplemented</span></div>
+    <span class="k">def</span> <span class="nf">to_internal_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-<div class="viewcode-block" id="ReadOnlySynthesisModelField.to_representation"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.ReadOnlySynthesisModelField.to_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="n">serializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer_class</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span></div></div>
+        <span class="k">return</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span>
 
 
-<div class="viewcode-block" id="FloatField"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.FloatField">[docs]</a><span class="k">class</span> <span class="nc">FloatField</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">FloatField</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">FloatField</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">FloatField</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Float field that can handle empty strings</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="FloatField.to_representation"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.FloatField.to_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;to float representation&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="IdUrlSerializerMixin"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.IdUrlSerializerMixin">[docs]</a><span class="k">class</span> <span class="nc">IdUrlSerializerMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">IdUrlSerializerMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializer Mixin to support Hypermedia as the Engine of Application State (HATEOAS).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -127,7 +127,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
 
-<div class="viewcode-block" id="IdUrlSerializerMixin.get_url"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.IdUrlSerializerMixin.get_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the Site url based on the current context</span>
 <span class="sd">        :param obj: an object instance</span>
@@ -136,10 +136,10 @@
         <span class="k">if</span> <span class="s2">&quot;request&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="n">viewname</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-detail&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span>
                            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">},</span>
-                           <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="p">)</span></div></div>
+                           <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="p">)</span>
 
 
-<div class="viewcode-block" id="PersonSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.PersonSerializer">[docs]</a><span class="k">class</span> <span class="nc">PersonSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">PersonSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Serializes a :class:`basin3d.synthesis.models.Person`&quot;&quot;&quot;</span>
 
     <span class="n">first_name</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
@@ -156,10 +156,10 @@
         <span class="n">instance</span><span class="o">.</span><span class="n">last_name</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">last_name</span><span class="p">)</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">institution</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;institution&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">institution</span><span class="p">)</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">role</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;role&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">role</span><span class="p">)</span></div>
+        <span class="n">instance</span><span class="o">.</span><span class="n">role</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;role&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">role</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="VerticalCoordinateSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.VerticalCoordinateSerializer">[docs]</a><span class="k">class</span> <span class="nc">VerticalCoordinateSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">VerticalCoordinateSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Serializes a :class:`basin3d.synthesis.models.field.VerticalCoordinate` and its child classes &quot;&quot;&quot;</span>
 
     <span class="n">value</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">FloatField</span><span class="p">()</span>
@@ -167,10 +167,10 @@
     <span class="n">distance_units</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
     <span class="n">encoding_method</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span>
     <span class="n">datum</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
-    <span class="nb">type</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span></div>
+    <span class="nb">type</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="HorizonatalCoordinateSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.HorizonatalCoordinateSerializer">[docs]</a><span class="k">class</span> <span class="nc">HorizonatalCoordinateSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">HorizonatalCoordinateSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Serializes a :class:`basin3d.synthesis.models.field.HorizonatalCoordinate` and its child classes &quot;&quot;&quot;</span>
 
     <span class="c1"># Base Fields</span>
@@ -224,10 +224,10 @@
         <span class="c1"># remove unneeded fields</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">field_to_remove</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="AbsoluteCoordinateSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.AbsoluteCoordinateSerializer">[docs]</a><span class="k">class</span> <span class="nc">AbsoluteCoordinateSerializer</span><span class="p">(</span><span class="n">ChooseFieldsSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">AbsoluteCoordinateSerializer</span><span class="p">(</span><span class="n">ChooseFieldsSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a :class:`basin3d.synthesis.models.field.AbsoluteCoordinate`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -236,10 +236,10 @@
     <span class="n">vertical_extent</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ListSerializer</span><span class="p">(</span><span class="n">child</span><span class="o">=</span><span class="n">ReadOnlySynthesisModelField</span><span class="p">(</span><span class="n">serializer_class</span><span class="o">=</span><span class="n">VerticalCoordinateSerializer</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="RepresentativeCoordinateSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.RepresentativeCoordinateSerializer">[docs]</a><span class="k">class</span> <span class="nc">RepresentativeCoordinateSerializer</span><span class="p">(</span><span class="n">ChooseFieldsSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">RepresentativeCoordinateSerializer</span><span class="p">(</span><span class="n">ChooseFieldsSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a :class:`basin3d.synthesis.models.field.RepresentativeCoordinate`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -249,10 +249,10 @@
     <span class="n">vertical_position</span> <span class="o">=</span> <span class="n">ReadOnlySynthesisModelField</span><span class="p">(</span><span class="n">serializer_class</span><span class="o">=</span><span class="n">VerticalCoordinateSerializer</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="CoordinateSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.CoordinateSerializer">[docs]</a><span class="k">class</span> <span class="nc">CoordinateSerializer</span><span class="p">(</span><span class="n">ChooseFieldsSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">CoordinateSerializer</span><span class="p">(</span><span class="n">ChooseFieldsSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a :class:`basin3d.synthesis.models.field.Coordinate`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -261,10 +261,10 @@
     <span class="n">representative</span> <span class="o">=</span> <span class="n">ReadOnlySynthesisModelField</span><span class="p">(</span><span class="n">serializer_class</span><span class="o">=</span><span class="n">RepresentativeCoordinateSerializer</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="RelatedSamplingFeatureSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.RelatedSamplingFeatureSerializer">[docs]</a><span class="k">class</span> <span class="nc">RelatedSamplingFeatureSerializer</span><span class="p">(</span><span class="n">ChooseFieldsSerializerMixin</span><span class="p">,</span> <span class="n">IdUrlSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">RelatedSamplingFeatureSerializer</span><span class="p">(</span><span class="n">ChooseFieldsSerializerMixin</span><span class="p">,</span> <span class="n">IdUrlSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a :class:`basin3d.synthesis.models.field.RelatedSamplingFeature`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -296,15 +296,15 @@
     <span class="c1">#                            request=self.context[&quot;request&quot;], )</span>
     <span class="c1">#     return obj.related_sampling_feature</span>
 
-<div class="viewcode-block" id="RelatedSamplingFeatureSerializer.get_related_sampling_feature_type"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.RelatedSamplingFeatureSerializer.get_related_sampling_feature_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_related_sampling_feature_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_related_sampling_feature_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the :class:`basin3d.models.FeatureTypes` type to the display value</span>
 <span class="sd">        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance</span>
 <span class="sd">        :return: Display value for the :class:`basin3d.models.FeatureTypes` type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">FeatureTypes</span><span class="o">.</span><span class="n">TYPES</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">related_sampling_feature_type</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">FeatureTypes</span><span class="o">.</span><span class="n">TYPES</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">related_sampling_feature_type</span><span class="p">]</span>
 
-<div class="viewcode-block" id="RelatedSamplingFeatureSerializer.get_url"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.RelatedSamplingFeatureSerializer.get_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the  url based on the current context</span>
 <span class="sd">        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance</span>
@@ -322,13 +322,13 @@
                                   <span class="c1"># ToDo: take off the database prefix?</span>
                                   <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">related_sampling_feature</span><span class="p">},</span>
                                   <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="p">)</span>
-                <span class="k">except</span><span class="p">:</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">None</span>
                 <span class="k">return</span> <span class="n">url</span>
-        <span class="k">return</span> <span class="kc">None</span></div></div>
+        <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="FeatureSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.FeatureSerializer">[docs]</a><span class="k">class</span> <span class="nc">FeatureSerializer</span><span class="p">(</span><span class="n">ChooseFieldsSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">FeatureSerializer</span><span class="p">(</span><span class="n">ChooseFieldsSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a :class:`basin3d.synthesis.models.field.Feature`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -347,13 +347,13 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
 
-<div class="viewcode-block" id="FeatureSerializer.get_feature_type"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.FeatureSerializer.get_feature_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_feature_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the :class:`basin3d.models.FeatureTypes` type to the display value</span>
 <span class="sd">        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance</span>
 <span class="sd">        :return: Display value for the :class:`basin3d.models.FeatureTypes` type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">FeatureTypes</span><span class="o">.</span><span class="n">TYPES</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">feature_type</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">FeatureTypes</span><span class="o">.</span><span class="n">TYPES</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">feature_type</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">FeatureSerializer</span><span class="p">(</span><span class="o">**</span><span class="n">validated_data</span><span class="p">)</span>
@@ -365,7 +365,7 @@
         <span class="n">instance</span><span class="o">.</span><span class="n">feature_type</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;feature_type&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">feature_type</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">instance</span>
 
-<div class="viewcode-block" id="FeatureSerializer.get_url"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.FeatureSerializer.get_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the Site url based on the current context</span>
 <span class="sd">        :param obj: an object instance</span>
@@ -380,16 +380,16 @@
                 <span class="c1"># path_route = r&#39;monitoringfeature-detail&#39;</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="n">viewname</span><span class="o">=</span><span class="n">path_route</span><span class="p">,</span>
-                                   <span class="c1"># ToDo: take off the database prefix?</span>
-                                   <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">},</span>
-                                   <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="p">)</span>
+                                  <span class="c1"># ToDo: take off the database prefix?</span>
+                                  <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">},</span>
+                                  <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">None</span>
                 <span class="k">return</span> <span class="n">url</span>
-        <span class="k">return</span> <span class="kc">None</span></div></div>
+        <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="SamplingFeatureSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.SamplingFeatureSerializer">[docs]</a><span class="k">class</span> <span class="nc">SamplingFeatureSerializer</span><span class="p">(</span><span class="n">FeatureSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">SamplingFeatureSerializer</span><span class="p">(</span><span class="n">FeatureSerializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a :class:`basin3d.synthesis.models.field.SamplingFeature`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -407,10 +407,10 @@
 
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">related_sampling_feature_complex</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s1">&#39;related_sampling_feature_complex&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">related_sampling_feature_complex</span><span class="p">)</span></div>
+            <span class="s1">&#39;related_sampling_feature_complex&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">related_sampling_feature_complex</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SpatialSamplingFeatureSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.SpatialSamplingFeatureSerializer">[docs]</a><span class="k">class</span> <span class="nc">SpatialSamplingFeatureSerializer</span><span class="p">(</span><span class="n">SamplingFeatureSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">SpatialSamplingFeatureSerializer</span><span class="p">(</span><span class="n">SamplingFeatureSerializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a :class:`basin3d.synthesis.models.field.SpatialSamplingFeature`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -428,10 +428,10 @@
 
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coordinates&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span></div>
+        <span class="n">instance</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coordinates&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="MonitoringFeatureSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.MonitoringFeatureSerializer">[docs]</a><span class="k">class</span> <span class="nc">MonitoringFeatureSerializer</span><span class="p">(</span><span class="n">SpatialSamplingFeatureSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MonitoringFeatureSerializer</span><span class="p">(</span><span class="n">SpatialSamplingFeatureSerializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a :class:`basin3d.synthesis.models.field.MonitoringFeature`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -450,10 +450,10 @@
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">description_reference</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description_reference&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">description_reference</span><span class="p">)</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">related_party</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;related_party&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">related_party</span><span class="p">)</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">utc_offset</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;utc_offset&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">utc_offset</span><span class="p">)</span></div>
+        <span class="n">instance</span><span class="o">.</span><span class="n">utc_offset</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;utc_offset&#39;</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">utc_offset</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ObservationSerializerMixin"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.ObservationSerializerMixin">[docs]</a><span class="k">class</span> <span class="nc">ObservationSerializerMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ObservationSerializerMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a :class:`basin3d.synthesis.models.measurement.Observation`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -477,16 +477,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">observed_property</span>
 
-<div class="viewcode-block" id="ObservationSerializerMixin.get_feature_of_interest_type"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.ObservationSerializerMixin.get_feature_of_interest_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_of_interest_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_feature_of_interest_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the :class:`basin3d.models.FeatureTypes` type to the display value</span>
 <span class="sd">        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance</span>
 <span class="sd">        :return: Display value for the :class:`basin3d.models.FeatureTypes` type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">FeatureTypes</span><span class="o">.</span><span class="n">TYPES</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">feature_of_interest_type</span><span class="p">]</span></div></div>
+        <span class="k">return</span> <span class="n">FeatureTypes</span><span class="o">.</span><span class="n">TYPES</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">feature_of_interest_type</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="MeasurementTimeseriesTVPObservationSerializer"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.MeasurementTimeseriesTVPObservationSerializer">[docs]</a><span class="k">class</span> <span class="nc">MeasurementTimeseriesTVPObservationSerializer</span><span class="p">(</span><span class="n">ObservationSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MeasurementTimeseriesTVPObservationSerializer</span><span class="p">(</span><span class="n">ObservationSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serializes a :class:`basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPObservation`</span>
 
@@ -535,15 +535,15 @@
             <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MeasurementTimeseriesTVPObservationSerializer.get_result_points"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.MeasurementTimeseriesTVPObservationSerializer.get_result_points">[docs]</a>    <span class="k">def</span> <span class="nf">get_result_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_result_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the result points (i.e., the timeseries data)</span>
 <span class="sd">        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">result_points</span></div>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">result_points</span>
 
-<div class="viewcode-block" id="MeasurementTimeseriesTVPObservationSerializer.get_url"><a class="viewcode-back" href="../../../synthesis_models.html#basin3d.synthesis.serializers.MeasurementTimeseriesTVPObservationSerializer.get_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the  url based on the current context</span>
 <span class="sd">        :param obj: ``MeasurementTimeseriesTVPObservation`` object instance</span>
@@ -552,10 +552,10 @@
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="s2">&quot;request&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="n">viewname</span><span class="o">=</span><span class="s1">&#39;measurementtvptimeseries-detail&#39;</span><span class="p">,</span>
                            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">},</span>
-                           <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="p">)</span></div>
+                           <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">MeasurementTimeseriesTVPObservationSerializer</span><span class="p">(</span><span class="o">**</span><span class="n">validated_data</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">MeasurementTimeseriesTVPObservationSerializer</span><span class="p">(</span><span class="o">**</span><span class="n">validated_data</span><span class="p">)</span>
 </pre></div>
 
           </div>
@@ -586,15 +586,14 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../basin3d.html" >basin3d</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>basin3d.synthesis.models.measurement &#8212; BASIN-3D v2.0.0-rc1-3-g532905e documentation</title>
+    <title>basin3d.synthesis.models.measurement &#8212; BASIN-3D v2.0.0-rc1-10-g7d4a7e7 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
@@ -25,10 +25,9 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../basin3d.html" >basin3d</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="../models.html" accesskey="U">basin3d.synthesis.models</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="../models.html" accesskey="U">basin3d.synthesis.models</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -39,22 +38,24 @@
             
   <h1>Source code for basin3d.synthesis.models.measurement</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-
-
 <span class="sd">`basin3d.synthesis.models.measurement`</span>
 <span class="sd">**************************************</span>
 
 <span class="sd">.. currentmodule:: basin3d.synthesis.models.measurement</span>
 
-<span class="sd">:synopsis: Classes to represent Measurements &amp; Results</span>
+<span class="sd">:synopsis: Classes to represent Observations</span>
 
+<span class="sd">.. inheritance-diagram:: basin3d.synthesis.models basin3d.synthesis.models.measurement</span>
+<span class="sd">    :parts: 2</span>
 
 <span class="sd">---------------------</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">numbers</span> <span class="k">import</span> <span class="n">Number</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">basin3d.models</span> <span class="k">import</span> <span class="n">FeatureTypes</span>
+<span class="kn">from</span> <span class="nn">basin3d.models</span> <span class="k">import</span> <span class="n">FeatureTypes</span><span class="p">,</span> <span class="n">ObservedPropertyVariable</span>
+<span class="kn">from</span> <span class="nn">basin3d.synthesis.models.field</span> <span class="k">import</span> <span class="n">MonitoringFeature</span>
 <span class="kn">from</span> <span class="nn">basin3d.plugins</span> <span class="k">import</span> <span class="n">get_datasource_observed_property</span><span class="p">,</span> \
     <span class="n">get_datasource_observed_property_variable</span>
 <span class="kn">from</span> <span class="nn">basin3d.synthesis.models</span> <span class="k">import</span> <span class="n">Base</span>
@@ -85,7 +86,7 @@
 
 <div class="viewcode-block" id="ResultQuality"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.measurement.ResultQuality">[docs]</a><span class="k">class</span> <span class="nc">ResultQuality</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Controlled Vocabulary for result quality</span>
+<span class="sd">    Controlled Vocabulary for result quality assessment</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1">#: The result has been checked for quality</span>
@@ -135,76 +136,76 @@
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;feature_of_interest_type must be FeatureType&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Unique identifier&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Unique observation identifier&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
 
     <span class="nd">@id</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">value</span>
 
-
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;This can be either :class:`TYPE_MEASUREMENT` or :class:`TYPE_MEASUREMENT_TVP_TIMESERIES`&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Type of observation. Use constants prefixed with `TYPE_`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
 
-
     <span class="nd">@type</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">utc_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;offset in hours referenced to UTC (e.g. +/-9)&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">utc_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Coordinated Universal Time (UTC) offset in hours (e.g. +/-9)&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utc_offset</span>
 
     <span class="nd">@utc_offset</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">utc_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">utc_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_utc_offset</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">phenomenon_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;datetime (required OGC attribute timePhenomenon)&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">phenomenon_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;datetime of the observation (required OGC attribute timePhenomenon).</span>
+<span class="sd">           For timeseries, start and end datetimes can be provided.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phenomenon_time</span>
 
     <span class="nd">@phenomenon_time</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">phenomenon_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">phenomenon_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_phenomenon_time</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">observed_property</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">observed_property</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The property that was observed&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed_property</span>
 
     <span class="nd">@observed_property</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">observed_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">observed_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_observed_property</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">feature_of_interest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The feature that was observed&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">feature_of_interest</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MonitoringFeature&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The feature on which the observed property was observed&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_of_interest</span>
 
     <span class="nd">@feature_of_interest</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">feature_of_interest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">feature_of_interest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;MonitoringFeature&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_feature_of_interest</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">feature_of_interest_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">feature_of_interest_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;FeatureTypes&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The type of feature that was observed. See :class:`basin3d.models.FeatureTypes`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_of_interest_type</span>
 
     <span class="nd">@feature_of_interest_type</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">feature_of_interest_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">feature_of_interest_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;FeatureTypes&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_feature_of_interest_type</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">result_quality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">result_quality</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ResultQuality&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The result quality assessment. See :class:`ResultQuality`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_quality</span>
 
     <span class="nd">@result_quality</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">result_quality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">result_quality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;ResultQuality&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_quality</span> <span class="o">=</span> <span class="n">value</span></div>
 
 
@@ -213,31 +214,31 @@
 <span class="sd">    Metadata attributes for Observations with a time</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1">#: Measurements aggregated by year</span>
+    <span class="c1">#: Observations aggregated by year</span>
     <span class="n">AGGREGATION_DURATION_YEAR</span> <span class="o">=</span> <span class="s2">&quot;YEAR&quot;</span>
 
-    <span class="c1">#: Measurements aggregated by month</span>
+    <span class="c1">#: Observations aggregated by month</span>
     <span class="n">AGGREGATION_DURATION_MONTH</span> <span class="o">=</span> <span class="s2">&quot;MONTH&quot;</span>
 
-    <span class="c1">#: Measurements aggregated by day</span>
+    <span class="c1">#: Observations aggregated by day</span>
     <span class="n">AGGREGATION_DURATION_DAY</span> <span class="o">=</span> <span class="s2">&quot;DAY&quot;</span>
 
-    <span class="c1">#: Measurements aggregated by hour</span>
+    <span class="c1">#: Observations aggregated by hour</span>
     <span class="n">AGGREGATION_DURATION_HOUR</span> <span class="o">=</span> <span class="s2">&quot;HOUR&quot;</span>
 
-    <span class="c1">#: Measurements aggregated by minute</span>
+    <span class="c1">#: Observations aggregated by minute</span>
     <span class="n">AGGREGATION_DURATION_MINUTE</span> <span class="o">=</span> <span class="s2">&quot;MINUTE&quot;</span>
 
-    <span class="c1">#: Measurements aggregated by second</span>
+    <span class="c1">#: Observations aggregated by second</span>
     <span class="n">AGGREGATION_DURATION_SECOND</span> <span class="o">=</span> <span class="s2">&quot;SECOND&quot;</span>
 
-    <span class="c1">#: Measurement taken at the start</span>
+    <span class="c1">#: Observation taken at the start</span>
     <span class="n">TIME_REFERENCE_START</span> <span class="o">=</span> <span class="s2">&quot;START&quot;</span>
 
-    <span class="c1">#: Measurement taken in the middle</span>
+    <span class="c1">#: Observation taken in the middle</span>
     <span class="n">TIME_REFERENCE_MIDDLE</span> <span class="o">=</span> <span class="s2">&quot;MIDDLE&quot;</span>
 
-    <span class="c1">#: Measurement taken at the end</span>
+    <span class="c1">#: Observation taken at the end</span>
     <span class="n">TIME_REFERENCE_END</span> <span class="o">=</span> <span class="s2">&quot;END&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -248,21 +249,23 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">TimeMetadataMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">aggregation_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Follows OGC TM_PeriodDuration&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">aggregation_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Time period represented by the observation. Follows OGC TM_PeriodDuration.</span>
+<span class="sd">           Use constants prefixed with `AGGREGATION_DURATION`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregation_duration</span>
 
     <span class="nd">@aggregation_duration</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">aggregation_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">aggregation_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_aggregation_duration</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">time_reference_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">time_reference_position</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Position of timestamp in aggregated_duration. Encompassed as part of OGC interpolationType.</span>
+<span class="sd">           Use constants prefixed with `TIME_REFERENCE`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_reference_position</span>
 
     <span class="nd">@time_reference_position</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">time_reference_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Encompassed as part of OGC interpolationType&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">time_reference_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_time_reference_position</span> <span class="o">=</span> <span class="n">value</span></div>
 
 
@@ -291,66 +294,52 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">MeasurementMetadataMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">observed_property_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">observed_property_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ObservedPropertyVariable&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The observed property that was measured&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observed_property_variable</span>
 
     <span class="nd">@observed_property_variable</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">observed_property_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">observed_property_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;ObservedPropertyVariable&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_observed_property_variable</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The statisctic being used.  Use constants prefixed with `STATISTIC_`&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The statistical property of the observation result. Use constants prefixed with `STATISTIC_`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span>
 
     <span class="nd">@statistic</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span> <span class="o">=</span> <span class="n">value</span></div>
 
 
 <div class="viewcode-block" id="MeasurementTimeseriesTVPResultMixin"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPResultMixin">[docs]</a><span class="k">class</span> <span class="nc">MeasurementTimeseriesTVPResultMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Result Mixin: Measurement Timeseries TimeValuePair</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        - *result_points:* list of TimeValuePair</span>
-<span class="sd">        - *unit_of_measurement:* string</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_points</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unit_of_measurement</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tvp</span> <span class="o">=</span> <span class="n">TimeValuePair</span>
 
         <span class="c1"># Instantiate the serializer superclass</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MeasurementTimeseriesTVPResultMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">result_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">result_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;TimeValuePair&#39;</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;A list of results &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_points</span>
 
     <span class="nd">@result_points</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">result_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">result_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;TimeValuePair&#39;</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_points</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">unit_of_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The unit of measurement&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">unit_of_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Unit of measurement&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_of_measurement</span>
 
     <span class="nd">@unit_of_measurement</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">unit_of_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_unit_of_measurement</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tvp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Time value Pair. See :class:`TimeValuePair`&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tvp</span>
-
-    <span class="nd">@tvp</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">tvp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tvp</span> <span class="o">=</span> <span class="n">value</span></div>
+    <span class="k">def</span> <span class="nf">unit_of_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unit_of_measurement</span> <span class="o">=</span> <span class="n">value</span></div>
 
 
 <div class="viewcode-block" id="MeasurementResultMixin"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.measurement.MeasurementResultMixin">[docs]</a><span class="k">class</span> <span class="nc">MeasurementResultMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -366,7 +355,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">result_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;a Numeric&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Numeric value that was measured&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_value</span>
 
     <span class="nd">@result_value</span><span class="o">.</span><span class="n">setter</span>
@@ -375,7 +364,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">unit_of_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The unit of measurement&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Unit of measurement&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_of_measurement</span>
 
     <span class="nd">@unit_of_measurement</span><span class="o">.</span><span class="n">setter</span>
@@ -386,10 +375,10 @@
 <div class="viewcode-block" id="MeasurementTimeseriesTVPObservation"><a class="viewcode-back" href="../../../../synthesis_models.html#basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPObservation">[docs]</a><span class="k">class</span> <span class="nc">MeasurementTimeseriesTVPObservation</span><span class="p">(</span><span class="n">TimeMetadataMixin</span><span class="p">,</span> <span class="n">MeasurementMetadataMixin</span><span class="p">,</span>
                                           <span class="n">MeasurementTimeseriesTVPResultMixin</span><span class="p">,</span> <span class="n">Observation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Series of measurement data points grouped by time (i.e., a timeseries).</span>
-<span class="sd">    Anything specified at the group level automatically applies to the individual data point.</span>
-<span class="sd">    Position Observation (the one inheriting from Base) last in the inheritance list.</span>
+<span class="sd">    Series of measurement (numerical) observations in TVP format grouped by time (i.e., a timeseries).</span>
+<span class="sd">    Anything specified at the group level automatically applies to the individual observation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># NOTE: Position Observation (the one inheriting from Base) last in the inheritance list.</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasource</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TYPE_MEASUREMENT_TVP_TIMESERIES</span>
 
@@ -437,16 +426,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../basin3d.html" >basin3d</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="../models.html" >basin3d.synthesis.models</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="../models.html" >basin3d.synthesis.models</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

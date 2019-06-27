@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>basin3d.serializers &#8212; BASIN-3D v2.0.0-rc1-3-g532905e documentation</title>
+    <title>basin3d.serializers &#8212; BASIN-3D v2.0.0-rc1-10-g7d4a7e7 documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
@@ -25,9 +25,8 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../basin3d.html" accesskey="U">basin3d</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -46,6 +45,7 @@
 <span class="sd">:platform: Unix, Mac</span>
 <span class="sd">:synopsis: BASIN-3D Serializers</span>
 <span class="sd">:module author: Val Hendrix &lt;vhendrix@lbl.gov&gt;</span>
+<span class="sd">:module author: Danielle Svehla Christianson &lt;dschristianson@lbl.gov&gt;</span>
 
 <span class="sd">.. contents:: Contents</span>
 <span class="sd">    :local:</span>
@@ -67,7 +67,7 @@
 <span class="kn">from</span> <span class="nn">rest_framework</span> <span class="k">import</span> <span class="n">serializers</span>
 
 
-<div class="viewcode-block" id="ChooseFieldsSerializerMixin"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.ChooseFieldsSerializerMixin">[docs]</a><span class="k">class</span> <span class="nc">ChooseFieldsSerializerMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ChooseFieldsSerializerMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A serializer that  dynamically sets fields</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -80,7 +80,7 @@
         <span class="k">if</span> <span class="s1">&#39;request&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">handle_fields</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;request&#39;</span><span class="p">])</span>
 
-<div class="viewcode-block" id="ChooseFieldsSerializerMixin.handle_fields"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.ChooseFieldsSerializerMixin.handle_fields">[docs]</a>    <span class="k">def</span> <span class="nf">handle_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
+    <span class="k">def</span> <span class="nf">handle_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Restrict the fields by those in the request</span>
 <span class="sd">        :param request:</span>
@@ -93,10 +93,10 @@
 
                 <span class="c1"># Remove the fields not in the intersection</span>
                 <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">field_set</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field</span><span class="p">)</span></div></div>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="DelimitedListField"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.DelimitedListField">[docs]</a><span class="k">class</span> <span class="nc">DelimitedListField</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ListField</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">DelimitedListField</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ListField</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a delemited string field to a list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -107,16 +107,16 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">DelimitedListField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="n">delimiter</span>
 
-<div class="viewcode-block" id="DelimitedListField.to_representation"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.DelimitedListField.to_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List of object instances -&gt; List of dicts of primitive datatypes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_values</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delimiter</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="o">.</span><span class="n">to_representation</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span>
-                <span class="n">data_values</span><span class="p">]</span></div></div>
+                <span class="n">data_values</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="DataSourceSerializer"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.DataSourceSerializer">[docs]</a><span class="k">class</span> <span class="nc">DataSourceSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">DataSourceSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Data Source serializer that converts a models.DataSource</span>
@@ -127,7 +127,7 @@
     <span class="n">observed_property_variables</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     <span class="n">check</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
 
-<div class="viewcode-block" id="DataSourceSerializer.get_observed_property_variables"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.DataSourceSerializer.get_observed_property_variables">[docs]</a>    <span class="k">def</span> <span class="nf">get_observed_property_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_observed_property_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the url for the observed property variables associated with the current datasource</span>
 <span class="sd">        :param obj:</span>
@@ -139,10 +139,11 @@
         <span class="n">url_kwargs</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="k">return</span> <span class="n">reverse</span><span class="o">.</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-observed-property-variables&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">url_kwargs</span><span class="p">,</span>
-                               <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">reverse</span><span class="o">.</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-observed-property-variables&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span>
+                               <span class="n">kwargs</span><span class="o">=</span><span class="n">url_kwargs</span><span class="p">,</span>
+                               <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DataSourceSerializer.get_check"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.DataSourceSerializer.get_check">[docs]</a>    <span class="k">def</span> <span class="nf">get_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check the data source</span>
 <span class="sd">        :param obj:</span>
@@ -152,9 +153,9 @@
             <span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">check/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">reverse</span><span class="o">.</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;datasource-detail&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">url_kwargs</span><span class="p">,</span>
-                               <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],))</span></div>
+                                                 <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="p">))</span>
 
-<div class="viewcode-block" id="DataSourceSerializer.get_direct_path"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.DataSourceSerializer.get_direct_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_direct_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span> <span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_direct_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the url for direct api access</span>
 <span class="sd">        :param obj:</span>
@@ -168,29 +169,30 @@
             <span class="s1">&#39;direct_path&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">reverse</span><span class="o">.</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;direct-path-detail&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">url_kwargs</span><span class="p">,</span>
-                               <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span></div>
+                               <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DataSourceSerializer.Meta"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.DataSourceSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">DataSource</span>
         <span class="n">depth</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;direct_path&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="s1">&#39;id_prefix&#39;</span><span class="p">,</span>
                   <span class="s1">&#39;observed_property_variables&#39;</span><span class="p">,</span> <span class="s1">&#39;check&#39;</span><span class="p">)</span>
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="s1">&#39;id_prefix&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;observed_property_variables&#39;</span><span class="p">,</span> <span class="s1">&#39;check&#39;</span><span class="p">)</span>
-        <span class="n">lookup_field</span> <span class="o">=</span> <span class="s1">&#39;name&#39;</span></div></div>
+        <span class="n">lookup_field</span> <span class="o">=</span> <span class="s1">&#39;name&#39;</span>
 
 
-<div class="viewcode-block" id="DataSourceObservedPropertyVariableSerializer"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.DataSourceObservedPropertyVariableSerializer">[docs]</a><span class="k">class</span> <span class="nc">DataSourceObservedPropertyVariableSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">DataSourceObservedPropertyVariableSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Model that Serializes Mapped Data Source Parameters</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="DataSourceObservedPropertyVariableSerializer.Meta"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.DataSourceObservedPropertyVariableSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">DataSourceObservedPropertyVariable</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;datasource&#39;</span><span class="p">,</span> <span class="s1">&#39;observed_property_variable&#39;</span><span class="p">)</span></div></div>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;datasource&#39;</span><span class="p">,</span> <span class="s1">&#39;observed_property_variable&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ObservedPropertyVariableSerializer"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.ObservedPropertyVariableSerializer">[docs]</a><span class="k">class</span> <span class="nc">ObservedPropertyVariableSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ObservedPropertyVariableSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Observed Property Variable Serializer</span>
 
@@ -199,7 +201,7 @@
     <span class="n">categories</span> <span class="o">=</span> <span class="n">DelimitedListField</span><span class="p">()</span>
     <span class="n">datasources</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ObservedPropertyVariableSerializer.get_datasources"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.ObservedPropertyVariableSerializer.get_datasources">[docs]</a>    <span class="k">def</span> <span class="nf">get_datasources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_datasources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the url for the data sources associated with the current variable</span>
 <span class="sd">        :param obj:</span>
@@ -212,16 +214,15 @@
             <span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">reverse</span><span class="o">.</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-datasources&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">url_kwargs</span><span class="p">,</span>
-                               <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span></div>
+                               <span class="n">request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="ObservedPropertyVariableSerializer.Meta"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.ObservedPropertyVariableSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">ObservedPropertyVariable</span>
         <span class="n">depth</span> <span class="o">=</span> <span class="mi">2</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;full_name&#39;</span><span class="p">,</span> <span class="s1">&#39;categories&#39;</span><span class="p">,</span> <span class="s1">&#39;datasources&#39;</span><span class="p">)</span></div></div>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;full_name&#39;</span><span class="p">,</span> <span class="s1">&#39;categories&#39;</span><span class="p">,</span> <span class="s1">&#39;datasources&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ObservedPropertySerializer"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.ObservedPropertySerializer">[docs]</a><span class="k">class</span> <span class="nc">ObservedPropertySerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ObservedPropertySerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">HyperlinkedModelSerializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Observed Property Serializer</span>
 
@@ -231,19 +232,19 @@
     <span class="n">datasource</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     <span class="n">observed_property_variable</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ObservedPropertySerializer.get_sampling_medium"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.ObservedPropertySerializer.get_sampling_medium">[docs]</a>    <span class="k">def</span> <span class="nf">get_sampling_medium</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">sampling_medium</span><span class="o">.</span><span class="n">name</span></div>
+    <span class="k">def</span> <span class="nf">get_sampling_medium</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">sampling_medium</span><span class="o">.</span><span class="n">name</span>
 
-<div class="viewcode-block" id="ObservedPropertySerializer.get_datasource"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.ObservedPropertySerializer.get_datasource">[docs]</a>    <span class="k">def</span> <span class="nf">get_datasource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">name</span></div>
+    <span class="k">def</span> <span class="nf">get_datasource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">name</span>
 
-<div class="viewcode-block" id="ObservedPropertySerializer.get_observed_property_variable"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.ObservedPropertySerializer.get_observed_property_variable">[docs]</a>    <span class="k">def</span> <span class="nf">get_observed_property_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">observed_property_variable</span><span class="o">.</span><span class="n">id</span></div>
+    <span class="k">def</span> <span class="nf">get_observed_property_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">observed_property_variable</span><span class="o">.</span><span class="n">id</span>
 
-<div class="viewcode-block" id="ObservedPropertySerializer.Meta"><a class="viewcode-back" href="../../framework.html#basin3d.serializers.ObservedPropertySerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">ObservedProperty</span>
         <span class="n">depth</span> <span class="o">=</span> <span class="mi">2</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="s1">&#39;__all__&#39;</span></div></div>
+        <span class="n">fields</span> <span class="o">=</span> <span class="s1">&#39;__all__&#39;</span>
 </pre></div>
 
           </div>
@@ -274,15 +275,14 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-3-g532905e</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../basin3d.html" >basin3d</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>
