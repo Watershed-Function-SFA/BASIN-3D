@@ -843,13 +843,13 @@ class MonitoringFeature(SpatialSamplingFeature):
         self._description_reference = value
 
     @property
-    def related_party(self) -> List['Person']:
+    def related_party(self) -> List[Person]:
         """list of Person, people or organizations responsible for Feature.
            To be extended in future to full OGC Responsible_Party"""
         return self._related_party
 
     @related_party.setter
-    def related_party(self, value: List['Person']):
+    def related_party(self, value: List[Person]):
         self._related_party = value
 
     @property
