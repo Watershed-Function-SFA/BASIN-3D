@@ -6,7 +6,8 @@
 
 :platform: Unix, Mac
 :synopsis: BASIN-3D Serializers
-:module author: Val Hendrix <vhendrix@lbl.gov>, Danielle Svehla Christianson <dschristianson@lbl.gov>
+:module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Danielle Svehla Christianson <dschristianson@lbl.gov>
 
 .. contents:: Contents
     :local:

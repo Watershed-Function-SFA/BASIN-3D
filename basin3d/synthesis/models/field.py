@@ -6,6 +6,9 @@
 
 :synopsis: Classes to represent multi-scale feature hierarchy on which Observations are made
 
+.. inheritance-diagram:: basin3d.synthesis.models basin3d.synthesis.models.field
+    :parts: 2
+
 ---------------------
 """
 from typing import List

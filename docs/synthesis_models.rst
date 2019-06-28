@@ -21,16 +21,10 @@ brokering service.
     :inherited-members:
     :show-inheritance:
 
-.. inheritance-diagram:: basin3d.synthesis.models basin3d.synthesis.models.field
-    :parts: 2
-
 .. automodule:: basin3d.synthesis.models.field
     :members:
     :inherited-members:
     :show-inheritance:
-
-.. inheritance-diagram:: basin3d.synthesis.models basin3d.synthesis.models.measurement
-    :parts: 2
 
 .. automodule:: basin3d.synthesis.models.measurement
     :members:

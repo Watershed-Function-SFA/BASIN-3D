@@ -39,13 +39,13 @@ subesequent APIs.
 
 
 Observed Property Variables
-------------
+---------------------------
 Common names for observed property variables. A observed property variable defines what is
 being measured. Data source observed property variables are mapped to these synthesized
 observed property variables.
 
 | `/synthesis/observedpropertyvariables --` Returns a list of observed property variables
-| `/synthesis/observedpropertyvvariables/:id --` Get a single observed property variable
+| `/synthesis/observedpropertyvariables/:id --` Get a single observed property variable
 
 **Attributes:**
     - *id:* Unique observed property variable identifier
@@ -58,7 +58,7 @@ observed property variables.
 
 
 Observed Properties
-------------
+-------------------
 Definition of the attributes for an observed property
 
 | `/synthesis/observedproperty --` Returns a list of observed property variables
@@ -76,7 +76,7 @@ Definition of the attributes for an observed property
 
 
 Monitoring Features
-------------
+-------------------
 A feature on which an observation is made. Features organized into spatial
 hierarchies are described via the related_sampling_feature complex
 
@@ -104,7 +104,7 @@ hierarchies are described via the related_sampling_feature complex
 
 
 MeasurementTimeseriesTVPObservation
-------------
+-----------------------------------
 MeasurementTimeseriesTVPObservation: Series of measurement (numerical) observations
 in TVP (time value pair) format grouped by time (i.e., a timeseries).
 Attributes specified at the group level apply to all observations.
@@ -144,7 +144,7 @@ Direct API
 Bypass synthesis by accessing the data source APIs directly
 
 | `/direct/ --` Returns a list of direct apis
-| `/direct/:id_prefix --` Access a direct api for a datasource with the `:idprefix`
+| `/direct/:id_prefix --` Access a direct api for a datasource with the `:id_prefix`
 
 """
 import logging

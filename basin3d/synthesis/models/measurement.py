@@ -6,6 +6,9 @@
 
 :synopsis: Classes to represent Observations
 
+.. inheritance-diagram:: basin3d.synthesis.models basin3d.synthesis.models.measurement
+    :parts: 2
+
 ---------------------
 """
 from collections import namedtuple

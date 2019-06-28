@@ -6,16 +6,19 @@
 
 :platform: Unix, Mac
 :synopsis: BASIN-3D ViewSets
-:module author: Val Hendrix <vhendrix@lbl.gov>, Danielle Svehla Christianson <dschristianson@lbl.gov>
+:module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Danielle Svehla Christianson <dschristianson@lbl.gov>
 
 .. contents:: Contents
     :local:
     :backlinks: top
 
-* :class:`DirectAPIViewSet` - supports REST ` `GET`` methods that list the direct datasource APIs
-* :class:`DataSourceViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.DataSource` objects
-* :class:`ObservedPropertyVariableViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.models.ObservedPropertyVariable` objects
-* :class:`ObservedPropertyViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.models.ObservedProperty` objects
+Below is the inheritance diagram for BASIN-3D Viewsets.  All of the views are based on viewsets from
+:class:`rest_framework.viewsets` which provide functionality for controlling access to the REST API.
+
+.. inheritance-diagram:: basin3d.viewsets
+    :top-classes: rest_framework.viewsets.GenericViewSet, rest_framework.viewsets.ReadOnlyModelViewSet
+
 
 """
 import json
@@ -38,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 class DirectAPIViewSet(viewsets.GenericViewSet):
     """
-    Direct Access to data source APIs
+    Direct Access to data source APIs. Supports REST  ``GET`` methods that list the direct datasource APIs
     """
     queryset = DataSource.objects.all()
     serializer_class = DataSourceSerializer
@@ -97,7 +100,7 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
     """
         Returns a list of all Data Sources available to the BASIN-3D service
 
-        ** Properties **
+        **Properties**
 
         * *name:* string, Unique name for the Data Source
         * *id_prefix:* string, unique id prefix for all Data Source ids

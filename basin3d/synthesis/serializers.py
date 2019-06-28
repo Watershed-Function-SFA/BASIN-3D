@@ -5,7 +5,8 @@
 .. currentmodule:: basin3d.synthesis.serializers
 
 :synopsis: The BASIN-3D Synthesis Model Serializers
-:module author: Val Hendrix <vhendrix@lbl.gov>, Danielle Svehla Christianson <dschristianson@lbl.gov>
+:module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Danielle Svehla Christianson <dschristianson@lbl.gov>
 
 Serializers that render :mod:`basin.synthesis.models` from Python objects to `JSON` and back again.
 
