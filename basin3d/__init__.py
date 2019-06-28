@@ -67,8 +67,7 @@ Definition of the attributes for an observed property
 **Attributes:**
     - *observed_property_variable:* Observed property variable assigned to the observed property
     - *datasource:* Data source defining the observed property
-    - *sampling_medium:* Medium in which the observed property is observed
-        (WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE)
+    - *sampling_medium:* Medium in which the observed property is observed (WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE)
     - *description:* Additional information about the observed property
 
 **URLs**
@@ -88,10 +87,8 @@ hierarchies are described via the related_sampling_feature complex
     - *id:* Unique feature identifier
     - *name:* Feature name
     - *description:* Description of the feature
-    - *feature_type:* Type of feature, supported feature types: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED,
-        SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT)
-    - * observed_property_variables:* list of observed variables made at the feature.
-        Observed property variables are configured via the plugins.
+    - *feature_type:* Type of feature, supported feature types: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED, SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT
+    - *observed_property_variables:* list of observed variables made at the feature. Observed property variables are configured via the plugins.
     - *related_sampling_feature_complex:* List of related sampling_features. PARENT features are currently supported.
     - *shape:* Shape of the feature: POINT, CURVE, SURFACE, SOLID
     - *coordinates:* Location of feature in absolute and/or representative datum
@@ -120,8 +117,7 @@ Attributes specified at the group level apply to all observations.
     - *feature_of_interest_type:* feature type of the feature of interest
     - *result_points:* observed values of the observed property being assessed in format of TVP (time value pair)
     - *time_reference_position:* position of timestamp in aggregated_duration (START, MIDDLE, END)
-    - *aggregation_duration:* time period represented by observation
-        (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)
+    - *aggregation_duration:* time period represented by observation (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)
     - *unit_of_measurement:* units in which the observation is reported
     - *statistic:* statistical property of the observation result (MEAN, MIN, MAX, TOTAL)
     - *result_quality:* quality assessment of the result (CHECKED, UNCHECKED)

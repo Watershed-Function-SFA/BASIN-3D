@@ -160,10 +160,8 @@ class MonitoringFeatureViewSet(DataSourcePluginViewSet):
     * *id:* string, Unique feature identifier
     * *name:* string, Feature name
     * *description:* string, Description of the feature
-    * *feature_type:* sting, FeatureType: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED,
-        SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT
-    * * observed_property_variables:* list of observed variables made at the feature.
-        Observed property variables are configured via the plugins.
+    * *feature_type:* sting, FeatureType: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED, SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT
+    * *observed_property_variables:* list of observed variables made at the feature. Observed property variables are configured via the plugins.
     * *related_sampling_feature_complex:* list of related_sampling features. PARENT features are currently supported.
     * *shape:* string, Shape of the feature: POINT, CURVE, SURFACE, SOLID
     * *coordinates:* location of feature in absolute and/or representative datum
@@ -173,6 +171,7 @@ class MonitoringFeatureViewSet(DataSourcePluginViewSet):
     * *url:* url, URL with details for the feature
 
     **Filter** by the following attributes (/?attribute=parameter&attribute=parameter&...)
+
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
 
     **Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
@@ -286,8 +285,7 @@ class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
     * *feature_of_interest_type:* enum (FeatureTypes), feature type of the feature of interest
     * *result_points:* list of TimeValuePair obj, observed values of the observed property being assessed
     * *time_reference_position:* enum, position of timestamp in aggregated_duration (START, MIDDLE, END)
-    * *aggregation_duration:* enum, time period represented by observation
-        (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)
+    * *aggregation_duration:* enum, time period represented by observation (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)
     * *unit_of_measurement:* string, units in which the observation is reported
     * *statistic:* enum, statistical property of the observation result (MEAN, MIN, MAX, TOTAL)
     * *result_quality:* enum, quality assessment of the result (CHECKED, UNCHECKED)
@@ -298,7 +296,7 @@ class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
     * *observed_property_variables (required):* comma separated list of observed property variable ids
     * *start_date (required):* date YYYY-MM-DD
     * *end_date (optional):* date YYYY-MM-DD
-    * *aggregation_duration: (default: DAY): enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)
+    * *aggregation_duration (default: DAY):* enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
 
     **Restrict fields** with query parameter ‘fields’. (e.g. ?fields=id,name)

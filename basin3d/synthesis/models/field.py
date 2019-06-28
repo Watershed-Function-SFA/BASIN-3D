@@ -332,7 +332,7 @@ class VerticalCoordinate(Base):
 
     @property
     def encoding_method(self) -> str:
-        """The method for encoding the units of distance. Use constants prefixed with `ENCODING_` """
+        """The method for encoding the units of distance. Use constants prefixed with `ENCODING_` from :class:`VerticalCoordinate`"""
         return self._distance_units
 
     @encoding_method.setter
@@ -341,7 +341,7 @@ class VerticalCoordinate(Base):
 
     @property
     def distance_units(self) -> str:
-        """The unit of distance. It uses constants prefixed with `DISTANCE_UNITS_`"""
+        """The unit of distance. It uses constants prefixed with `DISTANCE_UNITS_` from :class:`VerticalCoordinate`"""
         return self._distance_units
 
     @distance_units.setter
@@ -495,7 +495,7 @@ class HorizontalCoordinate(Base):
 
     @property
     def type(self) -> str:
-        """The type of horizontal coordinates. Use constants prefixed with `TYPE_`"""
+        """The type of horizontal coordinates. Use constants prefixed with `TYPE_` from :class:`HorizontalCoordinate`"""
         return self._type
 
     @type.setter
@@ -623,7 +623,7 @@ class GeographicCoordinate(HorizontalCoordinate):
 
     @property
     def units(self) -> str:
-        """Latitude and longitude units. Use constants prefixed with `UNTIS_`"""
+        """Latitude and longitude units. Use constants prefixed with `UNITS_`"""
         return self._units
 
     @units.setter

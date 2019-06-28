@@ -212,7 +212,7 @@ class TimeMetadataMixin(object):
     @property
     def aggregation_duration(self) -> str:
         """Time period represented by the observation. Follows OGC TM_PeriodDuration.
-           Use constants prefixed with `AGGREGATION_DURATION`"""
+           Use constants prefixed with `AGGREGATION_DURATION` from :class:`TimeseriesMetadataMixin`"""
         return self._aggregation_duration
 
     @aggregation_duration.setter
@@ -222,7 +222,7 @@ class TimeMetadataMixin(object):
     @property
     def time_reference_position(self) -> str:
         """Position of timestamp in aggregated_duration. Encompassed as part of OGC interpolationType.
-           Use constants prefixed with `TIME_REFERENCE`"""
+           Use constants prefixed with `TIME_REFERENCE` from :class:`TimeseriesMetadataMixin`"""
         return self._time_reference_position
 
     @time_reference_position.setter
@@ -265,7 +265,7 @@ class MeasurementMetadataMixin(object):
 
     @property
     def statistic(self) -> str:
-        """The statistical property of the observation result. Use constants prefixed with `STATISTIC_`"""
+        """The statistical property of the observation result. Use constants prefixed with `STATISTIC_` from :class:`MeasurementMetadataMixin`"""
         return self._statistic
 
     @statistic.setter
@@ -315,21 +315,21 @@ class MeasurementResultMixin(object):
         super(MeasurementResultMixin, self).__init__(*args, **kwargs)
 
     @property
-    def result_value(self):
+    def result_value(self) -> float:
         """Numeric value that was measured"""
         return self._result_value
 
     @result_value.setter
-    def result_value(self, value):
+    def result_value(self, value: float):
         self._result_value = value
 
     @property
-    def unit_of_measurement(self):
+    def unit_of_measurement(self) -> str:
         """Unit of measurement"""
         return self._unit_of_measurement
 
     @unit_of_measurement.setter
-    def unit_of_measurement(self, value):
+    def unit_of_measurement(self, value: str):
         self._unit_of_measurement = value
 
 
