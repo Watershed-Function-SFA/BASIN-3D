@@ -2,10 +2,13 @@
 BASIN-3D Quickstart
 ===================
 
-BASIN-3D is a  Django app that acts as a  Broker for Assimilation, Synthesis and Integration of eNvironmental
+BASIN-3D is a Django app that acts as a Broker for Assimilation, Synthesis and Integration of eNvironmental
 Diverse, Distributed Datasets.
 
 Detailed documentation is in the "docs" directory.
+
+Custom plugins are developed for a broker instance. See ~/example-django/ directory containing the app "mybroker"
+for a broker instance example.
 
 Django Settings
 ---------------
@@ -28,6 +31,8 @@ URLConf
 Include the basin3d URLconf in your project urls.py like this::
 
     url(r'^', include('basin3d.urls')),
+
+See ~/example-django/mybroker/urls.py for an example.
 
 Implement Data Source plugins
 -----------------------------
@@ -52,22 +57,22 @@ Map your measurement variables for your plugin variables. The name of the file s
 .. literalinclude:: ../example-django/mybroker/mapping_alpha.csv
 
 
-Extend the broker source plugin with the described attributes
+Extend the broker source plugin with the described attributes. The following example is from ~example-django/mybroker/plugins.py.
 
 .. literalinclude:: ../example-django/mybroker/plugins.py
    :language: python
    :lines: 164-191
 
 
-Create view classes for the desired synthesis models
+Create view classes for the desired synthesis models in the broker source plugin (e.g., ~example-django/mybroker/plugins.py).
 
 .. literalinclude:: ../example-django/mybroker/plugins.py
    :language: python
    :lines: 15-87
 
-Create a  Keyset
+Create a Keyset
 ----------------
-Credentials for data source are stored in an encrypted database field.  The keyset used to encrypt the field
+Credentials for data source are stored in an encrypted database field. The keyset used to encrypt the field
 must be created with python-keyczar. Python-keyczar is a dependency of BASIN-3D and should have been installed
 with the BASIN-3D framework::
 

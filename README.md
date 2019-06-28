@@ -116,6 +116,7 @@ Workflow for tagging and building release:
 
 * **Charuleka Varadharajan** - [LBL](http://eesa.lbl.gov/profiles/charuleka-varadharajan/)
 * **Valerie Hendrix**  - [LBL](https://dst.lbl.gov/people.php?p=ValHendrix)
+* **Danielle Svehla Christianson** - [LBL](https://crd.lbl.gov/departments/data-science-and-technology/uss/staff/danielle-christianson/)
 
 
 See also the list of [contributors](contributors.txt) who 
