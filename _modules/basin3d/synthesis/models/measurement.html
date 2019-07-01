@@ -251,7 +251,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">aggregation_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Time period represented by the observation. Follows OGC TM_PeriodDuration.</span>
-<span class="sd">           Use constants prefixed with `AGGREGATION_DURATION`&quot;&quot;&quot;</span>
+<span class="sd">           Use constants prefixed with `AGGREGATION_DURATION` from :class:`TimeseriesMetadataMixin`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregation_duration</span>
 
     <span class="nd">@aggregation_duration</span><span class="o">.</span><span class="n">setter</span>
@@ -261,7 +261,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">time_reference_position</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Position of timestamp in aggregated_duration. Encompassed as part of OGC interpolationType.</span>
-<span class="sd">           Use constants prefixed with `TIME_REFERENCE`&quot;&quot;&quot;</span>
+<span class="sd">           Use constants prefixed with `TIME_REFERENCE` from :class:`TimeseriesMetadataMixin`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_reference_position</span>
 
     <span class="nd">@time_reference_position</span><span class="o">.</span><span class="n">setter</span>
@@ -304,7 +304,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">statistic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;The statistical property of the observation result. Use constants prefixed with `STATISTIC_`&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;The statistical property of the observation result. Use constants prefixed with `STATISTIC_` from :class:`MeasurementMetadataMixin`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statistic</span>
 
     <span class="nd">@statistic</span><span class="o">.</span><span class="n">setter</span>
@@ -354,21 +354,21 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">MeasurementResultMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">result_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">result_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Numeric value that was measured&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_value</span>
 
     <span class="nd">@result_value</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">result_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">result_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_value</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">unit_of_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">unit_of_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Unit of measurement&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_of_measurement</span>
 
     <span class="nd">@unit_of_measurement</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">unit_of_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">unit_of_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unit_of_measurement</span> <span class="o">=</span> <span class="n">value</span></div>
 
 
@@ -434,7 +434,7 @@
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
     </div>
   </body>
 </html>

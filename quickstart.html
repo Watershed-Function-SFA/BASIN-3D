@@ -44,9 +44,11 @@
             
   <div class="section" id="basin-3d-quickstart">
 <h1>BASIN-3D Quickstart<a class="headerlink" href="#basin-3d-quickstart" title="Permalink to this headline">¶</a></h1>
-<p>BASIN-3D is a  Django app that acts as a  Broker for Assimilation, Synthesis and Integration of eNvironmental
+<p>BASIN-3D is a Django app that acts as a Broker for Assimilation, Synthesis and Integration of eNvironmental
 Diverse, Distributed Datasets.</p>
 <p>Detailed documentation is in the “docs” directory.</p>
+<p>Custom plugins are developed for a broker instance. See ~/example-django/ directory containing the app “mybroker”
+for a broker instance example.</p>
 <div class="section" id="django-settings">
 <h2>Django Settings<a class="headerlink" href="#django-settings" title="Permalink to this headline">¶</a></h2>
 <p>Add “basin3d” and its dependencies to your INSTALLED_APPS setting like this:</p>
@@ -67,6 +69,7 @@ Diverse, Distributed Datasets.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;basin3d.urls&#39;</span><span class="p">)),</span>
 </pre></div>
 </div>
+<p>See ~/example-django/mybroker/urls.py for an example.</p>
 </div>
 <div class="section" id="implement-data-source-plugins">
 <h2>Implement Data Source plugins<a class="headerlink" href="#implement-data-source-plugins" title="Permalink to this headline">¶</a></h2>
@@ -96,7 +99,7 @@ This file must be placed this in <cite>your-app/</cite> directory (e.g <cite>you
 <span class="n">As</span><span class="p">,</span><span class="n">As</span><span class="p">,</span><span class="n">WATER</span><span class="p">,</span>
 </pre></div>
 </div>
-<p>Extend the broker source plugin with the described attributes</p>
+<p>Extend the broker source plugin with the described attributes. The following example is from ~example-django/mybroker/plugins.py.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">class</span> <span class="nc">AlphaSourcePlugin</span><span class="p">(</span><span class="n">DataSourcePluginPoint</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;alpha-source-plugin&#39;</span>
@@ -126,7 +129,7 @@ This file must be placed this in <cite>your-app/</cite> directory (e.g <cite>you
         <span class="n">name</span> <span class="o">=</span> <span class="nb">id</span>  <span class="c1"># Human Friendly Data Source Name</span>
 </pre></div>
 </div>
-<p>Create view classes for the desired synthesis models</p>
+<p>Create view classes for the desired synthesis models in the broker source plugin (e.g., ~example-django/mybroker/plugins.py).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">AlphaMonitoringFeatureView</span><span class="p">(</span><span class="n">with_metaclass</span><span class="p">(</span><span class="n">DataSourcePluginViewMeta</span><span class="p">)):</span>
     <span class="n">synthesis_model_class</span> <span class="o">=</span> <span class="n">MonitoringFeature</span>
 
@@ -205,8 +208,8 @@ This file must be placed this in <cite>your-app/</cite> directory (e.g <cite>you
 </div>
 </div>
 <div class="section" id="create-a-keyset">
-<h2>Create a  Keyset<a class="headerlink" href="#create-a-keyset" title="Permalink to this headline">¶</a></h2>
-<p>Credentials for data source are stored in an encrypted database field.  The keyset used to encrypt the field
+<h2>Create a Keyset<a class="headerlink" href="#create-a-keyset" title="Permalink to this headline">¶</a></h2>
+<p>Credentials for data source are stored in an encrypted database field. The keyset used to encrypt the field
 must be created with python-keyczar. Python-keyczar is a dependency of BASIN-3D and should have been installed
 with the BASIN-3D framework:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install python-keyczar
@@ -278,7 +281,7 @@ to manage a BASIN-3D models (you’ll need the Admin app enabled).:</p>
 <li><a class="reference internal" href="#mapping-plugin-name-csv"><cite>mapping_&lt;plugin_name&gt;.csv</cite></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#create-a-keyset">Create a  Keyset</a></li>
+<li><a class="reference internal" href="#create-a-keyset">Create a Keyset</a></li>
 <li><a class="reference internal" href="#migrate-the-app">Migrate the App</a></li>
 <li><a class="reference internal" href="#setup-credentials">Setup Credentials</a></li>
 <li><a class="reference internal" href="#run-the-server">Run the Server</a></li>
@@ -334,7 +337,7 @@ to manage a BASIN-3D models (you’ll need the Admin app enabled).:</p>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
     </div>
   </body>
 </html>

@@ -15,7 +15,7 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Framework" href="framework.html" />
+    <link rel="next" title="Django Framework" href="django_framework.html" />
     <link rel="prev" title="Synthesis Models" href="synthesis_models.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -28,7 +28,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="framework.html" title="Framework"
+          <a href="django_framework.html" title="Django Framework"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="synthesis_models.html" title="Synthesis Models"
@@ -48,7 +48,7 @@
 brokering service.</p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#basin3d-synthesis-viewsets" id="id3"><cite>basin3d.synthesis.viewsets</cite></a></p></li>
+<li><p><a class="reference internal" href="#basin3d-synthesis-viewsets" id="id1"><cite>basin3d.synthesis.viewsets</cite></a></p></li>
 </ul>
 </div>
 <span class="target" id="module-basin3d.synthesis.viewsets"></span><div class="section" id="basin3d-synthesis-viewsets">
@@ -105,13 +105,13 @@ class <code class="xref py py-class docutils literal notranslate"><span class="p
 
 <dl class="method">
 <dt id="basin3d.synthesis.viewsets.DataSourcePluginViewSet.retrieve">
-<code class="sig-name descname">retrieve</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">pk=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/synthesis/viewsets.html#DataSourcePluginViewSet.retrieve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet.retrieve" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">retrieve</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">pk</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/synthesis/viewsets.html#DataSourcePluginViewSet.retrieve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet.retrieve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a single synthesized value</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>request</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.request.Request</span></code>) – The request object</p></li>
-<li><p><strong>pk</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The primary key</p></li>
+<li><p><strong>pk</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The primary key</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -168,11 +168,7 @@ TVP (time value pair) format grouped by time (i.e., a timeseries).</p>
 <li><p><em>feature_of_interest_type:</em> enum (FeatureTypes), feature type of the feature of interest</p></li>
 <li><p><em>result_points:</em> list of TimeValuePair obj, observed values of the observed property being assessed</p></li>
 <li><p><em>time_reference_position:</em> enum, position of timestamp in aggregated_duration (START, MIDDLE, END)</p></li>
-<li><dl class="simple">
-<dt><em>aggregation_duration:</em> enum, time period represented by observation</dt><dd><p>(YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)</p>
-</dd>
-</dl>
-</li>
+<li><p><em>aggregation_duration:</em> enum, time period represented by observation (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)</p></li>
 <li><p><em>unit_of_measurement:</em> string, units in which the observation is reported</p></li>
 <li><p><em>statistic:</em> enum, statistical property of the observation result (MEAN, MIN, MAX, TOTAL)</p></li>
 <li><p><em>result_quality:</em> enum, quality assessment of the result (CHECKED, UNCHECKED)</p></li>
@@ -183,7 +179,7 @@ TVP (time value pair) format grouped by time (i.e., a timeseries).</p>
 <li><p><em>observed_property_variables (required):</em> comma separated list of observed property variable ids</p></li>
 <li><p><em>start_date (required):</em> date YYYY-MM-DD</p></li>
 <li><p><em>end_date (optional):</em> date YYYY-MM-DD</p></li>
-<li><p><a href="#id1"><span class="problematic" id="id2">*</span></a>aggregation_duration: (default: DAY): enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)</p></li>
+<li><p><em>aggregation_duration (default: DAY):</em> enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)</p></li>
 <li><p><em>datasource (optional):</em> a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)</p></li>
 </ul>
 <p><strong>Restrict fields</strong> with query parameter ‘fields’. (e.g. ?fields=id,name)</p>
@@ -240,16 +236,8 @@ TVP (time value pair) format grouped by time (i.e., a timeseries).</p>
 <li><p><em>id:</em> string, Unique feature identifier</p></li>
 <li><p><em>name:</em> string, Feature name</p></li>
 <li><p><em>description:</em> string, Description of the feature</p></li>
-<li><dl class="simple">
-<dt><em>feature_type:</em> sting, FeatureType: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED,</dt><dd><p>SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT</p>
-</dd>
-</dl>
-</li>
-<li><ul>
-<li><p>observed_property_variables:* list of observed variables made at the feature.
-Observed property variables are configured via the plugins.</p></li>
-</ul>
-</li>
+<li><p><em>feature_type:</em> sting, FeatureType: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED, SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT</p></li>
+<li><p><em>observed_property_variables:</em> list of observed variables made at the feature. Observed property variables are configured via the plugins.</p></li>
 <li><p><em>related_sampling_feature_complex:</em> list of related_sampling features. PARENT features are currently supported.</p></li>
 <li><p><em>shape:</em> string, Shape of the feature: POINT, CURVE, SURFACE, SOLID</p></li>
 <li><p><em>coordinates:</em> location of feature in absolute and/or representative datum</p></li>
@@ -258,8 +246,10 @@ Observed property variables are configured via the plugins.</p></li>
 <li><p><em>utc_offset:</em> float, Coordinate Universal Time offset in hours (offset in hours), e.g., +9</p></li>
 <li><p><em>url:</em> url, URL with details for the feature</p></li>
 </ul>
-<p><strong>Filter</strong> by the following attributes (/?attribute=parameter&amp;attribute=parameter&amp;…)
-* <em>datasource (optional):</em> a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)</p>
+<p><strong>Filter</strong> by the following attributes (/?attribute=parameter&amp;attribute=parameter&amp;…)</p>
+<ul class="simple">
+<li><p><em>datasource (optional):</em> a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)</p></li>
+</ul>
 <p><strong>Restrict fields</strong>  with query parameter ‘fields’. (e.g. ?fields=id,name)</p>
 <dl class="method">
 <dt id="basin3d.synthesis.viewsets.MonitoringFeatureViewSet.extract_type">
@@ -334,8 +324,8 @@ Observed property variables are configured via the plugins.</p></li>
   <p class="topless"><a href="synthesis_models.html"
                         title="previous chapter">Synthesis Models</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="framework.html"
-                        title="next chapter">Framework</a></p>
+  <p class="topless"><a href="django_framework.html"
+                        title="next chapter">Django Framework</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -367,7 +357,7 @@ Observed property variables are configured via the plugins.</p></li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="framework.html" title="Framework"
+          <a href="django_framework.html" title="Django Framework"
              >next</a> |</li>
         <li class="right" >
           <a href="synthesis_models.html" title="Synthesis Models"
@@ -378,7 +368,7 @@ Observed property variables are configured via the plugins.</p></li>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
     </div>
   </body>
 </html>

@@ -132,11 +132,7 @@ observed property variables.</p>
 <dt><strong>Attributes:</strong></dt><dd><ul class="simple">
 <li><p><em>observed_property_variable:</em> Observed property variable assigned to the observed property</p></li>
 <li><p><em>datasource:</em> Data source defining the observed property</p></li>
-<li><dl class="simple">
-<dt><em>sampling_medium:</em> Medium in which the observed property is observed</dt><dd><p>(WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE)</p>
-</dd>
-</dl>
-</li>
+<li><p><em>sampling_medium:</em> Medium in which the observed property is observed (WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE)</p></li>
 <li><p><em>description:</em> Additional information about the observed property</p></li>
 </ul>
 </dd>
@@ -160,16 +156,8 @@ hierarchies are described via the related_sampling_feature complex</p>
 <li><p><em>id:</em> Unique feature identifier</p></li>
 <li><p><em>name:</em> Feature name</p></li>
 <li><p><em>description:</em> Description of the feature</p></li>
-<li><dl class="simple">
-<dt><em>feature_type:</em> Type of feature, supported feature types: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED,</dt><dd><p>SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT)</p>
-</dd>
-</dl>
-</li>
-<li><ul>
-<li><p>observed_property_variables:* list of observed variables made at the feature.
-Observed property variables are configured via the plugins.</p></li>
-</ul>
-</li>
+<li><p><em>feature_type:</em> Type of feature, supported feature types: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED, SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT</p></li>
+<li><p><em>observed_property_variables:</em> list of observed variables made at the feature. Observed property variables are configured via the plugins.</p></li>
 <li><p><em>related_sampling_feature_complex:</em> List of related sampling_features. PARENT features are currently supported.</p></li>
 <li><p><em>shape:</em> Shape of the feature: POINT, CURVE, SURFACE, SOLID</p></li>
 <li><p><em>coordinates:</em> Location of feature in absolute and/or representative datum</p></li>
@@ -202,11 +190,7 @@ Attributes specified at the group level apply to all observations.</p>
 <li><p><em>feature_of_interest_type:</em> feature type of the feature of interest</p></li>
 <li><p><em>result_points:</em> observed values of the observed property being assessed in format of TVP (time value pair)</p></li>
 <li><p><em>time_reference_position:</em> position of timestamp in aggregated_duration (START, MIDDLE, END)</p></li>
-<li><dl class="simple">
-<dt><em>aggregation_duration:</em> time period represented by observation</dt><dd><p>(YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)</p>
-</dd>
-</dl>
-</li>
+<li><p><em>aggregation_duration:</em> time period represented by observation (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)</p></li>
 <li><p><em>unit_of_measurement:</em> units in which the observation is reported</p></li>
 <li><p><em>statistic:</em> statistical property of the observation result (MEAN, MIN, MAX, TOTAL)</p></li>
 <li><p><em>result_quality:</em> quality assessment of the result (CHECKED, UNCHECKED)</p></li>
@@ -309,7 +293,7 @@ Attributes specified at the group level apply to all observations.</p>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
     </div>
   </body>
 </html>

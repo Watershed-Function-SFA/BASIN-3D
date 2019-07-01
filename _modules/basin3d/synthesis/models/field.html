@@ -371,7 +371,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">encoding_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;The method for encoding the units of distance. Use constants prefixed with `ENCODING_` &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;The method for encoding the units of distance. Use constants prefixed with `ENCODING_` from :class:`VerticalCoordinate`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_units</span>
 
     <span class="nd">@encoding_method</span><span class="o">.</span><span class="n">setter</span>
@@ -380,7 +380,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">distance_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;The unit of distance. It uses constants prefixed with `DISTANCE_UNITS_`&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;The unit of distance. It uses constants prefixed with `DISTANCE_UNITS_` from :class:`VerticalCoordinate`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_units</span>
 
     <span class="nd">@distance_units</span><span class="o">.</span><span class="n">setter</span>
@@ -534,7 +534,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;The type of horizontal coordinates. Use constants prefixed with `TYPE_`&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;The type of horizontal coordinates. Use constants prefixed with `TYPE_` from :class:`HorizontalCoordinate`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
 
     <span class="nd">@type</span><span class="o">.</span><span class="n">setter</span>
@@ -662,7 +662,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Latitude and longitude units. Use constants prefixed with `UNTIS_`&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Latitude and longitude units. Use constants prefixed with `UNITS_`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
 
     <span class="nd">@units</span><span class="o">.</span><span class="n">setter</span>
@@ -940,7 +940,7 @@
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
 (subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
     </div>
   </body>
 </html>
