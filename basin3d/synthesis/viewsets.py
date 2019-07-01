@@ -110,7 +110,7 @@ class DataSourcePluginViewSet(ViewSet):
         serializer = self.__class__.serializer_class(items, many=True, context={'request': request})
         return Response(serializer.data)
 
-    def retrieve(self, request: Request, pk: str = None) -> Response:
+    def retrieve(self, request: Request, pk: str) -> Response:
         """
         Retrieve a single synthesized value
 
