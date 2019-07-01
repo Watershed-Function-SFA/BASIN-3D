@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>BASIN-3D Setup &#8212; BASIN-3D v2.0.0-rc1-10-g7d4a7e7 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="BASIN-3D REST APIs" href="rest_api.html" />
+    <link rel="prev" title="What is BASIN-3D?" href="intro.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="rest_api.html" title="BASIN-3D REST APIs"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="What is BASIN-3D?"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="basin-3d-setup">
+<h1>BASIN-3D Setup<a class="headerlink" href="#basin-3d-setup" title="Permalink to this headline">¶</a></h1>
+<p>BASIN-3D is a Django app that acts as a Broker for Assimilation, Synthesis and Integration of eNvironmental
+Diverse, Distributed Datasets.</p>
+<p>The setup instructions below assume familiarity with Django. For more details, see <a class="reference external" href="https://www.djangoproject.com/start/">https://www.djangoproject.com/start/</a></p>
+<p>Custom plugins are developed for a broker instance. See ~/example-django/ directory containing the app “mybroker”
+for a broker instance example with datasource “Alpha” at <a class="reference external" href="https://github.com/Watershed-Function-SFA/BASIN-3D">https://github.com/Watershed-Function-SFA/BASIN-3D</a>.</p>
+<div class="section" id="install">
+<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
+<p>Download latest BASIN-3D tar.gz from github: <a class="reference external" href="https://github.com/Watershed-Function-SFA/BASIN-3D/releases">https://github.com/Watershed-Function-SFA/BASIN-3D/releases</a>. If you haven’t
+created a Django project for your custom broker, create one. See <a class="reference external" href="https://www.djangoproject.com/start/">https://www.djangoproject.com/start/</a> for details. Once
+the custom Django broker project is created, install the BASIN-3D source distribution to Python environment for your
+Django project.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">BASIN</span><span class="o">-</span><span class="mi">3</span><span class="n">D</span><span class="o">-</span><span class="p">{</span><span class="n">version</span><span class="p">}</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="django-settings">
+<h2>Django Settings<a class="headerlink" href="#django-settings" title="Permalink to this headline">¶</a></h2>
+<p>In the Django settings, add “basin3d” and its dependencies to your INSTALLED_APPS setting like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span>
+    <span class="o">&lt;</span><span class="n">yourapp</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s1">&#39;basin3d&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django_extensions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;rest_framework&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="urlconf">
+<h2>URLConf<a class="headerlink" href="#urlconf" title="Permalink to this headline">¶</a></h2>
+<p>Include the basin3d URLconf in your project urls.py like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="k">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+
+<span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;basin3d.urls&#39;</span><span class="p">)),</span>
+</pre></div>
+</div>
+<p>See ~/example-django/mybroker/urls.py for an example.</p>
+</div>
+<div class="section" id="implement-data-source-plugins">
+<h2>Implement Data Source plugins<a class="headerlink" href="#implement-data-source-plugins" title="Permalink to this headline">¶</a></h2>
+<p>Create one or more plugins in a plugins module in <cite>your-app/plugins.py</cite>. The following files
+must be placed in <cite>your-app/</cite> directory along side <cite>plugins.py</cite></p>
+<div class="section" id="measurement-variables-csv">
+<h3><cite>measurement_variables.csv</cite><a class="headerlink" href="#measurement-variables-csv" title="Permalink to this headline">¶</a></h3>
+<p>Define your broker variables in a comma separated values (csv) file named <cite>measurement_variables.csv</cite>.
+This file must be placed this in <cite>your-app/</cite> directory (e.g <cite>your-app/measurement_variables.csv</cite>) .</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">broker_id</span><span class="p">,</span><span class="n">description</span><span class="p">,</span><span class="n">categories</span><span class="p">,</span><span class="n">units</span>
+<span class="n">ACT</span><span class="p">,</span><span class="n">Acetate</span> <span class="p">(</span><span class="n">CH3COO</span><span class="p">),</span><span class="s2">&quot;Geochemistry,Anions&quot;</span><span class="p">,</span>
+<span class="n">Ag</span><span class="p">,</span><span class="n">Silver</span> <span class="p">(</span><span class="n">Ag</span><span class="p">),</span><span class="s2">&quot;Geochemistry,Trace elements&quot;</span><span class="p">,</span>
+<span class="n">Al</span><span class="p">,</span><span class="n">Aluminum</span> <span class="p">(</span><span class="n">Al</span><span class="p">),</span><span class="s2">&quot;Geochemistry,Trace elements&quot;</span><span class="p">,</span>
+<span class="n">As</span><span class="p">,</span><span class="n">Arsenic</span> <span class="p">(</span><span class="n">As</span><span class="p">),</span><span class="s2">&quot;Geochemistry,Trace elements&quot;</span><span class="p">,</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="mapping-plugin-name-csv">
+<h3><cite>mapping_&lt;plugin_name&gt;.csv</cite><a class="headerlink" href="#mapping-plugin-name-csv" title="Permalink to this headline">¶</a></h3>
+<p>Map your measurement variables for your plugin variables. The name of the file should be
+<cite>mapping_&lt;plugin_name&gt;.csv</cite>. This file must be placed this in <cite>your-app/</cite> directory
+(e.g <cite>your-app/mapping_alpha.csv</cite>) .</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">broker_id</span><span class="p">,</span><span class="n">datasource_name</span><span class="p">,</span><span class="n">sampling_medium</span><span class="p">,</span><span class="n">description</span>
+<span class="n">ACT</span><span class="p">,</span><span class="n">Acetate</span><span class="p">,</span><span class="n">WATER</span><span class="p">,</span>
+<span class="n">Ag</span><span class="p">,</span><span class="n">Ag</span><span class="p">,</span><span class="n">WATER</span><span class="p">,</span>
+<span class="n">Al</span><span class="p">,</span><span class="n">Al</span><span class="p">,</span><span class="n">WATER</span><span class="p">,</span>
+<span class="n">As</span><span class="p">,</span><span class="n">As</span><span class="p">,</span><span class="n">WATER</span><span class="p">,</span>
+</pre></div>
+</div>
+<p>Extend the broker source plugin with the described attributes. The following example is from ~example-django/mybroker/plugins.py.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">class</span> <span class="nc">AlphaSourcePlugin</span><span class="p">(</span><span class="n">DataSourcePluginPoint</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;alpha-source-plugin&#39;</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Alpha Source Plugin&#39;</span>
+    <span class="n">plugin_view_classes</span> <span class="o">=</span> <span class="p">(</span><span class="n">AlphaDataMeasurementTimeseriesTVPObservationView</span><span class="p">,</span> <span class="n">AlphaMonitoringFeatureView</span><span class="p">)</span>
+    <span class="c1"># Question: should we use the FeatureTypes CV directly?</span>
+    <span class="n">feature_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;REGION&#39;</span><span class="p">,</span> <span class="s1">&#39;POINT&#39;</span><span class="p">,</span> <span class="s1">&#39;TREE&#39;</span><span class="p">]</span>
+
+    <span class="k">class</span> <span class="nc">DataSourceMeta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is an internal metadata class for defining additional :class:`~basin3d.models.DataSource`</span>
+<span class="sd">        attributes.</span>
+
+<span class="sd">        **Attributes:**</span>
+<span class="sd">            - *id* - unique id short name</span>
+<span class="sd">            - *name* - human friendly name (more descriptive)</span>
+<span class="sd">            - *location* - resource location</span>
+<span class="sd">            - *id_prefix* - id prefix to make model object ids unique across datasources</span>
+<span class="sd">            - *credentials_format* - if the data source requires authentication, this is where the</span>
+<span class="sd">                format of the stored credentials is defined.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Data Source attributes</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;https://asource.foo/&#39;</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;Alpha&#39;</span>  <span class="c1"># unique id for the datasource</span>
+        <span class="n">id_prefix</span> <span class="o">=</span> <span class="s1">&#39;A&#39;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="nb">id</span>  <span class="c1"># Human Friendly Data Source Name</span>
+</pre></div>
+</div>
+<p>Create view classes for the desired synthesis models in the broker source plugin (e.g., ~example-django/mybroker/plugins.py).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">AlphaMonitoringFeatureView</span><span class="p">(</span><span class="n">with_metaclass</span><span class="p">(</span><span class="n">DataSourcePluginViewMeta</span><span class="p">)):</span>
+    <span class="n">synthesis_model_class</span> <span class="o">=</span> <span class="n">MonitoringFeature</span>
+
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get Monitoring Feature Info</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">obj_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">synthesis_model_class</span><span class="p">(</span>
+            <span class="n">datasource</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;Region1&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;AwesomeRegion&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This region is really awesome.&quot;</span><span class="p">,</span>
+            <span class="n">feature_type</span> <span class="o">=</span><span class="n">FeatureTypes</span><span class="o">.</span><span class="n">REGION</span><span class="p">,</span>
+            <span class="n">shape</span><span class="o">=</span><span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_SURFACE</span><span class="p">,</span>
+            <span class="n">coordinates</span><span class="o">=</span><span class="n">Coordinate</span><span class="p">(</span><span class="n">representative</span><span class="o">=</span><span class="n">RepresentativeCoordinate</span><span class="p">(</span>
+                <span class="n">representative_point</span><span class="o">=</span><span class="n">AbsoluteCoordinate</span><span class="p">(</span>
+                    <span class="n">horizontal_position</span><span class="o">=</span><span class="n">GeographicCoordinate</span><span class="p">(</span>
+                        <span class="n">units</span><span class="o">=</span><span class="n">GeographicCoordinate</span><span class="o">.</span><span class="n">UNITS_DEC_DEGREES</span><span class="p">,</span>
+                        <span class="n">latitude</span><span class="o">=</span><span class="mf">70.4657</span><span class="p">,</span> <span class="n">longitude</span><span class="o">=-</span><span class="mf">20.4567</span><span class="p">),</span>
+                    <span class="n">vertical_extent</span><span class="o">=</span><span class="n">AltitudeCoordinate</span><span class="p">(</span>
+                        <span class="n">datum</span><span class="o">=</span><span class="n">AltitudeCoordinate</span><span class="o">.</span><span class="n">DATUM_NAVD88</span><span class="p">,</span>
+                        <span class="n">value</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span>
+                        <span class="n">distance_units</span><span class="o">=</span><span class="n">VerticalCoordinate</span><span class="o">.</span><span class="n">DISTANCE_UNITS_FEET</span><span class="p">)),</span>
+                <span class="n">representative_point_type</span><span class="o">=</span><span class="n">RepresentativeCoordinate</span><span class="o">.</span><span class="n">REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">yield</span> <span class="n">obj_region</span>
+
+        <span class="n">obj_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">synthesis_model_class</span><span class="p">(</span>
+            <span class="n">datasource</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Point Location 1&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The first point.&quot;</span><span class="p">,</span>
+            <span class="n">feature_type</span><span class="o">=</span><span class="n">FeatureTypes</span><span class="o">.</span><span class="n">POINT</span><span class="p">,</span>
+            <span class="n">shape</span><span class="o">=</span><span class="n">SpatialSamplingShapes</span><span class="o">.</span><span class="n">SHAPE_POINT</span><span class="p">,</span>
+            <span class="n">coordinates</span><span class="o">=</span><span class="n">Coordinate</span><span class="p">(</span>
+                <span class="n">absolute</span><span class="o">=</span><span class="n">AbsoluteCoordinate</span><span class="p">(</span>
+                    <span class="n">horizontal_position</span><span class="o">=</span><span class="n">GeographicCoordinate</span><span class="p">(</span>
+                        <span class="n">units</span><span class="o">=</span><span class="n">GeographicCoordinate</span><span class="o">.</span><span class="n">UNITS_DEC_DEGREES</span><span class="p">,</span>
+                        <span class="n">latitude</span><span class="o">=</span><span class="mf">70.4657</span><span class="p">,</span> <span class="n">longitude</span><span class="o">=-</span><span class="mf">20.4567</span><span class="p">),</span>
+                    <span class="n">vertical_extent</span><span class="o">=</span><span class="n">AltitudeCoordinate</span><span class="p">(</span>
+                        <span class="n">datum</span><span class="o">=</span><span class="n">AltitudeCoordinate</span><span class="o">.</span><span class="n">DATUM_NAVD88</span><span class="p">,</span>
+                        <span class="n">value</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span>
+                        <span class="n">distance_units</span><span class="o">=</span><span class="n">VerticalCoordinate</span><span class="o">.</span><span class="n">DISTANCE_UNITS_FEET</span><span class="p">)),</span>
+                <span class="n">representative</span><span class="o">=</span><span class="n">RepresentativeCoordinate</span><span class="p">(</span>
+                    <span class="n">vertical_position</span><span class="o">=</span><span class="n">DepthCoordinate</span><span class="p">(</span>
+                        <span class="n">datum</span><span class="o">=</span><span class="n">DepthCoordinate</span><span class="o">.</span><span class="n">DATUM_LOCAL_SURFACE</span><span class="p">,</span>
+                        <span class="n">value</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span>
+                        <span class="n">distance_units</span><span class="o">=</span><span class="n">VerticalCoordinate</span><span class="o">.</span><span class="n">DISTANCE_UNITS_METERS</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">observed_property_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Ag&quot;</span><span class="p">,</span> <span class="s2">&quot;Acetate&quot;</span><span class="p">],</span>
+            <span class="n">related_sampling_feature_complex</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">RelatedSamplingFeature</span><span class="p">(</span><span class="n">datasource</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="p">,</span>
+                                       <span class="n">related_sampling_feature</span><span class="o">=</span><span class="s2">&quot;Region1&quot;</span><span class="p">,</span>
+                                       <span class="n">related_sampling_feature_type</span><span class="o">=</span><span class="n">FeatureTypes</span><span class="o">.</span><span class="n">REGION</span><span class="p">,</span>
+                                       <span class="n">role</span><span class="o">=</span><span class="n">RelatedSamplingFeature</span><span class="o">.</span><span class="n">ROLE_PARENT</span><span class="p">)]</span>
+        <span class="p">)</span>
+
+        <span class="k">yield</span> <span class="n">obj_point</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a MonitoringFeature</span>
+<span class="sd">        :param pk: primary key</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">pk</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">s</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="create-a-keyset">
+<h2>Create a Keyset<a class="headerlink" href="#create-a-keyset" title="Permalink to this headline">¶</a></h2>
+<p>Credentials for data source are stored in an encrypted database field. The keyset used to encrypt the field
+must be created with python3-keyczar. Python3-keyczar is a dependency of BASIN-3D and should have been installed
+with the BASIN-3D framework:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install python3-keyczar
+$ mkdir .keyset
+$ keyczart create --location=.keyset --purpose=crypt --name=basin3d
+$ keyczart addkey --location=.keyset --status=primary
+</pre></div>
+</div>
+<p>The default settings look for .keyset in the BASE directory of your applications.  If you would like to change it,
+do the following in your settings.py:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ENCRYPTED_FIELD_KEYS_DIR</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">keyset</span> <span class="n">directory</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="migrate-the-app">
+<h2>Migrate the App<a class="headerlink" href="#migrate-the-app" title="Permalink to this headline">¶</a></h2>
+<p>Run <cite>python manage.py migrate</cite> to create the BASIN-3d models. This will create the database and load the app’s
+plugins.</p>
+</div>
+<div class="section" id="setup-credentials">
+<h2>Setup Credentials<a class="headerlink" href="#setup-credentials" title="Permalink to this headline">¶</a></h2>
+<p>If your datasource requires credentials, BASIN-3D provides free form encrypted text fields for storing any
+datasource credentials. The most common format is YAML. However, any format is accepted, each datasource
+has to parse their own credential field. The example below assumes the datasource below is using YAML
+and requires a username and password.</p>
+<p>If a datasource required credentials, the credential format should be specified in the plugin definition.
+See plugin example above.</p>
+<p>Setup credentials for your data sources with <cite>manage.py</cite></p>
+<p>Display credentials format for a Broker Source plugin:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ bin/python manage.py credentialsformat Alpha
+username:
+password:
+</pre></div>
+</div>
+<p>Show the current credentials for a Broker source plugin:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ bin/python manage.py showcredentials Alpha
+</pre></div>
+</div>
+<p>Upload new credentials from standard input:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ bin/python manage.py uploadcredentials Alpha &lt; credentials.txt
+</pre></div>
+</div>
+<p>OR:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ bin/python manage.py uploadcredentials Alpha
+username: foo
+password: barsecrent
+&lt;Ctr D&gt; to Exit
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-the-server">
+<h2>Run the Server<a class="headerlink" href="#run-the-server" title="Permalink to this headline">¶</a></h2>
+<p>Start the development server:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ bin/python manage.py runserver
+</pre></div>
+</div>
+<p>Visit <a class="reference external" href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a> to view the REST API.</p>
+<p>Visit <a class="reference external" href="http://127.0.0.1:8000/admin/">http://127.0.0.1:8000/admin/</a> to manage a BASIN-3D models (you’ll need the Admin app
+enabled in the project’s urls.py):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^admin/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
+</pre></div>
+</div>
+<p>To create an admin user:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">createsuperuser</span>
+</pre></div>
+</div>
+<p>To exit running the server, control + C.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">BASIN-3D Setup</a><ul>
+<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#django-settings">Django Settings</a></li>
+<li><a class="reference internal" href="#urlconf">URLConf</a></li>
+<li><a class="reference internal" href="#implement-data-source-plugins">Implement Data Source plugins</a><ul>
+<li><a class="reference internal" href="#measurement-variables-csv"><cite>measurement_variables.csv</cite></a></li>
+<li><a class="reference internal" href="#mapping-plugin-name-csv"><cite>mapping_&lt;plugin_name&gt;.csv</cite></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-a-keyset">Create a Keyset</a></li>
+<li><a class="reference internal" href="#migrate-the-app">Migrate the App</a></li>
+<li><a class="reference internal" href="#setup-credentials">Setup Credentials</a></li>
+<li><a class="reference internal" href="#run-the-server">Run the Server</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="previous chapter">What is BASIN-3D?</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="rest_api.html"
+                        title="next chapter">BASIN-3D REST APIs</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/setup.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="rest_api.html" title="BASIN-3D REST APIs"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="What is BASIN-3D?"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
+(subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+    </div>
+  </body>
+</html>
