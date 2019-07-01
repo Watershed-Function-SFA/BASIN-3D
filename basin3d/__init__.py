@@ -1,12 +1,13 @@
 """
 ==============================
-BASIN-3D Data Source REST APIs
+BASIN-3D REST APIs
 ==============================
 .. currentmodule:: basin3d
 
 :platform: Unix, Mac
-:synopsis: All BASIN-3D REST api calls are read-only (GET). The browsable API may be accessed at the root URL of the application.
-:module author: Val Hendrix <vhendrix@lbl.gov>, Danielle Svehla Christianson <dschristianson@lbl.gov>
+:synopsis: All BASIN-3D REST API calls are read-only (GET). The browsable API may be accessed at the root URL of the application.
+:module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Danielle Svehla Christianson <dschristianson@lbl.gov>
 
 .. contents:: Contents
     :local:
@@ -139,8 +140,8 @@ Direct API
 **********
 Bypass synthesis by accessing the data source APIs directly
 
-| `/direct/ --` Returns a list of direct apis
-| `/direct/:id_prefix --` Access a direct api for a datasource with the `:id_prefix`
+| `/direct/ --` Returns a list of direct APIs
+| `/direct/:id_prefix --` Access a direct API for a datasource with the `:id_prefix`
 
 """
 import logging

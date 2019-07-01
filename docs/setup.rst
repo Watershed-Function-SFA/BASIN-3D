@@ -8,7 +8,7 @@ Diverse, Distributed Datasets.
 The setup instructions below assume familiarity with Django. For more details, see https://www.djangoproject.com/start/
 
 Custom plugins are developed for a broker instance. See ~/example-django/ directory containing the app "mybroker"
-for a broker instance example with datasource "Alpha".
+for a broker instance example with datasource "Alpha" at https://github.com/Watershed-Function-SFA/BASIN-3D.
 
 Install
 -------
@@ -145,9 +145,15 @@ Start the development server::
 
     $ bin/python manage.py runserver
 
-Visit http://127.0.0.1:8000/ to view the REST api.
+Visit http://127.0.0.1:8000/ to view the REST API.
 
 Visit http://127.0.0.1:8000/admin/ to manage a BASIN-3D models (you'll need the Admin app
 enabled in the project's urls.py)::
 
     url(r'^admin/', include(admin.site.urls)),
+
+To create an admin user::
+
+    ./manage.py createsuperuser
+
+To exit running the server, control + C.
