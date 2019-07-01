@@ -7,7 +7,7 @@ all: bin/python keyset db.sqlite3
 docs:
 	cd $(CURDIR)/../docs; PYTHONPATH=$(CURDIR) DJANGO_SETTINGS_MODULE=mybroker.settings make html
 
-develop: 
+develop:
 	$(CURDIR)/bin/pip install -e $(CURDIR)/..
 
 github:
@@ -15,7 +15,7 @@ github:
 
 bin/python:
 	$(PYTHON) -m venv .
-	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt sphinx sphinx_autodoc_typehints pytest-mypy pytest-flake8 pytest-django pytest-cov $(CURDIR)/..
+	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt pytest sphinx sphinx_autodoc_typehints pytest-mypy pytest-flake8 pytest-django pytest-cov $(CURDIR)/..
 
 db.sqlite3:
 	$(CURDIR)/bin/python manage.py migrate
