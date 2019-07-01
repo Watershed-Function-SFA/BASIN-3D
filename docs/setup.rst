@@ -1,24 +1,33 @@
-===================
-BASIN-3D Quickstart
-===================
+==============
+BASIN-3D Setup
+==============
 
 BASIN-3D is a Django app that acts as a Broker for Assimilation, Synthesis and Integration of eNvironmental
 Diverse, Distributed Datasets.
 
-Detailed documentation is in the "docs" directory.
+The setup instructions below assume familiarity with Django. For more details, see https://www.djangoproject.com/start/
 
 Custom plugins are developed for a broker instance. See ~/example-django/ directory containing the app "mybroker"
-for a broker instance example.
+for a broker instance example with datasource "Alpha".
+
+Install
+-------
+
+Download latest BASIN-3D tar.gz from github: https://github.com/Watershed-Function-SFA/BASIN-3D/releases. If you haven't
+created a Django project for your custom broker, create one. See https://www.djangoproject.com/start/ for details. Once
+the custom Django broker project is created, install the BASIN-3D source distribution to Python environment for your
+Django project. ::
+
+    pip install BASIN-3D-{version}.tar.gz
 
 Django Settings
 ---------------
 
-Add "basin3d" and its dependencies to your INSTALLED_APPS setting like this::
+In the Django settings, add "basin3d" and its dependencies to your INSTALLED_APPS setting like this::
 
     INSTALLED_APPS = [
         ...
         <yourapp>,
-        'djangoplugins',
         'basin3d',
         'django_extensions',
         'rest_framework',
@@ -29,6 +38,8 @@ URLConf
 -------
 
 Include the basin3d URLconf in your project urls.py like this::
+
+    from django.conf.urls import include, url
 
     url(r'^', include('basin3d.urls')),
 
@@ -71,12 +82,12 @@ Create view classes for the desired synthesis models in the broker source plugin
    :lines: 15-87
 
 Create a Keyset
-----------------
+---------------
 Credentials for data source are stored in an encrypted database field. The keyset used to encrypt the field
-must be created with python-keyczar. Python-keyczar is a dependency of BASIN-3D and should have been installed
+must be created with python3-keyczar. Python3-keyczar is a dependency of BASIN-3D and should have been installed
 with the BASIN-3D framework::
 
-    $ pip install python-keyczar
+    $ pip install python3-keyczar
     $ mkdir .keyset
     $ keyczart create --location=.keyset --purpose=crypt --name=basin3d
     $ keyczart addkey --location=.keyset --status=primary
@@ -95,9 +106,17 @@ plugins.
 Setup Credentials
 -----------------
 
+If your datasource requires credentials, BASIN-3D provides free form encrypted text fields for storing any
+datasource credentials. The most common format is YAML. However, any format is accepted, each datasource
+has to parse their own credential field. The example below assumes the datasource below is using YAML
+and requires a username and password.
+
+If a datasource required credentials, the credential format should be specified in the plugin definition.
+See plugin example above.
+
 Setup credentials for your data sources with `manage.py`
 
-Display credentials format for a Broker Source pluging]::
+Display credentials format for a Broker Source plugin::
 
     $ bin/python manage.py credentialsformat Alpha
     username:
@@ -122,10 +141,13 @@ OR::
 Run the Server
 --------------
 
-Start the development server and visit http://127.0.0.1:8000/admin/
-to manage a BASIN-3D models (you'll need the Admin app enabled).::
+Start the development server::
 
-    url(r'^admin/', include(admin.site.urls))  # admin site
+    $ bin/python manage.py runserver
 
+Visit http://127.0.0.1:8000/ to view the REST api.
 
-Visit http://127.0.0.1:8000/v1 to to view the REST api.
+Visit http://127.0.0.1:8000/admin/ to manage a BASIN-3D models (you'll need the Admin app
+enabled in the project's urls.py)::
+
+    url(r'^admin/', include(admin.site.urls)),

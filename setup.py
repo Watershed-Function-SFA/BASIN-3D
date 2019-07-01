@@ -6,7 +6,7 @@ import sys
 from setuptools import setup, find_packages
 
 # Get the Quickstart documentation
-with open('docs/quickstart.rst') as readme:
+with open('docs/setup.rst') as readme:
     INSTALL = readme.read()
 
 # Update version from latest git tags.

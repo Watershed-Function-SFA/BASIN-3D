@@ -3,7 +3,7 @@ Welcome to BASIN-3D |release| documentation!
 
 .. toctree::
    intro
-   quickstart
+   setup
    rest_api
    synthesis_models
    synthesis_views

@@ -98,7 +98,7 @@ Install a source distribution with pip:
 
     $ pip install BASIN-3D-<version>.tar.gz
     
-To get started read the [quickstart](./docs/quickstart.rst) documentation
+To get started read the [setup](./docs/setup.rst) documentation
 
 ## Versioning
 
