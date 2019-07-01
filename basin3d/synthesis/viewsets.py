@@ -68,7 +68,7 @@ class DataSourcePluginViewSet(ViewSet):
         # do nothing, subclasses may override this
         return request.query_params
 
-    def list(self, request: Request, format:str = None) -> Response:
+    def list(self, request: Request, format: str = None) -> Response:
         """
         Return the synthesized plugin results
 
