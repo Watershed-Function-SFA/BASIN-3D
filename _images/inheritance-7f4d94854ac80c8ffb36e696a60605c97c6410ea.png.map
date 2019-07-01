@@ -1,0 +1,6 @@
+<map id="inheritance17a8bfa175" name="inheritance17a8bfa175">
+<area shape="rect" id="node1" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet" target="_top" title="Base ViewsSet for all DataSource plugins. &#160;The inheritance diagram shows that this class extends the Django Rest Framework" alt="" coords="542,19,765,35"/>
+<area shape="rect" id="node2" title="The base ViewSet class does not provide any actions by default." alt="" coords="367,19,511,35"/>
+<area shape="rect" id="node3" title="Intentionally simple parent class for all views. Only implements" alt="" coords="3,3,141,19"/>
+<area shape="rect" id="node5" title="This is the magic." alt="" coords="172,35,336,50"/>
+</map>

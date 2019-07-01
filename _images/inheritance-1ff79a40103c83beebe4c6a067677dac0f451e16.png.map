@@ -1,0 +1,5 @@
+<map id="inheritanceb4abcd3759" name="inheritanceb4abcd3759">
+<area shape="rect" id="node1" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet" target="_top" title="Base ViewsSet for all DataSource plugins. &#160;The inheritance diagram shows that this class extends the" alt="" coords="5,29,238,53"/>
+<area shape="rect" id="node2" href="#basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet" target="_top" title="MeasurementTimeseriesTVPObservation: Series of measurement (numerical) observations in" alt="" coords="286,5,655,29"/>
+<area shape="rect" id="node3" href="#basin3d.synthesis.viewsets.MonitoringFeatureViewSet" target="_top" title="MonitoringFeature: A feature upon which monitoring is made. OGC Timeseries Profile OM_MonitoringFeature." alt="" coords="354,53,587,77"/>
+</map>

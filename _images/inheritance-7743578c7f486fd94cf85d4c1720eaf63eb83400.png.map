@@ -1,0 +1,12 @@
+<map id="inheritanceee426e5ccf" name="inheritanceee426e5ccf">
+<area shape="rect" id="node1" href="#basin3d.synthesis.models.measurement.MeasurementMetadataMixin" target="_top" title="Metadata attributes for Observations type Measurement" alt="" coords="251,4,450,21"/>
+<area shape="rect" id="node3" href="#basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPObservation" target="_top" title="Series of measurement (numerical) observations in TVP format grouped by time (i.e., a timeseries)." alt="" coords="511,56,764,73"/>
+<area shape="rect" id="node2" href="#basin3d.synthesis.models.measurement.MeasurementResultMixin" target="_top" title="Result Mixin: Measurement" alt="" coords="4,91,190,108"/>
+<area shape="rect" id="node4" href="#basin3d.synthesis.models.measurement.TimeMetadataMixin" target="_top" title="Metadata attributes for Observations with a time" alt="" coords="270,39,431,56"/>
+<area shape="rect" id="node5" href="#basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPResultMixin" target="_top" title="Result Mixin: Measurement Timeseries TimeValuePair" alt="" coords="224,73,476,91"/>
+<area shape="rect" id="node6" href="#basin3d.synthesis.models.measurement.Observation" target="_top" title="OGC OM_Observation feature type. This is a parent class to which Mixins" alt="" coords="286,108,415,125"/>
+<area shape="rect" id="node7" href="#basin3d.synthesis.models.Base" target="_top" title="Base synthesis model class. All classes that extend this are immutable." alt="" coords="61,125,132,143"/>
+<area shape="rect" id="node10" title="A person or organization" alt="" coords="310,143,390,160"/>
+<area shape="rect" id="node8" href="#basin3d.synthesis.models.measurement.ResultQuality" target="_top" title="Controlled Vocabulary for result quality assessment" alt="" coords="30,56,164,73"/>
+<area shape="rect" id="node9" href="#basin3d.synthesis.models.measurement.TimeValuePair" target="_top" title="Tuple that represents a time value pair. &#160;This will handle timestamp conversion" alt="" coords="27,21,166,39"/>
+</map>

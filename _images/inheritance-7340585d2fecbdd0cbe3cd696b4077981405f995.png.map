@@ -1,0 +1,11 @@
+<map id="inheritance96b6f7351e" name="inheritance96b6f7351e">
+<area shape="rect" id="node1" href="#basin3d.models.DataSource" target="_top" title="Data Source definition" alt="" coords="281,33,397,48"/>
+<area shape="rect" id="node3" href="#basin3d.models.DataSourceObservedPropertyVariable" target="_top" title="Synthesis of Data Source Observed Property Variables with BASIN&#45;3D Observed Property Variables" alt="" coords="232,63,445,77"/>
+<area shape="rect" id="node5" href="#basin3d.models.ObservedProperty" target="_top" title="Defining the attributes for a single/multiple Observed Properties" alt="" coords="269,92,409,107"/>
+<area shape="rect" id="node6" href="#basin3d.models.ObservedPropertyVariable" target="_top" title="Defining the properties being observed (measured). See http://vocabulary.odm2.org/variablename/ for controlled vocabulary" alt="" coords="254,122,424,137"/>
+<area shape="rect" id="node7" href="#basin3d.models.SamplingMedium" target="_top" title="Types of sampling mediums for Observed Properties" alt="" coords="270,151,407,166"/>
+<area shape="rect" id="node4" href="#basin3d.models.FeatureTypes" target="_top" title="Feature Types where an Observation can be made." alt="" coords="41,63,165,77"/>
+<area shape="rect" id="node8" href="#basin3d.models.SpatialSamplingShapes" target="_top" title="Spatial sampling shape describing a spatial sampling feature" alt="" coords="23,33,183,48"/>
+<area shape="rect" id="node9" href="#basin3d.models.StringListField" target="_top" title="StringListField stored delimited strings in the database." alt="" coords="639,3,765,18"/>
+<area shape="rect" id="node11" title="Base class for all field types" alt="" coords="279,3,399,18"/>
+</map>

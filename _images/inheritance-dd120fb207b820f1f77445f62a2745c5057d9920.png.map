@@ -1,0 +1,13 @@
+<map id="inheritance4490d5084e" name="inheritance4490d5084e">
+<area shape="rect" id="node1" href="#basin3d.viewsets.DataSourceViewSet" target="_top" title="Returns a list of all Data Sources available to the BASIN&#45;3D service" alt="" coords="646,2,748,12"/>
+<area shape="rect" id="node2" title="A viewset that provides default `list()` and `retrieve()` actions." alt="" coords="478,22,609,32"/>
+<area shape="rect" id="node5" href="#basin3d.viewsets.ObservedPropertyVariableViewSet" target="_top" title="Returns a list of available Observed Property Variables. A observed property variable defines what is" alt="" coords="629,22,766,32"/>
+<area shape="rect" id="node6" href="#basin3d.viewsets.ObservedPropertyViewSet" target="_top" title="Returns a list of available Observation Properties" alt="" coords="639,42,756,52"/>
+<area shape="rect" id="node3" href="#basin3d.viewsets.DirectAPIViewSet" target="_top" title="Direct Access to data source APIs. Supports REST &#160;``GET`` methods that list the direct datasource APIs" alt="" coords="496,42,591,52"/>
+<area shape="rect" id="node4" title="The GenericViewSet class does not provide any actions by default," alt="" coords="346,42,457,52"/>
+<area shape="rect" id="node7" title="Intentionally simple parent class for all views. Only implements" alt="" coords="2,32,89,42"/>
+<area shape="rect" id="node8" title="Base class for all other generic views." alt="" coords="214,32,324,42"/>
+<area shape="rect" id="node10" title="List a queryset." alt="" coords="350,2,452,12"/>
+<area shape="rect" id="node11" title="Retrieve a model instance." alt="" coords="344,22,458,32"/>
+<area shape="rect" id="node12" title="This is the magic." alt="" coords="217,52,321,62"/>
+</map>

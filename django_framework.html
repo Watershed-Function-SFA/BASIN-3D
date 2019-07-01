@@ -1,0 +1,988 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Django Framework &#8212; BASIN-3D v2.0.0-rc1-10-g7d4a7e7 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Synthesis Views" href="synthesis_views.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="synthesis_views.html" title="Synthesis Views"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-basin3d.models">
+<span id="django-framework"></span><span id="apireference"></span><h1>Django Framework<a class="headerlink" href="#module-basin3d.models" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basin3d-models">
+<h2><cite>basin3d.models</cite><a class="headerlink" href="#basin3d-models" title="Permalink to this headline">¶</a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">synopsis</dt>
+<dd class="field-odd"><p>The BASIN-3D  Models</p>
+</dd>
+<dt class="field-even">module author</dt>
+<dd class="field-even"><p>Val Hendrix &lt;<a class="reference external" href="mailto:vhendrix&#37;&#52;&#48;lbl&#46;gov">vhendrix<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
+</dd>
+<dt class="field-odd">module author</dt>
+<dd class="field-odd"><p>Danielle Svehla Christianson &lt;<a class="reference external" href="mailto:dschristianson&#37;&#52;&#48;lbl&#46;gov">dschristianson<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
+</dd>
+</dl>
+<p>Below is the inheritance diagram for BASIN-3D generic models and supporting classes.  All of the models are based on
+<code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.Model</span></code> which provide the object relational mapping technology for building and managing
+relational database tables.</p>
+<div class="graphviz"><img src="_images/inheritance-3b716cbbb376331eea8ccf3a9cbb94b8b9d504db.png" alt="Inheritance diagram of basin3d.models" usemap="#inheritance96b6f7351e" class="inheritance graphviz" /></div>
+<map id="inheritance96b6f7351e" name="inheritance96b6f7351e">
+<area shape="rect" id="node1" href="#basin3d.models.DataSource" target="_top" title="Data Source definition" alt="" coords="391,53,580,77"/>
+<area shape="rect" id="node3" href="#basin3d.models.DataSourceObservedPropertyVariable" target="_top" title="Synthesis of Data Source Observed Property Variables with BASIN&#45;3D Observed Property Variables" alt="" coords="313,101,658,125"/>
+<area shape="rect" id="node5" href="#basin3d.models.ObservedProperty" target="_top" title="Defining the attributes for a single/multiple Observed Properties" alt="" coords="373,149,599,173"/>
+<area shape="rect" id="node6" href="#basin3d.models.ObservedPropertyVariable" target="_top" title="Defining the properties being observed (measured). See http://vocabulary.odm2.org/variablename/ for controlled vocabulary" alt="" coords="349,197,623,221"/>
+<area shape="rect" id="node7" href="#basin3d.models.SamplingMedium" target="_top" title="Types of sampling mediums for Observed Properties" alt="" coords="375,245,597,269"/>
+<area shape="rect" id="node4" href="#basin3d.models.FeatureTypes" target="_top" title="Feature Types where an Observation can be made." alt="" coords="35,101,235,125"/>
+<area shape="rect" id="node8" href="#basin3d.models.SpatialSamplingShapes" target="_top" title="Spatial sampling shape describing a spatial sampling feature" alt="" coords="5,53,265,77"/>
+<area shape="rect" id="node9" href="#basin3d.models.StringListField" target="_top" title="StringListField stored delimited strings in the database." alt="" coords="384,5,587,29"/>
+</map><dl class="class">
+<dt id="basin3d.models.DataSource">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.models.</code><code class="sig-name descname">DataSource</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#DataSource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.DataSource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>Data Source definition</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><ul class="simple">
+<li><p><em>id:</em> string (inherited)</p></li>
+<li><p><em>name:</em> string</p></li>
+<li><p><em>id_prefix:</em> string, prefix that is added to all data source ids</p></li>
+<li><p><em>plugin_module:</em></p></li>
+<li><p><em>plugin_class:</em></p></li>
+<li><p><em>credentials:</em></p></li>
+<li><p><em>enabled:</em></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="exception">
+<dt id="basin3d.models.DataSource.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#basin3d.models.DataSource.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="basin3d.models.DataSource.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#basin3d.models.DataSource.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSource.basin3d_datasource">
+<code class="sig-name descname">basin3d_datasource</code><a class="headerlink" href="#basin3d.models.DataSource.basin3d_datasource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSource.credentials">
+<code class="sig-name descname">credentials</code><a class="headerlink" href="#basin3d.models.DataSource.credentials" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSource.enabled">
+<code class="sig-name descname">enabled</code><a class="headerlink" href="#basin3d.models.DataSource.enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="basin3d.models.DataSource.get_plugin">
+<code class="sig-name descname">get_plugin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#DataSource.get_plugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.DataSource.get_plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the plugin class</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSource.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#basin3d.models.DataSource.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSource.id_prefix">
+<code class="sig-name descname">id_prefix</code><a class="headerlink" href="#basin3d.models.DataSource.id_prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSource.location">
+<code class="sig-name descname">location</code><a class="headerlink" href="#basin3d.models.DataSource.location" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSource.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#basin3d.models.DataSource.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSource.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#basin3d.models.DataSource.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSource.observedproperty_set">
+<code class="sig-name descname">observedproperty_set</code><a class="headerlink" href="#basin3d.models.DataSource.observedproperty_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSource.plugin_class">
+<code class="sig-name descname">plugin_class</code><a class="headerlink" href="#basin3d.models.DataSource.plugin_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSource.plugin_module">
+<code class="sig-name descname">plugin_module</code><a class="headerlink" href="#basin3d.models.DataSource.plugin_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.models.DataSourceObservedPropertyVariable">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.models.</code><code class="sig-name descname">DataSourceObservedPropertyVariable</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#DataSourceObservedPropertyVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.DataSourceObservedPropertyVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>Synthesis of Data Source Observed Property Variables with BASIN-3D Observed Property Variables</p>
+<dl class="exception">
+<dt id="basin3d.models.DataSourceObservedPropertyVariable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#basin3d.models.DataSourceObservedPropertyVariable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="basin3d.models.DataSourceObservedPropertyVariable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#basin3d.models.DataSourceObservedPropertyVariable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSourceObservedPropertyVariable.datasource">
+<code class="sig-name descname">datasource</code><a class="headerlink" href="#basin3d.models.DataSourceObservedPropertyVariable.datasource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSourceObservedPropertyVariable.datasource_id">
+<code class="sig-name descname">datasource_id</code><a class="headerlink" href="#basin3d.models.DataSourceObservedPropertyVariable.datasource_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSourceObservedPropertyVariable.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#basin3d.models.DataSourceObservedPropertyVariable.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSourceObservedPropertyVariable.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#basin3d.models.DataSourceObservedPropertyVariable.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSourceObservedPropertyVariable.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#basin3d.models.DataSourceObservedPropertyVariable.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSourceObservedPropertyVariable.observed_property_variable">
+<code class="sig-name descname">observed_property_variable</code><a class="headerlink" href="#basin3d.models.DataSourceObservedPropertyVariable.observed_property_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.DataSourceObservedPropertyVariable.observed_property_variable_id">
+<code class="sig-name descname">observed_property_variable_id</code><a class="headerlink" href="#basin3d.models.DataSourceObservedPropertyVariable.observed_property_variable_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.models.FeatureTypes">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.models.</code><code class="sig-name descname">FeatureTypes</code><a class="reference internal" href="_modules/basin3d/models.html#FeatureTypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.FeatureTypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Feature Types where an Observation can be made.</p>
+<p>Controlled CV list that is maintained. USGS Watershed Boundry Dataset is used.
+The goal is to strike a balance between commonly used hierarchical levels and features
+versus a runaway list of FeatureTypes. OGC O&amp;M suggests that Features should be
+determined as needed.</p>
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.BASIN">
+<code class="sig-name descname">BASIN</code><em class="property"> = 2</em><a class="headerlink" href="#basin3d.models.FeatureTypes.BASIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.HORIZONTAL_PATH">
+<code class="sig-name descname">HORIZONTAL_PATH</code><em class="property"> = 8</em><a class="headerlink" href="#basin3d.models.FeatureTypes.HORIZONTAL_PATH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.PLOT">
+<code class="sig-name descname">PLOT</code><em class="property"> = 7</em><a class="headerlink" href="#basin3d.models.FeatureTypes.PLOT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.POINT">
+<code class="sig-name descname">POINT</code><em class="property"> = 10</em><a class="headerlink" href="#basin3d.models.FeatureTypes.POINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.REGION">
+<code class="sig-name descname">REGION</code><em class="property"> = 0</em><a class="headerlink" href="#basin3d.models.FeatureTypes.REGION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.SHAPE_TYPES">
+<code class="sig-name descname">SHAPE_TYPES</code><em class="property"> = {'CURVE': [8, 9], 'POINT': [10], 'SOLID': [], 'SURFACE': [0, 1, 2, 3, 4, 5, 6, 7]}</em><a class="headerlink" href="#basin3d.models.FeatureTypes.SHAPE_TYPES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.SITE">
+<code class="sig-name descname">SITE</code><em class="property"> = 6</em><a class="headerlink" href="#basin3d.models.FeatureTypes.SITE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.SUBBASIN">
+<code class="sig-name descname">SUBBASIN</code><em class="property"> = 3</em><a class="headerlink" href="#basin3d.models.FeatureTypes.SUBBASIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.SUBREGION">
+<code class="sig-name descname">SUBREGION</code><em class="property"> = 1</em><a class="headerlink" href="#basin3d.models.FeatureTypes.SUBREGION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.SUBWATERSHED">
+<code class="sig-name descname">SUBWATERSHED</code><em class="property"> = 5</em><a class="headerlink" href="#basin3d.models.FeatureTypes.SUBWATERSHED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.TYPES">
+<code class="sig-name descname">TYPES</code><em class="property"> = {0: 'REGION', 1: 'SUBREGION', 2: 'BASIN', 3: 'SUBBASIN', 4: 'WATERSHED', 5: 'SUBWATERSHED', 6: 'SITE', 7: 'PLOT', 8: 'HORIZONTAL PATH', 9: 'VERTICAL PATH', 10: 'POINT'}</em><a class="headerlink" href="#basin3d.models.FeatureTypes.TYPES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.VERTICAL_PATH">
+<code class="sig-name descname">VERTICAL_PATH</code><em class="property"> = 9</em><a class="headerlink" href="#basin3d.models.FeatureTypes.VERTICAL_PATH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.FeatureTypes.WATERSHED">
+<code class="sig-name descname">WATERSHED</code><em class="property"> = 4</em><a class="headerlink" href="#basin3d.models.FeatureTypes.WATERSHED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.models.ObservedProperty">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.models.</code><code class="sig-name descname">ObservedProperty</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#ObservedProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.ObservedProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>Defining the attributes for a single/multiple Observed Properties</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><ul class="simple">
+<li><p><em>id:</em> string, e.g., Cs137 MID</p></li>
+<li><p><em>description:</em> id, e.g., Cs 137 air dose rate car survey campaigns</p></li>
+<li><p><em>observed_property_variable_id:</em> string, e.g., Cs137MVID</p></li>
+<li><p><em>sampling_medium:</em> enum (WATER, GAS, SOLID PHASE, OTHER, NOT APPLICABLE)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="exception">
+<dt id="basin3d.models.ObservedProperty.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#basin3d.models.ObservedProperty.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="basin3d.models.ObservedProperty.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#basin3d.models.ObservedProperty.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedProperty.datasource">
+<code class="sig-name descname">datasource</code><a class="headerlink" href="#basin3d.models.ObservedProperty.datasource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedProperty.datasource_id">
+<code class="sig-name descname">datasource_id</code><a class="headerlink" href="#basin3d.models.ObservedProperty.datasource_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedProperty.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#basin3d.models.ObservedProperty.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedProperty.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#basin3d.models.ObservedProperty.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedProperty.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#basin3d.models.ObservedProperty.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedProperty.observed_property_variable">
+<code class="sig-name descname">observed_property_variable</code><a class="headerlink" href="#basin3d.models.ObservedProperty.observed_property_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedProperty.observed_property_variable_id">
+<code class="sig-name descname">observed_property_variable_id</code><a class="headerlink" href="#basin3d.models.ObservedProperty.observed_property_variable_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedProperty.sampling_medium">
+<code class="sig-name descname">sampling_medium</code><a class="headerlink" href="#basin3d.models.ObservedProperty.sampling_medium" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedProperty.sampling_medium_id">
+<code class="sig-name descname">sampling_medium_id</code><a class="headerlink" href="#basin3d.models.ObservedProperty.sampling_medium_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.models.ObservedPropertyVariable">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.models.</code><code class="sig-name descname">ObservedPropertyVariable</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#ObservedPropertyVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.ObservedPropertyVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>Defining the properties being observed (measured). See <a class="reference external" href="http://vocabulary.odm2.org/variablename/">http://vocabulary.odm2.org/variablename/</a> for controlled vocabulary</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><ul class="simple">
+<li><p><em>id:</em> string,</p></li>
+<li><p><em>full_name:</em> string,</p></li>
+<li><p><em>abbreviation:</em> string,</p></li>
+<li><p><em>categories:</em> Array of strings (in order of priority).</p></li>
+</ul>
+</dd>
+</dl>
+<p>See <a class="reference external" href="http://vocabulary.odm2.org/variabletype/">http://vocabulary.odm2.org/variabletype/</a> for options, although I think we should have our own list (theirs is a bit funky).</p>
+<dl class="exception">
+<dt id="basin3d.models.ObservedPropertyVariable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#basin3d.models.ObservedPropertyVariable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="basin3d.models.ObservedPropertyVariable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#basin3d.models.ObservedPropertyVariable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedPropertyVariable.basin3d_observedpropertyvariable">
+<code class="sig-name descname">basin3d_observedpropertyvariable</code><a class="headerlink" href="#basin3d.models.ObservedPropertyVariable.basin3d_observedpropertyvariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedPropertyVariable.categories">
+<code class="sig-name descname">categories</code><a class="headerlink" href="#basin3d.models.ObservedPropertyVariable.categories" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedPropertyVariable.full_name">
+<code class="sig-name descname">full_name</code><a class="headerlink" href="#basin3d.models.ObservedPropertyVariable.full_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedPropertyVariable.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#basin3d.models.ObservedPropertyVariable.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedPropertyVariable.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#basin3d.models.ObservedPropertyVariable.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.ObservedPropertyVariable.observedproperty_set">
+<code class="sig-name descname">observedproperty_set</code><a class="headerlink" href="#basin3d.models.ObservedPropertyVariable.observedproperty_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.models.SamplingMedium">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.models.</code><code class="sig-name descname">SamplingMedium</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#SamplingMedium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.SamplingMedium" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>Types of sampling mediums for Observed Properties</p>
+<dl class="exception">
+<dt id="basin3d.models.SamplingMedium.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#basin3d.models.SamplingMedium.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SamplingMedium.GAS">
+<code class="sig-name descname">GAS</code><em class="property"> = 'GAS'</em><a class="headerlink" href="#basin3d.models.SamplingMedium.GAS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="exception">
+<dt id="basin3d.models.SamplingMedium.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#basin3d.models.SamplingMedium.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SamplingMedium.NOT_APPLICABLE">
+<code class="sig-name descname">NOT_APPLICABLE</code><em class="property"> = 'N/A'</em><a class="headerlink" href="#basin3d.models.SamplingMedium.NOT_APPLICABLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SamplingMedium.OTHER">
+<code class="sig-name descname">OTHER</code><em class="property"> = 'OTHER'</em><a class="headerlink" href="#basin3d.models.SamplingMedium.OTHER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SamplingMedium.SAMPLING_MEDIUMS">
+<code class="sig-name descname">SAMPLING_MEDIUMS</code><em class="property"> = ['WATER', 'GAS', 'SOLID PHASE', 'OTHER', 'N/A']</em><a class="headerlink" href="#basin3d.models.SamplingMedium.SAMPLING_MEDIUMS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SamplingMedium.SOLID_PHASE">
+<code class="sig-name descname">SOLID_PHASE</code><em class="property"> = 'SOLID PHASE'</em><a class="headerlink" href="#basin3d.models.SamplingMedium.SOLID_PHASE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SamplingMedium.WATER">
+<code class="sig-name descname">WATER</code><em class="property"> = 'WATER'</em><a class="headerlink" href="#basin3d.models.SamplingMedium.WATER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SamplingMedium.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#basin3d.models.SamplingMedium.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SamplingMedium.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#basin3d.models.SamplingMedium.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SamplingMedium.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#basin3d.models.SamplingMedium.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SamplingMedium.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#basin3d.models.SamplingMedium.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SamplingMedium.observedproperty_set">
+<code class="sig-name descname">observedproperty_set</code><a class="headerlink" href="#basin3d.models.SamplingMedium.observedproperty_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.models.SpatialSamplingShapes">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.models.</code><code class="sig-name descname">SpatialSamplingShapes</code><a class="reference internal" href="_modules/basin3d/models.html#SpatialSamplingShapes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.SpatialSamplingShapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Spatial sampling shape describing a spatial sampling feature</p>
+<p>Controlled CV list as defined by OGC Observation &amp; Measurement GM_Shape.</p>
+<dl class="attribute">
+<dt id="basin3d.models.SpatialSamplingShapes.SHAPE_CURVE">
+<code class="sig-name descname">SHAPE_CURVE</code><em class="property"> = 'CURVE'</em><a class="headerlink" href="#basin3d.models.SpatialSamplingShapes.SHAPE_CURVE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The shape of a spatially extensive sampling feature which provides a complete sampling domain.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SpatialSamplingShapes.SHAPE_POINT">
+<code class="sig-name descname">SHAPE_POINT</code><em class="property"> = 'POINT'</em><a class="headerlink" href="#basin3d.models.SpatialSamplingShapes.SHAPE_POINT" title="Permalink to this definition">¶</a></dt>
+<dd><p>The shape of a spatially extensive sampling feature which provides a complete sampling domain.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SpatialSamplingShapes.SHAPE_SOLID">
+<code class="sig-name descname">SHAPE_SOLID</code><em class="property"> = 'SOLID'</em><a class="headerlink" href="#basin3d.models.SpatialSamplingShapes.SHAPE_SOLID" title="Permalink to this definition">¶</a></dt>
+<dd><p>The shape of a spatially extensive sampling feature which provides a complete sampling domain.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.models.SpatialSamplingShapes.SHAPE_SURFACE">
+<code class="sig-name descname">SHAPE_SURFACE</code><em class="property"> = 'SURFACE'</em><a class="headerlink" href="#basin3d.models.SpatialSamplingShapes.SHAPE_SURFACE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The shape of a spatially extensive sampling feature which provides a complete sampling domain.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.models.StringListField">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.models.</code><code class="sig-name descname">StringListField</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#StringListField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.StringListField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.fields.TextField</span></code></p>
+<p>StringListField stored delimited strings in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param</dt>
+<dd class="field-odd"><p>delimiter</p>
+</dd>
+<dt class="field-even">Type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="basin3d.models.StringListField.get_prep_value">
+<code class="sig-name descname">get_prep_value</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#StringListField.get_prep_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.StringListField.get_prep_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform preliminary non-db specific value checks and conversions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="basin3d.models.StringListField.to_python">
+<code class="sig-name descname">to_python</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#StringListField.to_python"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.StringListField.to_python" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the input value into the expected Python data type, raising
+django.core.exceptions.ValidationError if the data can’t be converted.
+Return the converted value. Subclasses should override this.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="basin3d.models.StringListField.value_to_string">
+<code class="sig-name descname">value_to_string</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#StringListField.value_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.StringListField.value_to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a string value of this field from the passed obj.
+This is used by the serialization framework.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="basin3d.models.get_feature_types">
+<code class="sig-prename descclassname">basin3d.models.</code><code class="sig-name descname">get_feature_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/models.html#get_feature_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.models.get_feature_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function for FeatureTypes
+:return list of feature_types as strings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<span class="target" id="module-basin3d.viewsets"></span><div class="section" id="basin3d-viewsets">
+<h2><cite>basin3d.viewsets</cite><a class="headerlink" href="#basin3d-viewsets" title="Permalink to this headline">¶</a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">platform</dt>
+<dd class="field-odd"><p>Unix, Mac</p>
+</dd>
+<dt class="field-even">synopsis</dt>
+<dd class="field-even"><p>BASIN-3D ViewSets</p>
+</dd>
+<dt class="field-odd">module author</dt>
+<dd class="field-odd"><p>Val Hendrix &lt;<a class="reference external" href="mailto:vhendrix&#37;&#52;&#48;lbl&#46;gov">vhendrix<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
+</dd>
+<dt class="field-even">module author</dt>
+<dd class="field-even"><p>Danielle Svehla Christianson &lt;<a class="reference external" href="mailto:dschristianson&#37;&#52;&#48;lbl&#46;gov">dschristianson<span>&#64;</span>lbl<span>&#46;</span>gov</a>&gt;</p>
+</dd>
+</dl>
+<p>Below is the inheritance diagram for BASIN-3D Viewsets.  All of the views are based on viewsets from
+<code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets</span></code> which provide functionality for controlling access to the REST API.</p>
+<div class="graphviz"><img src="_images/inheritance-7176a91dd0d73813576af790d77c29bc5d764199.png" alt="Inheritance diagram of basin3d.viewsets" usemap="#inheritance4490d5084e" class="inheritance graphviz" /></div>
+<map id="inheritance4490d5084e" name="inheritance4490d5084e">
+<area shape="rect" id="node1" href="#basin3d.viewsets.DataSourceViewSet" target="_top" title="Returns a list of all Data Sources available to the BASIN&#45;3D service" alt="" coords="412,53,658,77"/>
+<area shape="rect" id="node5" href="#basin3d.viewsets.ObservedPropertyVariableViewSet" target="_top" title="Returns a list of available Observed Property Variables. A observed property variable defines what is" alt="" coords="369,101,701,125"/>
+<area shape="rect" id="node6" href="#basin3d.viewsets.ObservedPropertyViewSet" target="_top" title="Returns a list of available Observation Properties" alt="" coords="393,149,677,173"/>
+<area shape="rect" id="node3" href="#basin3d.viewsets.DirectAPIViewSet" target="_top" title="Direct Access to data source APIs. Supports REST &#160;``GET`` methods that list the direct datasource APIs" alt="" coords="419,5,651,29"/>
+</map><dl class="class">
+<dt id="basin3d.viewsets.DataSourceViewSet">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.viewsets.</code><code class="sig-name descname">DataSourceViewSet</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#DataSourceViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.DataSourceViewSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets.ReadOnlyModelViewSet</span></code></p>
+<p>Returns a list of all Data Sources available to the BASIN-3D service</p>
+<p><strong>Properties</strong></p>
+<ul class="simple">
+<li><p><em>name:</em> string, Unique name for the Data Source</p></li>
+<li><p><em>id_prefix:</em> string, unique id prefix for all Data Source ids</p></li>
+<li><p><em>location:</em> string, Location of the Data Source</p></li>
+<li><p><em>url:</em> url, Endpoint for Data Source</p></li>
+<li><p><em>direct_path:</em> url, A direct call to the data source itself</p></li>
+<li><p><em>observed_property_variables:</em> url, Observed property variables for Data Source</p></li>
+<li><p><em>check:</em> url, Validate the Data Source connection</p></li>
+</ul>
+<dl class="method">
+<dt id="basin3d.viewsets.DataSourceViewSet.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">pk=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#DataSourceViewSet.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.DataSourceViewSet.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if Datasource is available
+:param request:
+:param pk:
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="basin3d.viewsets.DataSourceViewSet.observed_property_variables">
+<code class="sig-name descname">observed_property_variables</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">pk=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#DataSourceViewSet.observed_property_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.DataSourceViewSet.observed_property_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the DataSource Parameters for a broker parameter.</p>
+<p>Maps to  /datasources/{pk}/observedpropertyvariables/</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – </p></li>
+<li><p><strong>pk</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.viewsets.DataSourceViewSet.queryset">
+<code class="sig-name descname">queryset</code><em class="property"> = &lt;QuerySet [&lt;DataSource 'Alpha'&gt;]&gt;</em><a class="headerlink" href="#basin3d.viewsets.DataSourceViewSet.queryset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.viewsets.DataSourceViewSet.serializer_class">
+<code class="sig-name descname">serializer_class</code><a class="headerlink" href="#basin3d.viewsets.DataSourceViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.DataSourceSerializer</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.viewsets.DirectAPIViewSet">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.viewsets.</code><code class="sig-name descname">DirectAPIViewSet</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#DirectAPIViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.DirectAPIViewSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets.GenericViewSet</span></code></p>
+<p>Direct Access to data source APIs. Supports REST  <code class="docutils literal notranslate"><span class="pre">GET</span></code> methods that list the direct datasource APIs</p>
+<dl class="method">
+<dt id="basin3d.viewsets.DirectAPIViewSet.list">
+<code class="sig-name descname">list</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#DirectAPIViewSet.list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.DirectAPIViewSet.list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build the list of Direct APIs that can be accessed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – </p></li>
+<li><p><strong>args</strong> – </p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.viewsets.DirectAPIViewSet.lookup_field">
+<code class="sig-name descname">lookup_field</code><em class="property"> = 'id_prefix'</em><a class="headerlink" href="#basin3d.viewsets.DirectAPIViewSet.lookup_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.viewsets.DirectAPIViewSet.queryset">
+<code class="sig-name descname">queryset</code><em class="property"> = &lt;QuerySet [&lt;DataSource 'Alpha'&gt;]&gt;</em><a class="headerlink" href="#basin3d.viewsets.DirectAPIViewSet.queryset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="basin3d.viewsets.DirectAPIViewSet.retrieve">
+<code class="sig-name descname">retrieve</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#DirectAPIViewSet.retrieve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.DirectAPIViewSet.retrieve" title="Permalink to this definition">¶</a></dt>
+<dd><p>direct call to API</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.viewsets.DirectAPIViewSet.serializer_class">
+<code class="sig-name descname">serializer_class</code><a class="headerlink" href="#basin3d.viewsets.DirectAPIViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.DataSourceSerializer</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.viewsets.ObservedPropertyVariableViewSet">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.viewsets.</code><code class="sig-name descname">ObservedPropertyVariableViewSet</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#ObservedPropertyVariableViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.ObservedPropertyVariableViewSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets.ReadOnlyModelViewSet</span></code></p>
+<p>Returns a list of available Observed Property Variables. A observed property variable defines what is
+being measured. See <a class="reference external" href="http://vocabulary.odm2.org/variablename/">http://vocabulary.odm2.org/variablename/</a> for controlled vocabulary.</p>
+<p><strong>Properties</strong></p>
+<ul class="simple">
+<li><p><em>id:</em> string, Unique observed property variable identifier</p></li>
+<li><p><em>full_name:</em> string, Descriptive name</p></li>
+<li><p><em>categories:</em> list of strings, Categories of which the variable is a member, listed in hierarchical order</p></li>
+<li><p><em>datasources:</em> url, Retrieves the datasources that define the current variable</p></li>
+<li><p><em>url:</em> url, Endpoint for the observed property variable</p></li>
+</ul>
+<dl class="method">
+<dt id="basin3d.viewsets.ObservedPropertyVariableViewSet.datasources">
+<code class="sig-name descname">datasources</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">pk=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#ObservedPropertyVariableViewSet.datasources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.ObservedPropertyVariableViewSet.datasources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the DataSource Parameters for a broker parameter.</p>
+<p>Maps to  /observed_property_variables/{pk}/datasources/</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – </p></li>
+<li><p><strong>pk</strong> – observed_property_variables primary key</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.viewsets.ObservedPropertyVariableViewSet.filter_backends">
+<code class="sig-name descname">filter_backends</code><em class="property"> = (&lt;class 'django_filters.rest_framework.backends.DjangoFilterBackend'&gt;,)</em><a class="headerlink" href="#basin3d.viewsets.ObservedPropertyVariableViewSet.filter_backends" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.viewsets.ObservedPropertyVariableViewSet.queryset">
+<code class="sig-name descname">queryset</code><em class="property"> = &lt;QuerySet [&lt;ObservedPropertyVariable ACT&gt;, &lt;ObservedPropertyVariable Ag&gt;, &lt;ObservedPropertyVariable Al&gt;, &lt;ObservedPropertyVariable As&gt;]&gt;</em><a class="headerlink" href="#basin3d.viewsets.ObservedPropertyVariableViewSet.queryset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.viewsets.ObservedPropertyVariableViewSet.serializer_class">
+<code class="sig-name descname">serializer_class</code><a class="headerlink" href="#basin3d.viewsets.ObservedPropertyVariableViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.ObservedPropertyVariableSerializer</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="basin3d.viewsets.ObservedPropertyViewSet">
+<em class="property">class </em><code class="sig-prename descclassname">basin3d.viewsets.</code><code class="sig-name descname">ObservedPropertyViewSet</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/basin3d/viewsets.html#ObservedPropertyViewSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#basin3d.viewsets.ObservedPropertyViewSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.viewsets.ReadOnlyModelViewSet</span></code></p>
+<p>Returns a list of available Observation Properties</p>
+<p><strong>Properties</strong></p>
+<ul class="simple">
+<li><p><em>observed_property_variable:</em> string, observed property variable assigned to the observed property</p></li>
+<li><p><em>datasource:</em> string, data source defining the observed property</p></li>
+<li><dl class="simple">
+<dt><em>sampling_medium:</em> enum, medium in which the observed property is observed</dt><dd><p>(WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE)</p>
+</dd>
+</dl>
+</li>
+<li><p><em>description:</em> string, additional information about the observed property</p></li>
+<li><p><em>url:</em> url, endpoint for observed property</p></li>
+</ul>
+<dl class="attribute">
+<dt id="basin3d.viewsets.ObservedPropertyViewSet.filter_backends">
+<code class="sig-name descname">filter_backends</code><em class="property"> = (&lt;class 'django_filters.rest_framework.backends.DjangoFilterBackend'&gt;,)</em><a class="headerlink" href="#basin3d.viewsets.ObservedPropertyViewSet.filter_backends" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.viewsets.ObservedPropertyViewSet.queryset">
+<code class="sig-name descname">queryset</code><em class="property"> = &lt;QuerySet [&lt;ObservedProperty ''&gt;, &lt;ObservedProperty ''&gt;, &lt;ObservedProperty ''&gt;, &lt;ObservedProperty ''&gt;]&gt;</em><a class="headerlink" href="#basin3d.viewsets.ObservedPropertyViewSet.queryset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="basin3d.viewsets.ObservedPropertyViewSet.serializer_class">
+<code class="sig-name descname">serializer_class</code><a class="headerlink" href="#basin3d.viewsets.ObservedPropertyViewSet.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">basin3d.serializers.ObservedPropertySerializer</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Django Framework</a><ul>
+<li><a class="reference internal" href="#basin3d-models"><cite>basin3d.models</cite></a></li>
+<li><a class="reference internal" href="#basin3d-viewsets"><cite>basin3d.viewsets</cite></a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="synthesis_views.html"
+                        title="previous chapter">Synthesis Views</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/django_framework.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="synthesis_views.html" title="Synthesis Views"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BASIN-3D v2.0.0-rc1-10-g7d4a7e7</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory 
+(subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.1.
+    </div>
+  </body>
+</html>

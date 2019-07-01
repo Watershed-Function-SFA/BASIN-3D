@@ -1,0 +1,17 @@
+<map id="inheritance26b4ba8a9c" name="inheritance26b4ba8a9c">
+<area shape="rect" id="node1" href="#basin3d.synthesis.models.field.AbsoluteCoordinate" target="_top" title="Absolute coordinate describes the geo&#45;referenced location of a feature." alt="" coords="126,4,249,22"/>
+<area shape="rect" id="node2" href="#basin3d.synthesis.models.Base" target="_top" title="Base synthesis model class. All classes that extend this are immutable." alt="" coords="4,128,77,146"/>
+<area shape="rect" id="node4" href="#basin3d.synthesis.models.field.VerticalCoordinate" target="_top" title="The vertical position of the feature (altitudes or depths)." alt="" coords="129,39,246,57"/>
+<area shape="rect" id="node5" href="#basin3d.synthesis.models.field.Coordinate" target="_top" title="Top level coordinate class that holds :class:`AbsoluteCoordinate` or :class:`RepresentativeCoordinate`" alt="" coords="145,75,230,93"/>
+<area shape="rect" id="node7" href="#basin3d.synthesis.models.field.Feature" target="_top" title="A general feature upon which an observation can be made. Loosely after GF_Feature (ISO)." alt="" coords="152,110,223,128"/>
+<area shape="rect" id="node9" href="#basin3d.synthesis.models.field.HorizontalCoordinate" target="_top" title="Generic XY coordinates for a point on earth (https://www.fgdc.gov/csdgmgraphical/spref.htm)" alt="" coords="123,146,252,164"/>
+<area shape="rect" id="node12" href="#basin3d.synthesis.models.field.RelatedSamplingFeature" target="_top" title="Class that represents a related sampling feature and its role relative to" alt="" coords="115,181,261,199"/>
+<area shape="rect" id="node13" href="#basin3d.synthesis.models.field.RepresentativeCoordinate" target="_top" title="Representative coordinates describe the location of a feature by a representative shape / location." alt="" coords="112,217,263,235"/>
+<area shape="rect" id="node15" title="A person or organization" alt="" coords="147,252,229,270"/>
+<area shape="rect" id="node3" href="#basin3d.synthesis.models.field.AltitudeCoordinate" target="_top" title="An altitudinal vertical position (i.e., distance from sea level)." alt="" coords="308,22,426,39"/>
+<area shape="rect" id="node6" href="#basin3d.synthesis.models.field.DepthCoordinate" target="_top" title="A depth vertical position (i.e., the height or depth from the specified reference position)" alt="" coords="311,57,422,75"/>
+<area shape="rect" id="node14" href="#basin3d.synthesis.models.field.SamplingFeature" target="_top" title="A feature where sampling is conducted. OGC Observation &amp; Measurements SF_SamplingFeature." alt="" coords="311,110,423,128"/>
+<area shape="rect" id="node8" href="#basin3d.synthesis.models.field.GeographicCoordinate" target="_top" title="The latitude and longitude which define the position of a point on" alt="" coords="299,146,435,164"/>
+<area shape="rect" id="node10" href="#basin3d.synthesis.models.field.MonitoringFeature" target="_top" title="A feature upon which monitoring is made. OGC Timeseries Profile OM_MonitoringFeature." alt="" coords="647,110,764,128"/>
+<area shape="rect" id="node11" href="#basin3d.synthesis.models.field.SpatialSamplingFeature" target="_top" title="A spatially&#45;defined feature where sampling is conducted. OGC Observation &amp; Measurements SF_SpatialSamplingFeature." alt="" coords="470,110,612,128"/>
+</map>

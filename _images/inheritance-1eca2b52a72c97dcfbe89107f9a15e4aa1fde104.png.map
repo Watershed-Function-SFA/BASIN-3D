@@ -1,0 +1,8 @@
+<map id="inheritanceb4abcd3759" name="inheritanceb4abcd3759">
+<area shape="rect" id="node1" title="Intentionally simple parent class for all views. Only implements" alt="" coords="4,4,58,19"/>
+<area shape="rect" id="node4" title="The base ViewSet class does not provide any actions by default." alt="" coords="224,19,306,35"/>
+<area shape="rect" id="node3" href="#basin3d.synthesis.viewsets.DataSourcePluginViewSet" target="_top" title="Base ViewsSet for all DataSource plugins. &#160;The inheritance diagram shows that this class extends the" alt="" coords="337,19,490,35"/>
+<area shape="rect" id="node5" href="#basin3d.synthesis.viewsets.MeasurementTimeseriesTVPObservationViewSet" target="_top" title="MeasurementTimeseriesTVPObservation: Series of measurement (numerical) observations in" alt="" coords="522,4,764,19"/>
+<area shape="rect" id="node6" href="#basin3d.synthesis.viewsets.MonitoringFeatureViewSet" target="_top" title="MonitoringFeature: A feature upon which monitoring is made. OGC Timeseries Profile OM_MonitoringFeature." alt="" coords="566,35,720,51"/>
+<area shape="rect" id="node7" title="This is the magic." alt="" coords="89,35,192,51"/>
+</map>
