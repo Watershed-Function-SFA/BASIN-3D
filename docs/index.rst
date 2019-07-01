@@ -3,10 +3,11 @@ Welcome to BASIN-3D |release| documentation!
 
 .. toctree::
    intro
-   quickstart
+   setup
    rest_api
    synthesis_models
-   framework
+   synthesis_views
+   django_framework
 
 Indices and tables
 ==================

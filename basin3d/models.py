@@ -6,27 +6,48 @@
 
 :synopsis: The BASIN-3D  Models
 :module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Danielle Svehla Christianson <dschristianson@lbl.gov>
+
+Below is the inheritance diagram for BASIN-3D generic models and supporting classes.  All of the models are based on
+:class:`django.db.models.Model` which provide the object relational mapping technology for building and managing
+relational database tables.
+
+.. inheritance-diagram:: basin3d.models
+    :top-classes: django.db.models.Model, django.db.models.fields.TextField
 
 .. contents:: Contents
     :local:
     :backlinks: top
 
 
+
 """
 from __future__ import unicode_literals
+
+from importlib import import_module
+from typing import List
+
 from django.db import models
 from django_extensions.db.fields.encrypted import EncryptedTextField
-from importlib import import_module
 
 
 class SpatialSamplingShapes(object):
     """
-    GM_Shape defined in OGC O&M
+    Spatial sampling shape describing a spatial sampling feature
+
+    Controlled CV list as defined by OGC Observation & Measurement GM_Shape.
     """
 
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_SOLID = "SOLID"
+
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_SURFACE = "SURFACE"
+
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_CURVE = "CURVE"
+
+    #: The shape of a spatially extensive sampling feature which provides a complete sampling domain.
     SHAPE_POINT = "POINT"
 
 
@@ -34,9 +55,9 @@ class FeatureTypes(object):
     """
     Feature Types where an Observation can be made.
 
-    This is a controlled CV list that we are maintaining. USGS Watershed Boundry Dataset is used.
-    We're trying to strike a balance between commonly used hierarchical levels and features
-    versus a runaway list of Feature types. OGC O&M suggests that Features should be
+    Controlled CV list that is maintained. USGS Watershed Boundry Dataset is used.
+    The goal is to strike a balance between commonly used hierarchical levels and features
+    versus a runaway list of FeatureTypes. OGC O&M suggests that Features should be
     determined as needed.
     """
 
@@ -70,12 +91,12 @@ class FeatureTypes(object):
         SpatialSamplingShapes.SHAPE_POINT: [POINT],
         SpatialSamplingShapes.SHAPE_CURVE: [HORIZONTAL_PATH, VERTICAL_PATH],
         SpatialSamplingShapes.SHAPE_SURFACE: [REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED,
-                               SUBWATERSHED, SITE, PLOT],
+                                              SUBWATERSHED, SITE, PLOT],
         SpatialSamplingShapes.SHAPE_SOLID: []
     }
 
 
-def get_feature_types():
+def get_feature_types() -> List[str]:
     """
     Helper function for FeatureTypes
     :return list of feature_types as strings
@@ -123,6 +144,16 @@ class StringListField(models.TextField):
 class DataSource(models.Model):
     """
     Data Source definition
+
+    Attributes:
+        - *id:* string (inherited)
+        - *name:* string
+        - *id_prefix:* string, prefix that is added to all data source ids
+        - *plugin_module:*
+        - *plugin_class:*
+        - *credentials:*
+        - *enabled:*
+
     """
     name = models.CharField(max_length=20, unique=True, blank=False)
     id_prefix = models.CharField(max_length=5, unique=True, blank=False)
@@ -131,7 +162,6 @@ class DataSource(models.Model):
     plugin_class = models.TextField(blank=True)
     credentials = EncryptedTextField(blank=True)
     enabled = models.BooleanField(default=True)
-
 
     class Meta:
         ordering = ['id_prefix']
@@ -147,8 +177,7 @@ class DataSource(models.Model):
 
     def get_plugin(self):
         """
-        Return the plugin
-        :return:
+        Return the plugin class
         """
 
         module = import_module(self.plugin_module)
@@ -161,12 +190,10 @@ class ObservedProperty(models.Model):
     Defining the attributes for a single/multiple Observed Properties
 
     Attributes:
-        - *id:* string, (Cs137 MID)
-        - *description:* id, Cs 137 air dose rate car survey campaigns
-        - *observed_property_variable_id:* string, Cs137MVID
-        - *sampling_medium:* enum (water, gas, solid phase, other, not applicable)
-        - *owner:* Person (optional), NotImplemented
-        - *contact:* Person (optional), NotImplemented
+        - *id:* string, e.g., Cs137 MID
+        - *description:* id, e.g., Cs 137 air dose rate car survey campaigns
+        - *observed_property_variable_id:* string, e.g., Cs137MVID
+        - *sampling_medium:* enum (WATER, GAS, SOLID PHASE, OTHER, NOT APPLICABLE)
     """
 
     description = models.TextField(null=True, blank=True)
@@ -191,11 +218,11 @@ class ObservedPropertyVariable(models.Model):
     """
     Defining the properties being observed (measured). See http://vocabulary.odm2.org/variablename/ for controlled vocabulary
 
-        Attributes:
-            - *id:* string,
-            - *full_name:* string,
-            - *abbreviation:* string,
-            - *categories:* Array of strings (in order of priority).
+    Attributes:
+        - *id:* string,
+        - *full_name:* string,
+        - *abbreviation:* string,
+        - *categories:* Array of strings (in order of priority).
 
     See http://vocabulary.odm2.org/variabletype/ for options, although I think we should have our own list (theirs is a bit funky).
 
@@ -226,7 +253,7 @@ class ObservedPropertyVariable(models.Model):
 
 class DataSourceObservedPropertyVariable(models.Model):
     """
-    Synthesis of Data Source Parameters with Broker parameters
+    Synthesis of Data Source Observed Property Variables with BASIN-3D Observed Property Variables
     """
     datasource = models.ForeignKey(DataSource, related_name='basin3d_datasource', on_delete=models.CASCADE)
     observed_property_variable = models.ForeignKey(ObservedPropertyVariable,

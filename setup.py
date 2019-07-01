@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import os
+import subprocess
 import sys
 
-import subprocess
 from setuptools import setup, find_packages
 
 # Get the Quickstart documentation
-with open('docs/quickstart.rst') as readme:
+with open('docs/setup.rst') as readme:
     INSTALL = readme.read()
 
 # Update version from latest git tags.
@@ -17,10 +17,10 @@ try:
     git_describe = subprocess.check_output(["git", "describe", "--tags"]).rstrip().decode('utf-8')
 
     with open(version_py, 'w') as f:
-        f.write(version_msg + os.linesep + "__version__='" + git_describe.split("-")[0] + "'")
-        f.write(os.linesep + "__release__='" + git_describe + "'" + os.linesep)
+        f.write(version_msg + os.linesep + "__version__ = '" + git_describe.split("-")[0] + "'")
+        f.write(os.linesep + "__release__ = '" + git_describe + "'" + os.linesep)
 
-except Exception as e:
+except Exception:
     # If there is an exception, this means that git is not available
     # We will used the existing version.py file
     if not os.path.exists(version_py):
@@ -28,11 +28,11 @@ except Exception as e:
             f.write(version_msg + os.linesep + "__version__='0'")
             f.write(os.linesep + "__release__='0'" + os.linesep)
 
-__release__=None
+__release__ = None
 if os.path.exists(version_py):
-      with open(version_py) as f:
-          code = compile(f.read(), version_py, 'exec')
-      exec(code)
+    with open(version_py) as f:
+        code = compile(f.read(), version_py, 'exec')
+    exec(code)
 
 if sys.version_info.major == 2 and sys.version_info.minor < 7:
     sys.exit('Sorry, Python < 2.7 is not supported')
@@ -46,7 +46,7 @@ setup(name='BASIN-3D',
       long_description=INSTALL,
       author='Val Hendrix',
       author_email='vchendrix@lbl.gov',
-      packages=find_packages(exclude=["*.tests",]),
+      packages=find_packages(exclude=["*.tests", ]),
       py_modules=['manage'],
       include_package_data=True,
       install_requires=[

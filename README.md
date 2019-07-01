@@ -17,7 +17,7 @@ Broker for Assimilation, Synthesis and Integration of eNvironmental Diverse, Dis
 ### Prerequisities
 BASIN-D3 is a Django application which requires:
 
-* Python (> 3.4)
+* Python (>= 3.6)
 * Django (>=2.0,<2.1)
 
 ### Get the code
@@ -81,7 +81,7 @@ Sphinx is used to generate documentation. You first need
 to create a virtual environment for generating the docs.
 
     $ source activate basin3d
-    $ pip install sphinx
+    $ pip install sphinx sphinx-autodoc-typehints
     
 Generate the documentation
    
@@ -98,7 +98,7 @@ Install a source distribution with pip:
 
     $ pip install BASIN-3D-<version>.tar.gz
     
-To get started read the [quickstart](./docs/quickstart.rst) documentation
+To get started read the [setup](./docs/setup.rst) documentation
 
 ## Versioning
 
@@ -116,6 +116,7 @@ Workflow for tagging and building release:
 
 * **Charuleka Varadharajan** - [LBL](http://eesa.lbl.gov/profiles/charuleka-varadharajan/)
 * **Valerie Hendrix**  - [LBL](https://dst.lbl.gov/people.php?p=ValHendrix)
+* **Danielle Svehla Christianson** - [LBL](https://crd.lbl.gov/departments/data-science-and-technology/uss/staff/danielle-christianson/)
 
 
 See also the list of [contributors](contributors.txt) who 

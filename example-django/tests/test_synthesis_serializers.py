@@ -1,16 +1,13 @@
-from basin3d.synthesis.models import Person
-
 import json
 
-from django.test import TestCase
-from rest_framework.renderers import JSONRenderer
-
-from basin3d.synthesis import models
-from basin3d.serializers import ObservedPropertySerializer
 from basin3d.models import DataSource, ObservedProperty, \
     ObservedPropertyVariable, SamplingMedium, FeatureTypes, SpatialSamplingShapes
+from basin3d.serializers import ObservedPropertySerializer
+from basin3d.synthesis import models
 from basin3d.synthesis.serializers import MonitoringFeatureSerializer, \
     MeasurementTimeseriesTVPObservationSerializer
+from django.test import TestCase
+from rest_framework.renderers import JSONRenderer
 
 
 class Basin3DSerializerTests(TestCase):
@@ -41,7 +38,6 @@ class Basin3DSerializerTests(TestCase):
                           "datasource": "Alpha",
                           "observed_property_variable": "ACT",
                           "description": "Acetate (CH3COO)"})
-
 
 
 class SynthesisSerializerTests(TestCase):
@@ -89,7 +85,7 @@ class SynthesisSerializerTests(TestCase):
                              "datum": "NAD83", "type": "GEOGRAPHIC", "y": 70.4657, "x": -20.4567
                          }],
                          "vertical_extent": [{
-                            "datum": "NAVD88", "value": 1500.0, "distance_units": "feet",
+                             "datum": "NAVD88", "value": 1500.0, "distance_units": "feet",
                              "resolution": None, "type": "ALTITUDE"
                          }]
                      },
@@ -161,8 +157,8 @@ class SynthesisSerializerTests(TestCase):
                  "representative": {
                      "representative_point_type": None, "representative_point": None,
                      "vertical_position": {
-                          "datum": "LS", "value": -0.5, "distance_units": "meters",
-                          "type": "DEPTH", "resolution": None
+                         "datum": "LS", "value": -0.5, "distance_units": "meters",
+                         "type": "DEPTH", "resolution": None
                      }
                  }
              },
@@ -254,8 +250,8 @@ class SynthesisSerializerTests(TestCase):
                                      "representative": {
                                          "representative_point_type": None, "representative_point": None,
                                          "vertical_position": {
-                                              "datum": "LS", "value": -0.5, "distance_units": "meters",
-                                              "type": "DEPTH", "resolution": None
+                                             "datum": "LS", "value": -0.5, "distance_units": "meters",
+                                             "type": "DEPTH", "resolution": None
                                          }
                                      }
                                  },
@@ -267,7 +263,7 @@ class SynthesisSerializerTests(TestCase):
                                  "related_sampling_feature_complex": [{"related_sampling_feature": "A-Region1",
                                                                        "related_sampling_feature_type": "REGION",
                                                                        "role": "PARENT", "url": None}]
-                                 },
+                             },
                              "feature_of_interest_type": "POINT",
                              "aggregation_duration": "DAILY",
                              "time_reference_position": "START",

@@ -4,24 +4,24 @@
 
 .. currentmodule:: basin3d.synthesis.viewsets
 
-:synopsis: The BASIN-3D Synthesis Model Viewsets that support the REST api
+:synopsis: BASIN-3D Synthesis Model Viewsets (View Controllers) that support the REST API
 :module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Danielle Svehla Christianson <dschristianson@lbl.gov>
 
-View Controllers for BASIN-3D REST api
 
-* :class:`DataSourcePluginViewSet` - Base ViewSet for all synthesized model views.
-* :class:`DataPointGroupViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.DataPointGroup` objects
-* :class:`DataPointViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.measurement.DataPoint` objects
-* :class:`PlotViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Plot` objects
-* :class:`PointLocationViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.PointLocation` objects
-* :class:`RegionViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Region` objects
-* :class:`SiteViewSet` - supports REST ` `GET`` methods that synthesize :class:`~basin3d.synthesis.models.field.Site` objects
+Below is the inheritance diagram for BASIN-3D Viewsets.  All of the views are based on
+:class:`DataSourcePluginViewSet` which provide all the synthesis logic for viewing data
+from the connected data sources.
+
+.. inheritance-diagram:: basin3d.synthesis.viewsets
+    :top-classes: basin3d.synthesis.viewsets.DataSourcePluginViewSet
+    :parts: 2
 
 ----------------------------------
 
 """
 import logging
-import os
+from typing import Dict
 
 from basin3d.models import DataSource, FeatureTypes
 from basin3d.plugins import InvalidOrMissingCredentials, get_request_feature_type
@@ -36,6 +36,7 @@ from basin3d.synthesis.serializers import MonitoringFeatureSerializer, \
     MeasurementTimeseriesTVPObservationSerializer
 from rest_framework import status
 from rest_framework import versioning
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
@@ -46,25 +47,36 @@ logger = logging.getLogger(__name__)
 
 class DataSourcePluginViewSet(ViewSet):
     """
-    Base ViewsSet  for all DataSource plugins
+    Base ViewsSet for all DataSource plugins.  The inheritance diagram shows that this class extends the
+    `Django Rest Framework <https://www.django-rest-framework.org/>`_
+    class :class:`rest_framework.viewsets.ViewSet`. These are based on `Django generic views
+    <https://docs.djangoproject.com/en/2.2/topics/class-based-views/generic-display/>`_.
+
+    .. inheritance-diagram:: rest_framework.viewsets.ViewSet basin3d.synthesis.viewsets.DataSourcePluginViewSet
 
     """
     versioning_class = versioning.NamespaceVersioning
 
-    def synthesize_query_params(self, request, plugin_view):
+    def synthesize_query_params(self, request, plugin_view: 'DataSourcePluginViewSet') -> Dict[str, str]:
         """
         Synthesizes query parameters, if necessary
 
         :param request: the request to synthesize
         :param plugin_view: The plugin view to synthesize query params for
-        :return:
+        :return: The query parameters
         """
         # do nothing, subclasses may override this
         return request.query_params
 
-    def list(self, request, format=None):
+    def list(self, request: Request, format: str = None) -> Response:
         """
         Return the synthesized plugin results
+
+        :param request: The incoming request object
+        :type request: :class:`rest_framework.request.Request`
+        :param format: The format to present the data (default is json)
+        :return: The HTTP Response
+        :rtype: :class:`rest_framework.request.Response`
         """
         items = []
 
@@ -98,12 +110,15 @@ class DataSourcePluginViewSet(ViewSet):
         serializer = self.__class__.serializer_class(items, many=True, context={'request': request})
         return Response(serializer.data)
 
-    def retrieve(self, request, pk=None):
+    def retrieve(self, request: Request, pk: str) -> Response:
         """
         Retrieve a single synthesized value
-        :param request:
-        :param pk:
-        :return:
+
+        :param request: The request object
+        :type request: :class:`rest_framework.request.Request`
+        :param pk: The primary key
+        :return: The HTTP Response
+        :rtype: :class:`rest_framework.request.Response`
         """
 
         # split the datasource id prefix from the primary key
@@ -138,29 +153,42 @@ class DataSourcePluginViewSet(ViewSet):
 
 class MonitoringFeatureViewSet(DataSourcePluginViewSet):
     """
-    Return a list of the MonitoringFeature types in use
+    MonitoringFeature: A feature upon which monitoring is made. OGC Timeseries Profile OM_MonitoringFeature.
 
-    **Fields**
-    * *url* - for each Feature type
+    **Properties**
 
-    ** Filter results** by the following attributes
+    * *id:* string, Unique feature identifier
+    * *name:* string, Feature name
+    * *description:* string, Description of the feature
+    * *feature_type:* sting, FeatureType: REGION, SUBREGION, BASIN, SUBBASIN, WATERSHED, SUBWATERSHED, SITE, PLOT, HORIZONTAL PATH, VERTICAL PATH, POINT
+    * *observed_property_variables:* list of observed variables made at the feature. Observed property variables are configured via the plugins.
+    * *related_sampling_feature_complex:* list of related_sampling features. PARENT features are currently supported.
+    * *shape:* string, Shape of the feature: POINT, CURVE, SURFACE, SOLID
+    * *coordinates:* location of feature in absolute and/or representative datum
+    * *description_reference:* string, additional information about the Feature
+    * *related_party:* (optional) list of people or organizations responsible for the Feature
+    * *utc_offset:* float, Coordinate Universal Time offset in hours (offset in hours), e.g., +9
+    * *url:* url, URL with details for the feature
+
+    **Filter** by the following attributes (/?attribute=parameter&attribute=parameter&...)
 
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
 
-    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
+    **Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
     """
     serializer_class = MonitoringFeatureSerializer
     synthesis_model = MonitoringFeature
 
-    def synthesize_query_params(self, request, plugin_view):
+    def synthesize_query_params(self, request: Request, plugin_view: DataSourcePluginViewSet) -> Dict[str, str]:
         """
         Synthesizes query parameters, if necessary
 
         Parameters Synthesized:
 
         :param request: the request to synthesize
+        :type request: :class:`rest_framework.request.Request`
         :param plugin_view: The plugin view to synthesize query params for
-        :return:
+        :return: The query parameters
         """
         query_params = {}
 
@@ -183,6 +211,14 @@ class MonitoringFeatureViewSet(DataSourcePluginViewSet):
         return query_params
 
     def extract_type(self, request):
+        """
+        Extract the feature types from the request
+
+        :param request: The Request object
+        :return: Tuple `(feature_type_code, feature_type_name)`. (e.g (0, 'REGION')
+        :rtype: tuple
+
+        """
         k = get_request_feature_type(request)
         if k:
             return k, FeatureTypes.TYPES[k]
@@ -235,48 +271,55 @@ class MonitoringFeatureViewSet(DataSourcePluginViewSet):
 
 class MeasurementTimeseriesTVPObservationViewSet(DataSourcePluginViewSet):
     """
-    Retrieve MeasurementTimeseriesTVPObservation Groups
+    MeasurementTimeseriesTVPObservation: Series of measurement (numerical) observations in
+    TVP (time value pair) format grouped by time (i.e., a timeseries).
 
-    ** Properties **
+    **Properties**
 
-    * *observation_property:* string, (optional)
-    * *start_time:* datetime,  survey start time
-    * *end_time:* datetime, units: survey end time
-    * *utc_offset:* float (offset in hours), +9
-    * *feature_of_interest* feature on which the observation is being made
-    * *feature_of_interest_type* enum (FeatureTypes)
-    * *result_points* -- for the list of data_points associated with this Data Point Group
+    * *id:* string, Observation identifier (optional)
+    * *type:* enum, MEASUREMENT_TVP_TIMESERIES
+    * *observed_property:* url, URL for the observation's observed property
+    * *phenomenon_time:* datetime, datetime of the observation, for a timeseries the start and end times can be provided
+    * *utc_offset:* float, Coordinate Universal Time offset in hours (offset in hours), e.g., +9
+    * *feature_of_interest:* MonitoringFeature obj, feature on which the observation is being made
+    * *feature_of_interest_type:* enum (FeatureTypes), feature type of the feature of interest
+    * *result_points:* list of TimeValuePair obj, observed values of the observed property being assessed
+    * *time_reference_position:* enum, position of timestamp in aggregated_duration (START, MIDDLE, END)
+    * *aggregation_duration:* enum, time period represented by observation (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)
+    * *unit_of_measurement:* string, units in which the observation is reported
+    * *statistic:* enum, statistical property of the observation result (MEAN, MIN, MAX, TOTAL)
+    * *result_quality:* enum, quality assessment of the result (CHECKED, UNCHECKED)
 
-    ** Filter results** by the following attributes:
+    **Filter** by the following attributes (?attribute=parameter&attribute=parameter&...):
 
+    * *monitoring_features (required):* comma separated list of monitoring_features ids
+    * *observed_property_variables (required):* comma separated list of observed property variable ids
+    * *start_date (required):* date YYYY-MM-DD
+    * *end_date (optional):* date YYYY-MM-DD
+    * *aggregation_duration (default: DAY):* enum (YEAR|MONTH|DAY|HOUR|MINUTE|SECOND)
     * *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
-    * *monitoring_features (required)* comma separated list of monitoring_features ids
-    * *observed_property_variables (required)* comma separated list of observed property variable ids
-    * *start_date (required)*
-    * *end_date*
-    * *aggregation_duration (default:day):*  options (year|month|day|hour|minute|second)
-    * *result_quality* if 'True' then filter by quality checked data. Otherwise, there is no filtering.
 
-    ** Restrict fields**  with query parameter ‘fields’. (e.g. ?fields=id,name)
+    **Restrict fields** with query parameter ‘fields’. (e.g. ?fields=id,name)
 
 
     """
     serializer_class = MeasurementTimeseriesTVPObservationSerializer
     synthesis_model = MeasurementTimeseriesTVPObservation
 
-    def synthesize_query_params(self, request, plugin_view):
+    def synthesize_query_params(self, request: Request, plugin_view: DataSourcePluginViewSet) -> Dict[str, str]:
         """
         Synthesizes query parameters, if necessary
 
         Parameters Synthesized:
           + monitoring_features
           + observed_property_variables
-          + temporal_resolution (default: day)
+          + aggregation_duration (default: DAY)
           + quality_checked
 
         :param request: the request to synthesize
+        :type request: :class:`rest_framework.request.Request`
         :param plugin_view: The plugin view to synthesize query params for
-        :return:
+        :return: The query parameters
         """
 
         id_prefix = plugin_view.datasource.id_prefix

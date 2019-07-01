@@ -7,6 +7,7 @@
 :platform: Unix, Mac
 :synopsis: BASIN-3D ``DataSource`` plugin classes
 :module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Danielle Svehla Christianson <dschristianson@lbl.gov>
 
 .. contents:: Contents
     :local:
@@ -14,16 +15,11 @@
 
 """
 import logging
+from json import JSONDecodeError
 
+import requests
 # Python 3.5 compatibility
 import six
-
-try:
-    from json import JSONDecodeError
-except ImportError:
-    JSONDecodeError = ValueError
-
-
 import yaml
 from basin3d import synthesis, get_url, post_url
 from basin3d.apps import Basin3DConfig
@@ -34,18 +30,14 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from rest_framework import status
 
-
-import requests
-
 # Ignore Insecure Warnings in DEBUG Mode
 try:
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
     if settings.DEBUG:
         requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-except:
+except Exception:
     pass
-
 
 __all__ = ['get_url']
 
@@ -181,7 +173,7 @@ class DataSourcePluginViewMeta(type):
 
         # If there is an init method, we want to modify it
         # to accept a DataSource instance
-        old_init=None
+        old_init = None
         if "__init__" in dct:
             old_init = dct["__init__"]
 
@@ -242,15 +234,15 @@ class DataSourcePluginViewMeta(type):
 
             # if there is an init, execute it
             if old_init:
-                old_init(self, *args, **kwargs) # original init
+                old_init(self, *args, **kwargs)  # original init
 
-            if not args and len(args) == 0 and not isinstance(args[0],DataSource):
+            if not args and len(args) == 0 and not isinstance(args[0], DataSource):
                 raise ValueError("Must specify an argument of type {}".format(DataSource))
 
             self.datasource = args[0]
 
         # Add methods
-        dct["__init__"] = new_init # replace the original init
+        dct["__init__"] = new_init  # replace the original init
         dct["get_observed_property_variables"] = get_observed_property_variables  # add get variables
         dct["get_observed_property_variable"] = get_observed_property_variable
         dct["get_observed_property"] = get_observed_property
@@ -330,7 +322,7 @@ class DataSourcePluginPoint(six.with_metaclass(PluginMount, object)):
             try:
                 if request.method == "GET":
                     response = http_auth.get("{}{}".format(datasource.location, direct_path),
-                                         params=request.query_params)
+                                             params=request.query_params)
                 elif request.method == "POST":
                     response = http_auth.post("{}{}".format(datasource.location, direct_path),
                                               params=request.data)
@@ -343,7 +335,7 @@ class DataSourcePluginPoint(six.with_metaclass(PluginMount, object)):
                     response = get_url("{}{}".format(datasource.location, direct_path))
                 elif request.method == "POST":
                     response = post_url("{}{}".format(datasource.location, direct_path),
-                                              params=request.data)
+                                        params=request.data)
             except Exception as e:
                 response = JsonResponse(data={"error": str(e)},
                                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -443,8 +435,7 @@ class HTTPConnectionDataSource(object):
         self.credentials = None
         self.verify_ssl = True
         if datasource.get_plugin().DataSourceMeta.id in settings.BASIN3D and \
-                        'VERIFY_SSL' in settings.BASIN3D[
-                    datasource.get_plugin().DataSourceMeta.id]:
+                'VERIFY_SSL' in settings.BASIN3D[datasource.get_plugin().DataSourceMeta.id]:
             self.verify_ssl = settings.BASIN3D[datasource.get_plugin().DataSourceMeta.id][
                 'VERIFY_SSL']
 
@@ -455,7 +446,7 @@ class HTTPConnectionDataSource(object):
         :return: JSON response
         :rtype: dict
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def logout(self):
         """
@@ -463,7 +454,7 @@ class HTTPConnectionDataSource(object):
 
         :return: None
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def get(self, url_part, params=None, headers=None):
         """
@@ -474,7 +465,7 @@ class HTTPConnectionDataSource(object):
         :param headers:
         :return:
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def post(self, url_part, params=None, headers=None):
         """
@@ -485,7 +476,7 @@ class HTTPConnectionDataSource(object):
         :param headers:
         :return:
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     @classmethod
     def get_credentials_format(cls):
@@ -493,7 +484,7 @@ class HTTPConnectionDataSource(object):
         This returnes the format that the credentials are stored in the DB
         :return: The format for the credentials
         """
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class InvalidOrMissingCredentials(Exception):
@@ -564,7 +555,7 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
                 return self.credentials["client_id"], self.credentials["client_secret"]
             raise InvalidOrMissingCredentials("client_id and client_secret are missing or invalid")
 
-        return None,None
+        return None, None
 
     @staticmethod
     def get_credentials_format():
@@ -601,7 +592,7 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
         """
 
         # Build the authentication url
-        url = '{}{}'.format(self.datasource.location,self.auth_token_path)
+        url = '{}{}'.format(self.datasource.location, self.auth_token_path)
         try:
 
             # Login to the Data Source
@@ -691,14 +682,14 @@ class HTTPOAuth2DataSource(HTTPConnectionDataSource):
         """
 
         # Build the authentication url for revoking the token
-        url = '{}{}'.format(self.datasource.location,self.revoke_token_path)
+        url = '{}{}'.format(self.datasource.location, self.revoke_token_path)
 
         # Request the token to be revoked
         if self.token:
             res = requests.post(url, params={"token": self.token["access_token"],
-                                         "client_id": self.client_id},
-                            auth=(self.client_id, self.client_secret),
-                            verify=self.verify_ssl)
+                                             "client_id": self.client_id},
+                                auth=(self.client_id, self.client_secret),
+                                verify=self.verify_ssl)
 
             # Validate the success of the token revocation
             from rest_framework import status

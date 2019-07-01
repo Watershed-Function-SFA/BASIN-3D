@@ -6,20 +6,9 @@
 
 :synopsis: The BASIN-3D Synthesis Model Serializers
 :module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Danielle Svehla Christianson <dschristianson@lbl.gov>
 
 Serializers that render :mod:`basin.synthesis.models` from Python objects to `JSON` and back again.
-
-
-* :class:`FloatField` -  A Float field that can handle empty strings
-* :class:`HorizontalCoordinateSerializer`
-* :class:`IdUrlSerializerMixin` - Serializer Mixin to support Hypermedia as the Engine of Application State (HATEOAS).
-* :class:`PersonSerializer`
-* :class:`ReadOnlySynthesisModelField` -  A generic field that can be used against any serializer
-* :class:`TimestampSerializer` - Extends :class:`rest_framework.serializers.DateTimeField` to handle
-    numeric epoch times.
-* :class:`ObservationSerializerMixin`
-* :class:`MeasurementTimeseriesTVPObservationSerializer`
-# ToDo: add documenation
 
 """
 from numbers import Number
@@ -70,7 +59,7 @@ class ReadOnlySynthesisModelField(serializers.Field):
         super(ReadOnlySynthesisModelField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
-        raise NotImplemented
+        raise NotImplementedError
 
     def to_representation(self, obj):
         serializer = self.serializer_class(obj, context=self.context)
@@ -83,6 +72,7 @@ class FloatField(serializers.FloatField):
     """
 
     def to_representation(self, value):
+        """to float representation"""
         if not value:
             return None
         return float(value)
@@ -238,7 +228,7 @@ class CoordinateSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
 
 class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
     """
-
+    Serializes a :class:`basin3d.synthesis.models.field.RelatedSamplingFeature`
     """
     related_sampling_feature = serializers.CharField()
     related_sampling_feature_type = serializers.SerializerMethodField()
@@ -294,7 +284,7 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
                                   # ToDo: take off the database prefix?
                                   kwargs={'pk': obj.related_sampling_feature},
                                   request=self.context["request"], )
-                except:
+                except Exception:
                     return None
                 return url
         return None
@@ -352,9 +342,9 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
                 # path_route = r'monitoringfeature-detail'
                 try:
                     url = reverse(viewname=path_route,
-                                   # ToDo: take off the database prefix?
-                                   kwargs={'pk': obj.id},
-                                   request=self.context["request"], )
+                                  # ToDo: take off the database prefix?
+                                  kwargs={'pk': obj.id},
+                                  request=self.context["request"], )
                 except Exception:
                     return None
                 return url

@@ -7,21 +7,29 @@
 :platform: Unix, Mac
 :synopsis: BASIN-3D ViewSets
 :module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Danielle Svehla Christianson <dschristianson@lbl.gov>
 
 .. contents:: Contents
     :local:
     :backlinks: top
+
+Below is the inheritance diagram for BASIN-3D Viewsets.  All of the views are based on viewsets from
+:class:`rest_framework.viewsets` which provide functionality for controlling access to the REST API.
+
+.. inheritance-diagram:: basin3d.viewsets
+    :top-classes: rest_framework.viewsets.GenericViewSet, rest_framework.viewsets.ReadOnlyModelViewSet
+
+
 """
 import json
 import logging
 
+import django_filters
 from basin3d import get_url
 from basin3d.models import DataSource, ObservedProperty, ObservedPropertyVariable, \
     DataSourceObservedPropertyVariable
-
 from basin3d.serializers import DataSourceSerializer, \
     ObservedPropertySerializer, ObservedPropertyVariableSerializer
-import django_filters
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
@@ -30,9 +38,10 @@ from rest_framework.reverse import reverse
 
 logger = logging.getLogger(__name__)
 
+
 class DirectAPIViewSet(viewsets.GenericViewSet):
     """
-    Direct Access to data source APIs
+    Direct Access to data source APIs. Supports REST  ``GET`` methods that list the direct datasource APIs
     """
     queryset = DataSource.objects.all()
     serializer_class = DataSourceSerializer
@@ -50,7 +59,6 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
 
         direct_apis = []
         for datasource in self.queryset:
-
             direct_apis.append(
                 {datasource.name: request.build_absolute_uri(reverse('direct-path-detail',
                                                                      kwargs={
@@ -82,7 +90,7 @@ class DirectAPIViewSet(viewsets.GenericViewSet):
                                                                                      "id_prefix": datasource.id_prefix,
                                                                                      "direct_path": ""})))),
                         status=response.status_code)
-                except:
+                except Exception:
                     return response
 
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -92,24 +100,22 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
     """
         Returns a list of all Data Sources available to the BASIN-3D service
 
+        **Properties**
 
-        ** Properties **
-
-        * *name* - unique name for the datasource
-        * *id_prefix* - unique id prefix for all datasource ids
-        * *location* - the web location of the data source
-        * *url* - for detail on a single Model Domain
-        * *direct_path* - a direct call to the data source itself
-        * *variables* - returns the measurement variables for the current data source
-        * *observed_property_variables* - returns the observed property variables for the current data source
-        * *check* - validate the datasource connection
+        * *name:* string, Unique name for the Data Source
+        * *id_prefix:* string, unique id prefix for all Data Source ids
+        * *location:* string, Location of the Data Source
+        * *url:* url, Endpoint for Data Source
+        * *direct_path:* url, A direct call to the data source itself
+        * *observed_property_variables:* url, Observed property variables for Data Source
+        * *check:* url, Validate the Data Source connection
 
     """
     queryset = DataSource.objects.all()
     serializer_class = DataSourceSerializer
 
     @detail_route()
-    def check(self,request, pk=None):
+    def check(self, request, pk=None):
         """
         Determine if Datasource is available
         :param request:
@@ -127,11 +133,11 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
                 try:
                     http_auth.login()
                     return Response(data={"message": "Login to {} data source was successful".format(datasource.name),
-                                       "success": True},
-                                 status=status.HTTP_200_OK)
+                                          "success": True},
+                                    status=status.HTTP_200_OK)
                 except Exception as e:
-                    return Response(data={"message": str(e), "success":False},
-                                            status=status.HTTP_200_OK)
+                    return Response(data={"message": str(e), "success": False},
+                                    status=status.HTTP_200_OK)
 
                 finally:
                     http_auth.logout()
@@ -146,14 +152,15 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
                             status=status.HTTP_200_OK)
                     else:
                         return Response(
-                            data={"message": "Response from {} data source returns HTTP status {}".format(datasource.name,
-                                                                                                          response.status_code),
-                                  "success": True},
+                            data={
+                                "message": "Response from {} data source returns HTTP status {}".format(datasource.name,
+                                                                                                        response.status_code),
+                                "success": True},
                             status=status.HTTP_200_OK)
 
                 except Exception as e:
-                    return Response(data={"message": str(e), "success":False},
-                                            status=status.HTTP_200_OK)
+                    return Response(data={"message": str(e), "success": False},
+                                    status=status.HTTP_200_OK)
 
     @detail_route()  # Custom Route for an association
     def observed_property_variables(self, request, pk=None):
@@ -177,7 +184,7 @@ class DataSourceViewSet(viewsets.ReadOnlyModelViewSet):
 
         # Then just serialize and return it!
         serializer = ObservedPropertyVariableSerializer(
-            v, many=True,context={'request': request})
+            v, many=True, context={'request': request})
         return Response(serializer.data)
 
 
@@ -188,10 +195,11 @@ class ObservedPropertyVariableViewSet(viewsets.ReadOnlyModelViewSet):
 
         **Properties**
 
-        * *id* - unique measurement variable identifier
-        * *full_name* - descriptive name
-        * *categories* - categories listed in hierarchical order
-        * *datasources* - retrieves the datasources that define the current variable
+        * *id:* string, Unique observed property variable identifier
+        * *full_name:* string, Descriptive name
+        * *categories:* list of strings, Categories of which the variable is a member, listed in hierarchical order
+        * *datasources:* url, Retrieves the datasources that define the current variable
+        * *url:* url, Endpoint for the observed property variable
 
     """
     queryset = ObservedPropertyVariable.objects.all()
@@ -227,6 +235,15 @@ class ObservedPropertyVariableViewSet(viewsets.ReadOnlyModelViewSet):
 class ObservedPropertyViewSet(viewsets.ReadOnlyModelViewSet):
     """
         Returns a list of available Observation Properties
+
+        **Properties**
+
+        * *observed_property_variable:* string, observed property variable assigned to the observed property
+        * *datasource:* string, data source defining the observed property
+        * *sampling_medium:* enum, medium in which the observed property is observed
+            (WATER, GAS, SOLID_PHASE, OTHER, NOT_APPLICABLE)
+        * *description:* string, additional information about the observed property
+        * *url:* url, endpoint for observed property
 
     """
     queryset = ObservedProperty.objects.all()

@@ -7,6 +7,7 @@
 :platform: Unix, Mac
 :synopsis: BASIN-3D Serializers
 :module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Danielle Svehla Christianson <dschristianson@lbl.gov>
 
 .. contents:: Contents
     :local:
@@ -41,7 +42,7 @@ class ChooseFieldsSerializerMixin(object):
         if 'request' in self.context:
             self.handle_fields(self.context['request'])
 
-    def handle_fields(self, request=None ):
+    def handle_fields(self, request=None):
         """
         Restrict the fields by those in the request
         :param request:
@@ -100,7 +101,8 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
         url_kwargs = {
             "pk": obj.id,
         }
-        return reverse.reverse("{}-observed-property-variables".format(obj.__class__.__name__.lower()), kwargs=url_kwargs,
+        return reverse.reverse("{}-observed-property-variables".format(obj.__class__.__name__.lower()),
+                               kwargs=url_kwargs,
                                request=self.context["request"], format=format)
 
     def get_check(self, obj):
@@ -113,9 +115,9 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
             'pk': obj.id,
         }
         return "{}check/".format(reverse.reverse('datasource-detail', kwargs=url_kwargs,
-                               request=self.context["request"],))
+                                                 request=self.context["request"], ))
 
-    def get_direct_path(self, obj ):
+    def get_direct_path(self, obj):
         """
         Return the url for direct api access
         :param obj:
@@ -146,6 +148,7 @@ class DataSourceObservedPropertyVariableSerializer(serializers.HyperlinkedModelS
     Model that Serializes Mapped Data Source Parameters
 
     """
+
     class Meta:
         model = DataSourceObservedPropertyVariable
         fields = ('id', 'name', 'datasource', 'observed_property_variable')
@@ -153,8 +156,7 @@ class DataSourceObservedPropertyVariableSerializer(serializers.HyperlinkedModelS
 
 class ObservedPropertyVariableSerializer(serializers.HyperlinkedModelSerializer):
     """
-
-    Observed Property Variable serializer
+    Observed Property Variable Serializer
 
     """
 
@@ -176,7 +178,6 @@ class ObservedPropertyVariableSerializer(serializers.HyperlinkedModelSerializer)
         return reverse.reverse("{}-datasources".format(obj.__class__.__name__.lower()), kwargs=url_kwargs,
                                request=self.context["request"], format=format)
 
-
     class Meta:
         model = ObservedPropertyVariable
         depth = 2
@@ -185,7 +186,6 @@ class ObservedPropertyVariableSerializer(serializers.HyperlinkedModelSerializer)
 
 class ObservedPropertySerializer(serializers.HyperlinkedModelSerializer):
     """
-
     Observed Property Serializer
 
     """

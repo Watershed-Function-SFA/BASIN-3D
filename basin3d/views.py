@@ -7,6 +7,7 @@
 :platform: Unix, Mac
 :synopsis: BASIN-3D Views
 :module author: Val Hendrix <vhendrix@lbl.gov>
+:module author: Danielle Svehla Christianson <dschristianson@lbl.gov>
 
 .. contents:: Contents
     :local:
@@ -16,7 +17,7 @@ from collections import OrderedDict
 import logging
 import sys
 
-from basin3d.models import DataSource, FeatureTypes, get_feature_types
+from basin3d.models import DataSource, get_feature_types
 from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
