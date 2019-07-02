@@ -34,8 +34,8 @@ if os.path.exists(version_py):
         code = compile(f.read(), version_py, 'exec')
     exec(code)
 
-if sys.version_info.major == 2 and sys.version_info.minor < 7:
-    sys.exit('Sorry, Python < 2.7 is not supported')
+if sys.version_info.major == 2:
+    sys.exit('Sorry, Python < 2.X is not supported')
 
 if sys.version_info.major == 3 and sys.version_info.minor <= 4:
     sys.exit('Sorry, Python < 3.4 is not supported')
