@@ -20,7 +20,7 @@ BASIN-D3 is a Django application which requires:
 * Python (>= 3.6)
 * Django (>=2.0,<2.1)**
 
-** BASIN-3D may work on later version of Django Application Framework but it has not been tested.
+** BASIN-3D may work on later versions of Django Application Framework, but it has not been tested.
 
 ### Get the code
 
