@@ -5,7 +5,7 @@ Broker for Assimilation, Synthesis and Integration of eNvironmental Diverse, Dis
 
 ## Development Practices
 
-* BASIN-3D uses the [cactus model](https://barro.github.io/2016/02/a-succesful-git-branching-model-considered-harmful/) 
+* BASIN-3D uses the [GitFlow model](https://datasift.github.io/gitflow/IntroducingGitFlow.html) 
   of branching and code versioning in git. 
 * Code development will be peformed in a forked copy of the repo. Commits will not be made directly to the basin-3d repo.  Developers will submit a pull request that is then merged by another team member, if another team member is available.
 * Each pull request should contain only related modifications to a feature or bug fix.  
@@ -18,7 +18,7 @@ Broker for Assimilation, Synthesis and Integration of eNvironmental Diverse, Dis
 BASIN-D3 is a Django application which requires:
 
 * Python (>= 3.6)
-* Django (>=2.0,<2.1)
+* Django (>=2.0)
 
 ### Get the code
 
@@ -128,4 +128,4 @@ See [LICENSE.md](LICENSE.md) file for licensing details
 
 ## Acknowledgments
 
-TBD
+This research is supported as part of the Watershed Function Scientific Focus Area funded by the U.S. Department of Energy, Office of Science, Office of Biological and Environmental Research under Award no. DE-AC02-05CH11231. This research used resources of the National Energy Research Scientific Computing Center (NERSC), U.S. Department of Energy Office of Science User Facility operated under Contract No. DE-AC02-05CH11231. 
