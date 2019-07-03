@@ -15,13 +15,15 @@
 
 """
 import logging
+
 from json import JSONDecodeError
 
 import requests
 # Python 3.5 compatibility
 import six
 import yaml
-from basin3d import synthesis, get_url, post_url
+from basin3d import get_url, post_url
+from basin3d.synthesis.models import Base
 from basin3d.apps import Basin3DConfig
 from basin3d.models import FeatureTypes
 from django.apps import apps
@@ -260,7 +262,7 @@ class DataSourcePluginViewMeta(type):
                 module = __import__(module_name)
                 synthesis_model_class = getattr(module, class_name_list[-1])
 
-            if not isinstance(synthesis_model_class, synthesis.models.Base):
+            if not isinstance(synthesis_model_class, Base):
                 ValueError("synthesis_model_class for {} must extend from synthesis.Base".format(
                     DataSourcePluginViewMeta.__name__))
 

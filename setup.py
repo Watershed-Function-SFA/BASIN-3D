@@ -37,8 +37,8 @@ if os.path.exists(version_py):
 if sys.version_info.major == 2:
     sys.exit('Sorry, Python < 2.X is not supported')
 
-if sys.version_info.major == 3 and sys.version_info.minor <= 4:
-    sys.exit('Sorry, Python < 3.4 is not supported')
+if sys.version_info.major == 3 and sys.version_info.minor < 6:
+    sys.exit('Sorry, Python < 3.6 is not supported')
 
 setup(name='BASIN-3D',
       version=__release__,

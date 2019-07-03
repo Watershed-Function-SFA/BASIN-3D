@@ -1,6 +1,6 @@
 .PHONY: all
 
-PYTHON=python
+PYTHON=python3
 
 all: bin/python keyset db.sqlite3
 
