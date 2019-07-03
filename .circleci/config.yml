@@ -5,6 +5,10 @@
 version: 2
 jobs:
   build:
+    branches:
+      ignore:
+        - gh-pages
+        - /feature-.*/
     docker:
       # specify the version you desire here
       - image: circleci/python:3.7.2
