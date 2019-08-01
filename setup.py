@@ -51,7 +51,7 @@ setup(name='BASIN-3D',
       include_package_data=True,
       install_requires=[
           "django>=2.0,<2.1",
-          "djangorestframework",
+          "djangorestframework>=3.9.2,<3.9.4",
           "django-filter",
           "django-extensions",
           "python3-keyczar",
