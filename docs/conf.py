@@ -80,8 +80,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'BASIN-3D'
-copyright = '2016, The Regents of the University of California, through Lawrence Berkeley National Laboratory \n(subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved.'
-author = 'Charuleka Varadharajan, Valerie Hendrix'
+copyright = '2019, The Regents of the University of California, through Lawrence Berkeley National Laboratory \n(subject to receipt of any required approvals from the U.S. Dept. of Energy).  All rights reserved.'
+author = 'Charuleka Varadharajan, Valerie Hendrix, Danielle Christianson'
 
 # The full version, including alpha/beta/rc tags.
 release = __release__
