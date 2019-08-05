@@ -11,7 +11,7 @@ develop:
 	$(CURDIR)/bin/pip install -e $(CURDIR)/..
 
 github:
-	cd $(CURDIR)/../docs; PYTHONPATH=$(CURDIR) GH_PAGES=$(GH_PAGES) DJANGO_SETTINGS_MODULE=mybroker.settings make github
+	cd $(CURDIR)/../docs; PYTHONPATH=$(CURDIR):$(CURDIR)/.. GH_PAGES=$(GH_PAGES) DJANGO_SETTINGS_MODULE=mybroker.settings make github
 
 bin/python:
 	$(PYTHON) -m venv .
