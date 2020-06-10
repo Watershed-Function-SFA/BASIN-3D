@@ -459,7 +459,7 @@ class MeasurementTimeseriesTVPObservationSerializer(ObservationSerializerMixin, 
     result_points = serializers.SerializerMethodField()
     unit_of_measurement = serializers.CharField()
 
-    FIELDS_OPTIONAL = {'aggregation_duration', 'time_reference_position', 'utc_offset', 'statistic'}
+    FIELDS_OPTIONAL = {'aggregation_duration', 'time_reference_position', 'statistic'}
 
     def __init__(self, *args, **kwargs):
         """
