@@ -1,8 +1,7 @@
-from basin3d.models import DataSource, FeatureTypes, SpatialSamplingShapes
-from basin3d.synthesis.models.field import MonitoringFeature, Coordinate, \
+from django_basin3d.models import DataSource, FeatureTypes, SpatialSamplingShapes
+from basin3d.core.models import MonitoringFeature, Coordinate, \
     AbsoluteCoordinate, RepresentativeCoordinate, GeographicCoordinate, AltitudeCoordinate, \
-    DepthCoordinate, VerticalCoordinate, RelatedSamplingFeature
-from basin3d.synthesis.models.measurement import Observation, \
+    DepthCoordinate, VerticalCoordinate, RelatedSamplingFeature, Observation, \
     MeasurementTimeseriesTVPObservation, ResultQuality, TimeValuePair
 from django.test import TestCase
 
@@ -10,6 +9,7 @@ from django.test import TestCase
 class ModelTests(TestCase):
     def setUp(self):
         self.datasource = DataSource.objects.get(name="Alpha")
+        self.plugin_access = self.datasource.get_plugin().get_plugin_access()[MeasurementTimeseriesTVPObservation]
 
     def test_representative_coordinate(self):
         """Test a Representative Coordinatge"""
@@ -37,12 +37,12 @@ class ModelTests(TestCase):
 
     def test_related_sampling_feature(self):
         """Test a Related Sampling feature"""
-        related_sampling_feature = RelatedSamplingFeature(datasource=self.datasource,
+        related_sampling_feature = RelatedSamplingFeature(plugin_access=self.plugin_access,
                                                           related_sampling_feature="Region1",
                                                           related_sampling_feature_type=FeatureTypes.REGION,
                                                           role=RelatedSamplingFeature.ROLE_PARENT)
 
-        assert related_sampling_feature.datasource == self.datasource
+        assert related_sampling_feature.datasource == self.plugin_access.datasource
         assert related_sampling_feature.related_sampling_feature == "A-Region1"
         assert related_sampling_feature.related_sampling_feature_type == FeatureTypes.REGION
         assert related_sampling_feature.role == RelatedSamplingFeature.ROLE_PARENT
@@ -64,7 +64,7 @@ class ModelTests(TestCase):
         """
 
         a_region = MonitoringFeature(
-            datasource=self.datasource,
+            plugin_access=self.plugin_access,
             id="Region1",
             name="AwesomeRegion",
             description="This region is really awesome.",
@@ -101,7 +101,7 @@ class ModelTests(TestCase):
             RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE
 
         a_point = MonitoringFeature(
-            datasource=self.datasource,
+            plugin_access=self.plugin_access,
             id="1",
             name="Point Location 1",
             description="The first point.",
@@ -124,7 +124,7 @@ class ModelTests(TestCase):
             ),
             observed_property_variables=["Ag", "Acetate"],
             related_sampling_feature_complex=[
-                RelatedSamplingFeature(datasource=self.datasource,
+                RelatedSamplingFeature(plugin_access=self.plugin_access,
                                        related_sampling_feature="Region1",
                                        related_sampling_feature_type=FeatureTypes.REGION,
                                        role=RelatedSamplingFeature.ROLE_PARENT)]
@@ -161,7 +161,7 @@ class ModelTests(TestCase):
         :return: n/a
         """
         obs01 = Observation(
-            datasource=self.datasource,
+            plugin_access=self.plugin_access,
             id="timeseries01",
             utc_offset="9",
             phenomenon_time="20180201",
@@ -182,7 +182,7 @@ class ModelTests(TestCase):
         :return: n/a
         """
         obs01 = MeasurementTimeseriesTVPObservation(
-            datasource=self.datasource,
+            plugin_access=self.plugin_access,
             id="timeseries01",
             utc_offset="9",
             phenomenon_time="20180201",
@@ -201,8 +201,10 @@ class ModelTests(TestCase):
         assert obs01.id == "A-timeseries01"
         assert obs01.utc_offset == "9"
         assert obs01.phenomenon_time == "20180201"
-        assert obs01.observed_property == 1
-        assert obs01.observed_property_variable is None
+        assert obs01.observed_property is not None
+        assert obs01.observed_property.datasource_variable == "Acetate"
+        assert obs01.observed_property_variable is not None
+        assert obs01.observed_property_variable == "ACT"
         assert obs01.result_quality == ResultQuality.RESULT_QUALITY_CHECKED
         assert obs01.feature_of_interest == "Point011"
         assert obs01.feature_of_interest_type == FeatureTypes.POINT

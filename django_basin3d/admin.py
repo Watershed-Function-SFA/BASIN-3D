@@ -1,4 +1,4 @@
-from basin3d.models import DataSource, \
+from django_basin3d.models import DataSource, \
     ObservedProperty, ObservedPropertyVariable, DataSourceObservedPropertyVariable
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
@@ -14,7 +14,7 @@ class DataSourceAdmin(ModelAdmin):
 
 @admin.register(ObservedPropertyVariable)
 class ObservedPropertyVariableAdmin(ModelAdmin):
-    list_display = ('id', 'full_name', 'categories')
+    list_display = ('basin3d_id', 'full_name', 'categories')
 
     actions = None
 

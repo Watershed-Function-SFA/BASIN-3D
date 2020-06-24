@@ -1,8 +1,8 @@
 """
-`basin3d.serializers`
+`django_basin3d.serializers`
 *********************
 
-.. currentmodule:: basin3d.serializers
+.. currentmodule:: django_basin3d.serializers
 
 :platform: Unix, Mac
 :synopsis: BASIN-3D Serializers
@@ -23,7 +23,7 @@ About Django Serializers:
 
 
 """
-from basin3d.models import DataSource, ObservedProperty, ObservedPropertyVariable, \
+from django_basin3d.models import DataSource, ObservedProperty, ObservedPropertyVariable, \
     DataSourceObservedPropertyVariable
 from rest_framework import reverse
 from rest_framework import serializers
@@ -85,7 +85,6 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
 
     """
 
-    direct_path = serializers.SerializerMethodField()
     observed_property_variables = serializers.SerializerMethodField()
     check = serializers.SerializerMethodField()
 
@@ -117,26 +116,10 @@ class DataSourceSerializer(serializers.HyperlinkedModelSerializer):
         return "{}check/".format(reverse.reverse('datasource-detail', kwargs=url_kwargs,
                                                  request=self.context["request"], ))
 
-    def get_direct_path(self, obj):
-        """
-        Return the url for direct api access
-        :param obj:
-        :return:
-        """
-        format = None
-        if "format" in self.context["request"].query_params:
-            format = self.context["request"].query_params["format"]
-        url_kwargs = {
-            'id_prefix': obj.id_prefix,
-            'direct_path': ''
-        }
-        return reverse.reverse('direct-path-detail', kwargs=url_kwargs,
-                               request=self.context["request"], format=format)
-
     class Meta:
         model = DataSource
         depth = 1
-        fields = ('url', 'direct_path', 'name', 'location', 'id_prefix',
+        fields = ('url', 'name', 'location', 'id_prefix',
                   'observed_property_variables', 'check')
         read_only_fields = ('name', 'location', 'id_prefix',
                             'observed_property_variables', 'check')
@@ -173,7 +156,7 @@ class ObservedPropertyVariableSerializer(serializers.HyperlinkedModelSerializer)
         if "format" in self.context["request"].query_params:
             format = self.context["request"].query_params["format"]
         url_kwargs = {
-            "pk": obj.id,
+            "pk": obj.basin3d_id,
         }
         return reverse.reverse("{}-datasources".format(obj.__class__.__name__.lower()), kwargs=url_kwargs,
                                request=self.context["request"], format=format)
@@ -181,7 +164,7 @@ class ObservedPropertyVariableSerializer(serializers.HyperlinkedModelSerializer)
     class Meta:
         model = ObservedPropertyVariable
         depth = 2
-        fields = ('url', 'id', 'full_name', 'categories', 'datasources')
+        fields = ('url', 'basin3d_id', 'full_name', 'categories', 'datasources')
 
 
 class ObservedPropertySerializer(serializers.HyperlinkedModelSerializer):
@@ -201,7 +184,7 @@ class ObservedPropertySerializer(serializers.HyperlinkedModelSerializer):
         return obj.datasource.name
 
     def get_observed_property_variable(self, obj):
-        return obj.observed_property_variable.id
+        return obj.observed_property_variable.basin3d_id
 
     class Meta:
         model = ObservedProperty

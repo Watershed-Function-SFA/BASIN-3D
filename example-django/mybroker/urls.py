@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from basin3d import urls as b3durls
+from django_basin3d import urls as b3durls
 
 admin.autodiscover()
 

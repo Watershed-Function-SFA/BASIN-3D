@@ -1,8 +1,8 @@
 .PHONY: all
 
-PYTHON=python3
+PYTHON=python3.7
 
-all: bin/python keyset db.sqlite3
+all: bin/python db.sqlite3
 
 docs:
 	cd $(CURDIR)/../docs; PYTHONPATH=$(CURDIR) DJANGO_SETTINGS_MODULE=mybroker.settings make html
@@ -15,15 +15,11 @@ github:
 
 bin/python:
 	$(PYTHON) -m venv .
-	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt pytest sphinx sphinx_autodoc_typehints pytest-mypy pytest-flake8 pytest-django pytest-cov $(CURDIR)/..
+	$(CURDIR)/bin/pip install -r $(CURDIR)/../requirements.txt
+	$(CURDIR)/bin/pip install pytest sphinx sphinx_autodoc_typehints pytest-mypy pytest-flake8 pytest-django pytest-cov $(CURDIR)/..
 
 db.sqlite3:
 	$(CURDIR)/bin/python manage.py migrate
-
-keyset:
-	@mkdir -p $(CURDIR)/.keyset
-	@test -e $(CURDIR)/.keyset/meta || $(CURDIR)/bin/keyczart create --location=$(CURDIR)/.keyset --purpose=crypt --name=basin3d
-	@test -e $(CURDIR)/.keyset/1 || $(CURDIR)/bin/keyczart addkey --location=$(CURDIR)/.keyset --status=primary
 
 
 .PHONY: run
@@ -32,9 +28,9 @@ run:
 
 .PHONY: test
 test:
-	$(CURDIR)/bin/pytest -v --flake8 --mypy --cov basin3d $(CURDIR)/.. $(CURDIR)/tests --ignore $(CURDIR)/../basin3d/migrations && cd $(CURDIR)
+	$(CURDIR)/bin/pytest -vv --flake8 --mypy --cov django_basin3d --cov-report term --cov-report html $(CURDIR)/.. $(CURDIR)/tests --ignore $(CURDIR)/../django_basin3d/migrations && cd $(CURDIR)
 
 .PHONY: clean
 clean:
-	rm -rf bin lib  include build var .keyset db.sqlite3
+	rm -rf bin lib  include build var db.sqlite3
 	find  ./ -name *.pyc -exec rm {} +

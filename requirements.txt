@@ -1,8 +1,7 @@
-django>=2.0,<2.1
-djangorestframework>=3.9.2,<3.9.4
+-e git+git@github.com:Watershed-Function-SFA/basin3d-core.git@master#egg=basin3d-core
+django
+djangorestframework
 django-filter
-django-extensions
-python3-keyczar
 pyyaml
 requests
 markdown

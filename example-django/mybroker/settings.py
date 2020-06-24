@@ -15,7 +15,6 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ENCRYPTED_FIELD_KEYS_DIR = os.path.join(BASE_DIR, '.keyset/')
 
 
 # Quick-start development settings - unsuitable for production
@@ -36,8 +35,7 @@ INSTALLED_APPS = [
 
     'mybroker',
     'rest_framework',
-    'basin3d',
-    'django_extensions',
+    'django_basin3d',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -145,6 +143,4 @@ REST_FRAMEWORK = {
 }
 
 BASIN3D = {
-    'SYNTHESIS': True,  # Turn on/off synthesis API
-    'DIRECT_API': True,  # Turn on/off direct API
 }

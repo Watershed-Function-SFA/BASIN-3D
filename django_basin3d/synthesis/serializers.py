@@ -1,8 +1,8 @@
 """
-`basin3d.synthesis.serializers`
+`django_basin3d.synthesis.serializers`
 *******************************
 
-.. currentmodule:: basin3d.synthesis.serializers
+.. currentmodule:: django_basin3d.synthesis.serializers
 
 :synopsis: The BASIN-3D Synthesis Model Serializers
 :module author: Val Hendrix <vhendrix@lbl.gov>
@@ -13,8 +13,8 @@ Serializers that render :mod:`basin.synthesis.models` from Python objects to `JS
 """
 from numbers import Number
 
-from basin3d.models import FeatureTypes
-from basin3d.serializers import ChooseFieldsSerializerMixin
+from django_basin3d.models import FeatureTypes
+from django_basin3d.serializers import ChooseFieldsSerializerMixin
 from django.utils.datetime_safe import datetime
 from rest_framework import serializers
 from rest_framework.reverse import reverse
@@ -102,7 +102,7 @@ class IdUrlSerializerMixin(object):
 
 
 class PersonSerializer(serializers.Serializer):
-    """ Serializes a :class:`basin3d.synthesis.models.Person`"""
+    """ Serializes a :class:`django_basin3d.synthesis.models.Person`"""
 
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -122,7 +122,7 @@ class PersonSerializer(serializers.Serializer):
 
 
 class VerticalCoordinateSerializer(serializers.Serializer):
-    """ Serializes a :class:`basin3d.synthesis.models.field.VerticalCoordinate` and its child classes """
+    """ Serializes a :class:`django_basin3d.synthesis.models.field.VerticalCoordinate` and its child classes """
 
     value = serializers.FloatField()
     resolution = serializers.FloatField()
@@ -133,7 +133,7 @@ class VerticalCoordinateSerializer(serializers.Serializer):
 
 
 class HorizonatalCoordinateSerializer(serializers.Serializer):
-    """ Serializes a :class:`basin3d.synthesis.models.field.HorizonatalCoordinate` and its child classes """
+    """ Serializes a :class:`django_basin3d.synthesis.models.field.HorizonatalCoordinate` and its child classes """
 
     # Base Fields
     x = FloatField()
@@ -154,10 +154,10 @@ class HorizonatalCoordinateSerializer(serializers.Serializer):
     def __init__(self, *args, **kwargs):
         """
         Override ``BaseSerializer.__init__`` to modify the fields outputted. This depends on the
-        type of coordinate classes in :class:`basin3d.synthesis.field`
+        type of coordinate classes in :class:`django_basin3d.synthesis.field`
 
         See the synthesis classes for a list of attributes:
-            * :class:`basin3d.synthesis.models.field.GeographicCoordate`
+            * :class:`django_basin3d.synthesis.models.field.GeographicCoordate`
 
 
         :param args:
@@ -179,7 +179,7 @@ class HorizonatalCoordinateSerializer(serializers.Serializer):
 
         if instance:
 
-            from basin3d.synthesis.models.field import GeographicCoordinate
+            from basin3d.core.models import GeographicCoordinate
             if isinstance(instance, GeographicCoordinate):
                 field_to_remove -= self.FIELDS_GEOGRAPHIC
 
@@ -191,7 +191,7 @@ class HorizonatalCoordinateSerializer(serializers.Serializer):
 
 class AbsoluteCoordinateSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
     """
-    Serializes a :class:`basin3d.synthesis.models.field.AbsoluteCoordinate`
+    Serializes a :class:`django_basin3d.synthesis.models.field.AbsoluteCoordinate`
     """
 
     horizontal_position = serializers.ListSerializer(child=ReadOnlySynthesisModelField(serializer_class=HorizonatalCoordinateSerializer))
@@ -203,7 +203,7 @@ class AbsoluteCoordinateSerializer(ChooseFieldsSerializerMixin, serializers.Seri
 
 class RepresentativeCoordinateSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
     """
-    Serializes a :class:`basin3d.synthesis.models.field.RepresentativeCoordinate`
+    Serializes a :class:`django_basin3d.synthesis.models.field.RepresentativeCoordinate`
     """
 
     representative_point = ReadOnlySynthesisModelField(serializer_class=AbsoluteCoordinateSerializer)
@@ -216,7 +216,7 @@ class RepresentativeCoordinateSerializer(ChooseFieldsSerializerMixin, serializer
 
 class CoordinateSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
     """
-    Serializes a :class:`basin3d.synthesis.models.field.Coordinate`
+    Serializes a :class:`django_basin3d.synthesis.models.field.Coordinate`
     """
 
     absolute = ReadOnlySynthesisModelField(serializer_class=AbsoluteCoordinateSerializer)
@@ -228,7 +228,7 @@ class CoordinateSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
 
 class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSerializerMixin, serializers.Serializer):
     """
-    Serializes a :class:`basin3d.synthesis.models.field.RelatedSamplingFeature`
+    Serializes a :class:`django_basin3d.synthesis.models.field.RelatedSamplingFeature`
     """
     related_sampling_feature = serializers.CharField()
     related_sampling_feature_type = serializers.SerializerMethodField()
@@ -260,9 +260,9 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
 
     def get_related_sampling_feature_type(self, obj):
         """
-        Convert the :class:`basin3d.models.FeatureTypes` type to the display value
+        Convert the :class:`django_basin3d.models.FeatureTypes` type to the display value
         :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
-        :return: Display value for the :class:`basin3d.models.FeatureTypes` type
+        :return: Display value for the :class:`django_basin3d.models.FeatureTypes` type
         """
         return FeatureTypes.TYPES[obj.related_sampling_feature_type]
 
@@ -292,7 +292,7 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
 
 class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
     """
-    Serializes a :class:`basin3d.synthesis.models.field.Feature`
+    Serializes a :class:`django_basin3d.synthesis.models.field.Feature`
     """
 
     id = serializers.CharField()
@@ -311,9 +311,9 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
 
     def get_feature_type(self, obj):
         """
-        Convert the :class:`basin3d.models.FeatureTypes` type to the display value
+        Convert the :class:`django_basin3d.models.FeatureTypes` type to the display value
         :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
-        :return: Display value for the :class:`basin3d.models.FeatureTypes` type
+        :return: Display value for the :class:`django_basin3d.models.FeatureTypes` type
         """
         return FeatureTypes.TYPES[obj.feature_type]
 
@@ -353,7 +353,7 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
 
 class SamplingFeatureSerializer(FeatureSerializer):
     """
-    Serializes a :class:`basin3d.synthesis.models.field.SamplingFeature`
+    Serializes a :class:`django_basin3d.synthesis.models.field.SamplingFeature`
     """
 
     related_sampling_feature_complex = serializers.ListSerializer(
@@ -374,7 +374,7 @@ class SamplingFeatureSerializer(FeatureSerializer):
 
 class SpatialSamplingFeatureSerializer(SamplingFeatureSerializer):
     """
-    Serializes a :class:`basin3d.synthesis.models.field.SpatialSamplingFeature`
+    Serializes a :class:`django_basin3d.synthesis.models.field.SpatialSamplingFeature`
     """
 
     shape = serializers.CharField()
@@ -395,7 +395,7 @@ class SpatialSamplingFeatureSerializer(SamplingFeatureSerializer):
 
 class MonitoringFeatureSerializer(SpatialSamplingFeatureSerializer):
     """
-    Serializes a :class:`basin3d.synthesis.models.field.MonitoringFeature`
+    Serializes a :class:`django_basin3d.synthesis.models.field.MonitoringFeature`
     """
     description_reference = serializers.CharField()
     related_party = serializers.ListSerializer(child=ReadOnlySynthesisModelField(serializer_class=PersonSerializer))
@@ -417,7 +417,7 @@ class MonitoringFeatureSerializer(SpatialSamplingFeatureSerializer):
 
 class ObservationSerializerMixin(object):
     """
-    Serializes a :class:`basin3d.synthesis.models.measurement.Observation`
+    Serializes a :class:`django_basin3d.synthesis.models.measurement.Observation`
     """
     def __init__(self, *args, **kwargs):
         super(ObservationSerializerMixin, self).__init__(*args, **kwargs)
@@ -426,31 +426,23 @@ class ObservationSerializerMixin(object):
         self.fields["type"] = serializers.CharField()
         self.fields["utc_offset"] = serializers.IntegerField()
         self.fields["phenomenon_time"] = TimestampField()
-        self.fields["observed_property"] = serializers.SerializerMethodField()
+        self.fields["observed_property_variable"] = serializers.CharField()
         self.fields["result_quality"] = serializers.CharField()
         self.fields["feature_of_interest"] = ReadOnlySynthesisModelField(serializer_class=MonitoringFeatureSerializer)
         self.fields["feature_of_interest_type"] = serializers.SerializerMethodField()
 
-    def get_observed_property(self, obj):
-        if "request" in self.context and self.context["request"]:
-            return reverse(viewname='observedproperty-detail',
-                           kwargs={'pk': obj.observed_property},
-                           request=self.context["request"], )
-        else:
-            return obj.observed_property
-
     def get_feature_of_interest_type(self, obj):
         """
-        Convert the :class:`basin3d.models.FeatureTypes` type to the display value
+        Convert the :class:`django_basin3d.models.FeatureTypes` type to the display value
         :param obj: ``MeasurementTimeseriesTVPObservation`` object instance
-        :return: Display value for the :class:`basin3d.models.FeatureTypes` type
+        :return: Display value for the :class:`django_basin3d.models.FeatureTypes` type
         """
         return FeatureTypes.TYPES[obj.feature_of_interest_type]
 
 
 class MeasurementTimeseriesTVPObservationSerializer(ObservationSerializerMixin, serializers.Serializer):
     """
-    Serializes a :class:`basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPObservation`
+    Serializes a :class:`django_basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPObservation`
 
     """
     aggregation_duration = serializers.CharField()

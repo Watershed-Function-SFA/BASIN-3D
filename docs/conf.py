@@ -33,7 +33,7 @@
 #
 # The short X.Y version.
 # part of setuptools
-from basin3d.version import __release__, __version__
+from django_basin3d.version import __release__, __version__
 
 import os
 import sys

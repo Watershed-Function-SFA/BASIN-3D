@@ -2,7 +2,7 @@
 ==============================
 BASIN-3D REST APIs
 ==============================
-.. currentmodule:: basin3d
+.. currentmodule:: django_basin3d
 
 :platform: Unix, Mac
 :synopsis: All BASIN-3D REST API calls are read-only (GET). The browsable API may be accessed at the root URL of the application.
@@ -136,13 +136,6 @@ Attributes specified at the group level apply to all observations.
     - *datasource (optional):* a single data source id prefix (e.g ?datasource=`datasource.id_prefix`)
 
 
-Direct API
-**********
-Bypass synthesis by accessing the data source APIs directly
-
-| `/direct/ --` Returns a list of direct APIs
-| `/direct/:id_prefix --` Access a direct API for a datasource with the `:id_prefix`
-
 """
 import logging
 
@@ -151,17 +144,17 @@ logger = logging.getLogger(__name__)
 __all__ = ['get_url']
 
 # application loads this AppConfig subclass by default
-# when basin3d is added to INSTALLED_APPS
-default_app_config = 'basin3d.apps.Basin3DConfig'
+# when django_basin3d is added to INSTALLED_APPS
+default_app_config = 'django_basin3d.apps.Basin3DConfig'
 
 
 def __insert_basin3d_defaults():
     """
-    Insert BASIN-3D default settings :class:`basin3d.settings`
+    Insert BASIN-3D default settings :class:`django_basin3d.settings`
     """
 
     from django.conf import global_settings, settings
-    from basin3d import settings as basin3d_settings
+    from django_basin3d import settings as basin3d_settings
 
     # Add the values from the application.settings module
     for key in dir(basin3d_settings):

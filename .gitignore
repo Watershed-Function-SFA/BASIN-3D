@@ -6,10 +6,12 @@
 .venv
 BASIN_3D.egg-info/
 _build
-basin3d/local.py
-basin3d/version.py
 bin
 dist/
+django_basin3d/local.py
+django_basin3d/version.py
+htmlcov/
 include
 lib
 pip-selfcheck.json
+src/

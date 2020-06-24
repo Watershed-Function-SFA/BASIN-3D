@@ -15,6 +15,5 @@ REST_FRAMEWORK = {
 }
 
 BASIN3D = {
-    'SYNTHESIS': True,
-    'DIRECT_API': True,
+
 }

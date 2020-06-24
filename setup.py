@@ -11,7 +11,7 @@ with open('docs/setup.rst') as readme:
 
 # Update version from latest git tags.
 # Create a version file in the root directory
-version_py = os.path.join(os.path.dirname(__file__), 'basin3d/version.py')
+version_py = os.path.join(os.path.dirname(__file__), 'django_basin3d/version.py')
 version_msg = "# Managed by setup.py via git tags.  **** DO NOT EDIT ****"
 try:
     git_describe = subprocess.check_output(["git", "describe", "--tags"]).rstrip().decode('utf-8')
@@ -50,11 +50,10 @@ setup(name='BASIN-3D',
       py_modules=['manage'],
       include_package_data=True,
       install_requires=[
-          "django>=2.0,<2.1",
-          "djangorestframework>=3.9.2,<3.9.4",
+          "basin3d-core",
+          "django",
+          "djangorestframework",
           "django-filter",
-          "django-extensions",
-          "python3-keyczar",
           "pyyaml",
           "requests",
           "markdown",

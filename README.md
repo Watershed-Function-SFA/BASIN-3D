@@ -40,7 +40,7 @@ There is an example project for testing in directory `example-django`.
    
 Create an Anaconda environment
 
-    conda create -y -n basin3d python=3.6.5
+    conda create -y -n basin3d python=3.7
 	
 Activate the new environment and prepare it for development
 
@@ -49,15 +49,9 @@ Activate the new environment and prepare it for development
 
 Install  BASIN-3D and its dependencies
 
-	python setup.py develop 
 	pip install $(cat requirements.txt ) pytest-django pytest-cov
-
-BASIN-3D stores datasource credentials.  This requires an encryption secrect key.
-
-    cd example-django
-	mkdir -p .keyset
-	keyczart create --location=.keyset --purpose=crypt --name=basin3d
-	keyczart addkey --location=.keyset --status=primary
+	python setup.py develop 
+	
 	
 Migrate the database
 

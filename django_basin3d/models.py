@@ -1,8 +1,8 @@
 """
-`basin3d.models`
+`django_basin3d.models`
 ****************
 
-.. currentmodule:: basin3d.models
+.. currentmodule:: django_basin3d.models
 
 :synopsis: The BASIN-3D  Models
 :module author: Val Hendrix <vhendrix@lbl.gov>
@@ -12,7 +12,7 @@ Below is the inheritance diagram for BASIN-3D generic models and supporting clas
 :class:`django.db.models.Model` which provide the object relational mapping technology for building and managing
 relational database tables.
 
-.. inheritance-diagram:: basin3d.models
+.. inheritance-diagram:: django_basin3d.models
     :top-classes: django.db.models.Model, django.db.models.fields.TextField
 
 .. contents:: Contents
@@ -28,7 +28,6 @@ from importlib import import_module
 from typing import List
 
 from django.db import models
-from django_extensions.db.fields.encrypted import EncryptedTextField
 
 
 class SpatialSamplingShapes(object):
@@ -160,8 +159,6 @@ class DataSource(models.Model):
     location = models.TextField(blank=True)
     plugin_module = models.TextField(blank=True)
     plugin_class = models.TextField(blank=True)
-    credentials = EncryptedTextField(blank=True)
-    enabled = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['id_prefix']
@@ -182,7 +179,8 @@ class DataSource(models.Model):
 
         module = import_module(self.plugin_module)
         plugin_class = getattr(module, self.plugin_class)
-        return plugin_class()
+        from django_basin3d.catalog import CatalogDjango
+        return plugin_class(CatalogDjango())
 
 
 class ObservedProperty(models.Model):
@@ -230,7 +228,7 @@ class ObservedPropertyVariable(models.Model):
     """
 
     # Unique string Identifier for the Observed Property Variable
-    id = models.CharField(max_length=50, unique=True, blank=False, primary_key=True)
+    basin3d_id = models.CharField(max_length=50, unique=True, blank=False, primary_key=True)
 
     # Long name of the Observed Property Variable
     full_name = models.CharField(max_length=255)
@@ -239,7 +237,7 @@ class ObservedPropertyVariable(models.Model):
     categories = StringListField(blank=True, null=True)
 
     class Meta:
-        ordering = ('id',)
+        ordering = ('basin3d_id',)
 
     def __str__(self):
         return self.__unicode__()
@@ -255,9 +253,9 @@ class DataSourceObservedPropertyVariable(models.Model):
     """
     Synthesis of Data Source Observed Property Variables with BASIN-3D Observed Property Variables
     """
-    datasource = models.ForeignKey(DataSource, related_name='basin3d_datasource', on_delete=models.CASCADE)
+    datasource = models.ForeignKey(DataSource, related_name='django_basin3d_datasource', on_delete=models.CASCADE)
     observed_property_variable = models.ForeignKey(ObservedPropertyVariable,
-                                                   related_name='basin3d_observedpropertyvariable',
+                                                   related_name='django_basin3d_observedpropertyvariable',
                                                    on_delete=models.CASCADE)
     name = models.CharField(max_length=255, blank=False)
 

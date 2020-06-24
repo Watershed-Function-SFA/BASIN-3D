@@ -1,20 +1,23 @@
 import json
 
-from basin3d.models import DataSource, ObservedProperty, \
-    ObservedPropertyVariable, SamplingMedium, FeatureTypes, SpatialSamplingShapes
-from basin3d.serializers import ObservedPropertySerializer
-from basin3d.synthesis import models
-from basin3d.synthesis.serializers import MonitoringFeatureSerializer, \
-    MeasurementTimeseriesTVPObservationSerializer
 from django.test import TestCase
 from rest_framework.renderers import JSONRenderer
+
+from basin3d.core import models
+from basin3d.core.models import MeasurementTimeseriesTVPObservation
+from django_basin3d.models import DataSource, FeatureTypes, ObservedProperty, ObservedPropertyVariable, SamplingMedium, \
+    SpatialSamplingShapes
+from django_basin3d.serializers import ObservedPropertySerializer
+from django_basin3d.synthesis.serializers import MeasurementTimeseriesTVPObservationSerializer, \
+    MonitoringFeatureSerializer
 
 
 class Basin3DSerializerTests(TestCase):
     def setUp(self):
-        self.datasource = DataSource.objects.get(name='Alpha')
+        self.datasource = DataSource.objects.get(name="Alpha")
+        self.plugin_access = self.datasource.get_plugin().get_plugin_access()[MeasurementTimeseriesTVPObservation]
         self.observed_property_var = ObservedPropertyVariable(
-            id="ACT", full_name="Acetate (CH3COO)",
+            basin3d_id="ACT", full_name="Acetate (CH3COO)",
             categories="Hydrology,Subsurface")
         self.sampling_medium = SamplingMedium(name="WATER")
         self.maxDiff = None
@@ -42,29 +45,30 @@ class Basin3DSerializerTests(TestCase):
 
 class SynthesisSerializerTests(TestCase):
     def setUp(self):
-        self.datasource = DataSource.objects.get(name='Alpha')
+        self.datasource = DataSource.objects.get(name="Alpha")
+        self.plugin_access = self.datasource.get_plugin().get_plugin_access()[MeasurementTimeseriesTVPObservation]
 
     def test_monitoring_feature_serializer(self):
         """ Test Monitoring Serializer """
 
-        obj = models.field.MonitoringFeature(
-            datasource=self.datasource,
+        obj = models.MonitoringFeature(
+            plugin_access=self.plugin_access,
             id="Region1",
             name="AwesomeRegion",
             description="This region is really awesome.",
             feature_type=FeatureTypes.REGION,
             shape=SpatialSamplingShapes.SHAPE_SURFACE,
-            coordinates=models.field.Coordinate(representative=models.field.RepresentativeCoordinate(
-                representative_point=models.field.AbsoluteCoordinate(
-                    horizontal_position=models.field.GeographicCoordinate(
-                        units=models.field.GeographicCoordinate.UNITS_DEC_DEGREES,
+            coordinates=models.Coordinate(representative=models.RepresentativeCoordinate(
+                representative_point=models.AbsoluteCoordinate(
+                    horizontal_position=models.GeographicCoordinate(
+                        units=models.GeographicCoordinate.UNITS_DEC_DEGREES,
                         latitude=70.4657, longitude=-20.4567,
-                        datum=models.field.GeographicCoordinate.DATUM_NAD83),
-                    vertical_extent=models.field.AltitudeCoordinate(
-                        datum=models.field.AltitudeCoordinate.DATUM_NAVD88,
+                        datum=models.GeographicCoordinate.DATUM_NAD83),
+                    vertical_extent=models.AltitudeCoordinate(
+                        datum=models.AltitudeCoordinate.DATUM_NAVD88,
                         value=1500,
-                        distance_units=models.field.VerticalCoordinate.DISTANCE_UNITS_FEET)),
-                representative_point_type=models.field.RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE)
+                        distance_units=models.VerticalCoordinate.DISTANCE_UNITS_FEET)),
+                representative_point_type=models.RepresentativeCoordinate.REPRESENTATIVE_POINT_TYPE_CENTER_LOCAL_SURFACE)
             )
         )
 
@@ -102,36 +106,36 @@ class SynthesisSerializerTests(TestCase):
              }
         )
 
-        obj = models.field.MonitoringFeature(
-            datasource=self.datasource,
+        obj = models.MonitoringFeature(
+            plugin_access=self.plugin_access,
             id="1",
             name="Point Location 1",
             description="The first point.",
             feature_type=FeatureTypes.POINT,
             shape=SpatialSamplingShapes.SHAPE_POINT,
-            coordinates=models.field.Coordinate(
-                absolute=models.field.AbsoluteCoordinate(
-                    horizontal_position=models.field.GeographicCoordinate(
-                        units=models.field.GeographicCoordinate.UNITS_DEC_DEGREES,
+            coordinates=models.Coordinate(
+                absolute=models.AbsoluteCoordinate(
+                    horizontal_position=models.GeographicCoordinate(
+                        units=models.GeographicCoordinate.UNITS_DEC_DEGREES,
                         latitude=70.4657, longitude=-20.4567,
-                        datum=models.field.GeographicCoordinate.DATUM_NAD83),
-                    vertical_extent=models.field.AltitudeCoordinate(
-                        datum=models.field.AltitudeCoordinate.DATUM_NAVD88,
+                        datum=models.GeographicCoordinate.DATUM_NAD83),
+                    vertical_extent=models.AltitudeCoordinate(
+                        datum=models.AltitudeCoordinate.DATUM_NAVD88,
                         value=1500,
-                        distance_units=models.field.VerticalCoordinate.DISTANCE_UNITS_FEET)),
-                representative=models.field.RepresentativeCoordinate(
-                    vertical_position=models.field.DepthCoordinate(
-                        datum=models.field.DepthCoordinate.DATUM_LOCAL_SURFACE,
+                        distance_units=models.VerticalCoordinate.DISTANCE_UNITS_FEET)),
+                representative=models.RepresentativeCoordinate(
+                    vertical_position=models.DepthCoordinate(
+                        datum=models.DepthCoordinate.DATUM_LOCAL_SURFACE,
                         value=-0.5,
-                        distance_units=models.field.VerticalCoordinate.DISTANCE_UNITS_METERS)
+                        distance_units=models.VerticalCoordinate.DISTANCE_UNITS_METERS)
                 )
             ),
             observed_property_variables=["Ag", "Acetate"],
             related_sampling_feature_complex=[
-                models.field.RelatedSamplingFeature(datasource=self.datasource,
-                                                    related_sampling_feature="Region1",
-                                                    related_sampling_feature_type=FeatureTypes.REGION,
-                                                    role=models.field.RelatedSamplingFeature.ROLE_PARENT)]
+                models.RelatedSamplingFeature(plugin_access=self.plugin_access,
+                                              related_sampling_feature="Region1",
+                                              related_sampling_feature_type=FeatureTypes.REGION,
+                                              role=models.RelatedSamplingFeature.ROLE_PARENT)]
         )
 
         s = MonitoringFeatureSerializer(obj)
@@ -173,60 +177,60 @@ class SynthesisSerializerTests(TestCase):
              }
         )
 
+    # @pytest.mark.xfail(reason="Serialization problem for ObservedProperty object")
     def test_measurement_timeseries_tvp_observation_serializer(self):
         """ Test MeasurementTimeseriesTVPObservation Serializer """
 
-        obj = models.measurement.MeasurementTimeseriesTVPObservation(
-            self.datasource,
+        obj = models.MeasurementTimeseriesTVPObservation(
+            plugin_access=self.plugin_access,
             id="timeseries01",
             utc_offset="9",
             phenomenon_time="2018-11-07T15:28:20",
-            result_quality=models.measurement.ResultQuality.RESULT_QUALITY_CHECKED,
-            feature_of_interest=models.field.MonitoringFeature(
-                datasource=self.datasource,
+            result_quality=models.ResultQuality.RESULT_QUALITY_CHECKED,
+            feature_of_interest=models.MonitoringFeature(
+                plugin_access=self.plugin_access,
                 id="1",
                 name="Point Location 1",
                 description="The first point.",
                 feature_type=FeatureTypes.POINT,
                 shape=SpatialSamplingShapes.SHAPE_POINT,
-                coordinates=models.field.Coordinate(
-                    absolute=models.field.AbsoluteCoordinate(
-                        horizontal_position=models.field.GeographicCoordinate(
-                            units=models.field.GeographicCoordinate.UNITS_DEC_DEGREES,
+                coordinates=models.Coordinate(
+                    absolute=models.AbsoluteCoordinate(
+                        horizontal_position=models.GeographicCoordinate(
+                            units=models.GeographicCoordinate.UNITS_DEC_DEGREES,
                             latitude=70.4657, longitude=-20.4567,
-                            datum=models.field.GeographicCoordinate.DATUM_NAD83),
-                        vertical_extent=models.field.AltitudeCoordinate(
-                            datum=models.field.AltitudeCoordinate.DATUM_NAVD88,
+                            datum=models.GeographicCoordinate.DATUM_NAD83),
+                        vertical_extent=models.AltitudeCoordinate(
+                            datum=models.AltitudeCoordinate.DATUM_NAVD88,
                             value=1500,
-                            distance_units=models.field.VerticalCoordinate.DISTANCE_UNITS_FEET)),
-                    representative=models.field.RepresentativeCoordinate(
-                        vertical_position=models.field.DepthCoordinate(
-                            datum=models.field.DepthCoordinate.DATUM_LOCAL_SURFACE,
+                            distance_units=models.VerticalCoordinate.DISTANCE_UNITS_FEET)),
+                    representative=models.RepresentativeCoordinate(
+                        vertical_position=models.DepthCoordinate(
+                            datum=models.DepthCoordinate.DATUM_LOCAL_SURFACE,
                             value=-0.5,
-                            distance_units=models.field.VerticalCoordinate.DISTANCE_UNITS_METERS)
+                            distance_units=models.VerticalCoordinate.DISTANCE_UNITS_METERS)
                     )
                 ),
                 observed_property_variables=["Ag", "Acetate"],
                 related_sampling_feature_complex=[
-                    models.field.RelatedSamplingFeature(datasource=self.datasource,
-                                                        related_sampling_feature="Region1",
-                                                        related_sampling_feature_type=FeatureTypes.REGION,
-                                                        role=models.field.RelatedSamplingFeature.ROLE_PARENT)]
+                    models.RelatedSamplingFeature(plugin_access=self.plugin_access,
+                                                  related_sampling_feature="Region1",
+                                                  related_sampling_feature_type=FeatureTypes.REGION,
+                                                  role=models.RelatedSamplingFeature.ROLE_PARENT)]
             ),
             feature_of_interest_type=FeatureTypes.POINT,
             aggregation_duration="DAILY",
             time_reference_position="START",
             observed_property_variable="Acetate",
             statistic="MEAN",
-            result_points=[models.measurement.TimeValuePair("2018-11-07T15:28:20", "5.32")],
+            result_points=[models.TimeValuePair("2018-11-07T15:28:20", "5.32")],
             unit_of_measurement="m"
         )
 
         s = MeasurementTimeseriesTVPObservationSerializer(obj)
 
         json_obj = JSONRenderer().render(s.data)
-        self.assertEqual(json.loads(json_obj.decode('utf-8')),
-                         {
+        self.assertEqual({
                              "id": "A-timeseries01",
                              "type": "MEASUREMENT_TVP_TIMESERIES",
                              "utc_offset": 9,
@@ -267,8 +271,8 @@ class SynthesisSerializerTests(TestCase):
                              "feature_of_interest_type": "POINT",
                              "aggregation_duration": "DAILY",
                              "time_reference_position": "START",
-                             "observed_property": 1,
+                             "observed_property_variable": 'ACT',
                              "statistic": "MEAN",
                              "result_points": [["2018-11-07T15:28:20", "5.32"]],
                              "unit_of_measurement": "m"
-                         })
+                         }, json.loads(json_obj.decode('utf-8')))

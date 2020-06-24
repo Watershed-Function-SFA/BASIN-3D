@@ -12,7 +12,7 @@ def remove_plugin_models(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('basin3d', '0003_remove_measurement_approach'),
+        ('django_basin3d', '0003_remove_measurement_approach'),
     ]
 
     operations = [

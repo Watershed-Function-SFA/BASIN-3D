@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('basin3d', '0002_change_datasource_sort'),
+        ('django_basin3d', '0002_change_datasource_sort'),
     ]
 
     operations = [

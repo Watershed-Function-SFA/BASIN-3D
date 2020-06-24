@@ -28,9 +28,8 @@ In the Django settings, add "basin3d" and its dependencies to your INSTALLED_APP
     INSTALLED_APPS = [
         ...
         <yourapp>,
-        'basin3d',
-        'django_extensions',
-        'rest_framework',
+        'django_basin3d',
+        ]'rest_framework',
     ]
 
 

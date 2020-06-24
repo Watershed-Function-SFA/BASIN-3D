@@ -1,7 +1,7 @@
 
 from django.test import TestCase
 
-from basin3d.models import DataSource, SamplingMedium, \
+from django_basin3d.models import DataSource, SamplingMedium, \
     ObservedPropertyVariable, ObservedProperty, DataSourceObservedPropertyVariable
 
 
@@ -28,7 +28,7 @@ class ObservedPropertyTestCase(TestCase):
         """
         self.datasource = DataSource.objects.get(name="Alpha")
         self.observed_property_var = ObservedPropertyVariable(
-            id="FOO", full_name="Groundwater Flux",
+            basin3d_id="FOO", full_name="Groundwater Flux",
             categories="Hydrology,Subsurface")
         self.sampling_medium = SamplingMedium()
 
@@ -48,7 +48,7 @@ class ObservedPropertyTestCase(TestCase):
     def test_observed_property_variable_create(self):
         """ create the object and test attributes """
 
-        assert self.observed_property_var.id == "FOO"
+        assert self.observed_property_var.basin3d_id == "FOO"
         assert self.observed_property_var.full_name == "Groundwater Flux"
         assert self.observed_property_var.categories == "Hydrology,Subsurface"
 
