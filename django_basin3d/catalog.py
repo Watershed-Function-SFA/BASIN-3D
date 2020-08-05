@@ -160,11 +160,11 @@ class CatalogDjango(CatalogBase):
             for op in django_models.DataSourceObservedPropertyVariable.objects.filter(**query_params):
                 yield self._convert_django_observed_property(op)
         except django_models.DataSourceObservedPropertyVariable.DoesNotExist:
-            yield None
+            return None
         except Exception as e:
             if not e.__class__.__name__ == 'DoesNotExist':
                 raise e
-            yield None
+            return None
 
     def find_observed_property_variable(self, datasource_id, variable_name, from_basin3d=False) -> Optional[ObservedPropertyVariable]:
         """
@@ -201,7 +201,7 @@ class CatalogDjango(CatalogBase):
         except Exception as e:
             if not e.__class__.__name__ == 'DoesNotExist':
                 raise e
-            yield None
+            return None
 
     def find_observed_property_variables(self, datasource_id=None, variable_names=None, from_basin3d=False) -> Iterator[ObservedPropertyVariable]:
         """
