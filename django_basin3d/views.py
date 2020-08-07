@@ -75,10 +75,10 @@ def monitoring_features_lists(request, format=format):
         for feature_type in datasource_feature_types:
             if feature_type in supported_feature_types:
                 ft = ''.join(feature_type.lower().split())
-                monitoring_features_list['{}s'.format(ft)] = \
-                    '{}://{}/monitoringfeatures/{}s/'.format(
+                if ft not in monitoring_features_list.keys():
+                    monitoring_features_list['{}s'.format(ft)] = \
+                        '{}://{}/monitoringfeatures/{}s/'.format(
                         request.scheme, request.get_host(), ft)
-                supported_feature_types.remove(feature_type)
             elif feature_type not in unsupported_feature_types:
                 unsupported_feature_types.append(feature_type)
 
