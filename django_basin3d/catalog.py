@@ -2,8 +2,9 @@ import importlib
 import sys
 from typing import Iterator, List, Optional
 
+import django
 from django.conf import settings
-from django.db import IntegrityError
+from django.db import IntegrityError, OperationalError
 
 from basin3d.core.catalog import CatalogBase, CatalogException
 from basin3d.core.models import DataSource, ObservedProperty, ObservedPropertyVariable
@@ -386,8 +387,12 @@ def load_data_sources(sender, **kwargs):
         try:
             importlib.import_module("{}.plugins".format(django_app))
             print(f"Loaded {django_app} plugins")
+
+            catalog = CatalogDjango()
+            catalog.initialize([v(catalog) for v in PluginMount.plugins.values()])
         except ImportError:
             pass
+        except OperationalError as oe:
+            print(f"Operational Error '{oe}'' - Most likely happens on a reverse migration.")
 
-    catalog = CatalogDjango()
-    catalog.initialize([v(catalog) for v in PluginMount.plugins.values()])
+

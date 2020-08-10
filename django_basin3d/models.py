@@ -196,8 +196,8 @@ class ObservedProperty(models.Model):
 
     description = models.TextField(null=True, blank=True)
     observed_property_variable = models.ForeignKey('ObservedPropertyVariable', null=False, on_delete=models.CASCADE)
-    sampling_medium = models.ForeignKey('SamplingMedium', null=False, on_delete=models.CASCADE)
-    datasource = models.ForeignKey('DataSource', null=False, on_delete=models.CASCADE)
+    sampling_medium = models.ForeignKey('SamplingMedium', null=False, on_delete=models.DO_NOTHING)
+    datasource = models.ForeignKey('DataSource', null=False, on_delete=models.DO_NOTHING)
 
     class Meta:
         unique_together = ('observed_property_variable', 'datasource')
@@ -253,10 +253,9 @@ class DataSourceObservedPropertyVariable(models.Model):
     """
     Synthesis of Data Source Observed Property Variables with BASIN-3D Observed Property Variables
     """
-    datasource = models.ForeignKey(DataSource, related_name='django_basin3d_datasource', on_delete=models.CASCADE)
+    datasource = models.ForeignKey(DataSource, on_delete=models.DO_NOTHING)
     observed_property_variable = models.ForeignKey(ObservedPropertyVariable,
-                                                   related_name='django_basin3d_observedpropertyvariable',
-                                                   on_delete=models.CASCADE)
+                                                   on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=255, blank=False)
 
     class Meta:
