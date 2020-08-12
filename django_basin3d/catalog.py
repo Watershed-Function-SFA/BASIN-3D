@@ -2,7 +2,6 @@ import importlib
 import sys
 from typing import Iterator, List, Optional
 
-import django
 from django.conf import settings
 from django.db import IntegrityError, OperationalError
 
@@ -394,5 +393,3 @@ def load_data_sources(sender, **kwargs):
             pass
         except OperationalError as oe:
             print(f"Operational Error '{oe}'' - Most likely happens on a reverse migration.")
-
-
