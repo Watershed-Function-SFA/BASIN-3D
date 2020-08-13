@@ -13,11 +13,12 @@ Serializers that render :mod:`basin.synthesis.models` from Python objects to `JS
 """
 from numbers import Number
 
-from django_basin3d.models import FeatureTypes
-from django_basin3d.serializers import ChooseFieldsSerializerMixin
 from django.utils.datetime_safe import datetime
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+
+from django_basin3d.models import FeatureTypes
+from django_basin3d.serializers import ChooseFieldsSerializerMixin
 
 
 class TimestampField(serializers.DateTimeField):
@@ -56,7 +57,7 @@ class ReadOnlySynthesisModelField(serializers.Field):
 
     def __init__(self, serializer_class, **kwargs):
         self.serializer_class = serializer_class
-        super(ReadOnlySynthesisModelField, self).__init__(**kwargs)
+        super(ReadOnlySynthesisModelField, self).__init__(read_only=True, **kwargs)
 
     def to_internal_value(self, data):
         raise NotImplementedError
@@ -104,47 +105,36 @@ class IdUrlSerializerMixin(object):
 class PersonSerializer(serializers.Serializer):
     """ Serializes a :class:`django_basin3d.synthesis.models.Person`"""
 
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    email = serializers.EmailField()
-    institution = serializers.CharField()
-    role = serializers.CharField()
-
-    def create(self, validated_data):
-        return PersonSerializer(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.email = validated_data.get('email', instance.email)
-        instance.institution = validated_data.get('institution', instance.institution)
-        instance.role = validated_data.get('role', instance.role)
+    first_name = serializers.CharField(read_only=True)
+    last_name = serializers.CharField(read_only=True)
+    email = serializers.EmailField(read_only=True)
+    institution = serializers.CharField(read_only=True)
+    role = serializers.CharField(read_only=True)
 
 
 class VerticalCoordinateSerializer(serializers.Serializer):
     """ Serializes a :class:`django_basin3d.synthesis.models.field.VerticalCoordinate` and its child classes """
 
-    value = serializers.FloatField()
-    resolution = serializers.FloatField()
-    distance_units = serializers.CharField()
-    encoding_method = serializers.CharField
-    datum = serializers.CharField()
-    type = serializers.CharField()
+    value = serializers.FloatField(read_only=True)
+    resolution = serializers.FloatField(read_only=True)
+    distance_units = serializers.CharField(read_only=True)
+    datum = serializers.CharField(read_only=True)
+    type = serializers.CharField(read_only=True)
 
 
 class HorizonatalCoordinateSerializer(serializers.Serializer):
     """ Serializes a :class:`django_basin3d.synthesis.models.field.HorizonatalCoordinate` and its child classes """
 
     # Base Fields
-    x = FloatField()
-    y = FloatField()
-    datum = serializers.CharField()
-    type = serializers.CharField()
+    x = FloatField(read_only=True)
+    y = FloatField(read_only=True)
+    datum = serializers.CharField(read_only=True)
+    type = serializers.CharField(read_only=True)
 
     # Geographic Fields
-    latitude = FloatField()
-    longitude = FloatField()
-    units = serializers.CharField()
+    latitude = FloatField(read_only=True)
+    longitude = FloatField(read_only=True)
+    units = serializers.CharField(read_only=True)
 
     # Geographic Fields
 
@@ -194,8 +184,10 @@ class AbsoluteCoordinateSerializer(ChooseFieldsSerializerMixin, serializers.Seri
     Serializes a :class:`django_basin3d.synthesis.models.field.AbsoluteCoordinate`
     """
 
-    horizontal_position = serializers.ListSerializer(child=ReadOnlySynthesisModelField(serializer_class=HorizonatalCoordinateSerializer))
-    vertical_extent = serializers.ListSerializer(child=ReadOnlySynthesisModelField(serializer_class=VerticalCoordinateSerializer))
+    horizontal_position = serializers.ListSerializer(
+        child=ReadOnlySynthesisModelField(serializer_class=HorizonatalCoordinateSerializer))
+    vertical_extent = serializers.ListSerializer(
+        child=ReadOnlySynthesisModelField(serializer_class=VerticalCoordinateSerializer))
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -207,7 +199,7 @@ class RepresentativeCoordinateSerializer(ChooseFieldsSerializerMixin, serializer
     """
 
     representative_point = ReadOnlySynthesisModelField(serializer_class=AbsoluteCoordinateSerializer)
-    representative_point_type = serializers.CharField()
+    representative_point_type = serializers.CharField(read_only=True)
     vertical_position = ReadOnlySynthesisModelField(serializer_class=VerticalCoordinateSerializer)
 
     def __init__(self, *args, **kwargs):
@@ -230,9 +222,9 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
     """
     Serializes a :class:`django_basin3d.synthesis.models.field.RelatedSamplingFeature`
     """
-    related_sampling_feature = serializers.CharField()
-    related_sampling_feature_type = serializers.SerializerMethodField()
-    role = serializers.CharField()
+    related_sampling_feature = serializers.CharField(read_only=True)
+    related_sampling_feature_type = serializers.SerializerMethodField(read_only=True)
+    role = serializers.CharField(read_only=True)
 
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
@@ -277,8 +269,8 @@ class RelatedSamplingFeatureSerializer(ChooseFieldsSerializerMixin, IdUrlSeriali
             if obj.related_sampling_feature_type in FeatureTypes.TYPES.keys():
                 feature_type = FeatureTypes.TYPES[obj.related_sampling_feature_type]
                 path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
-            # else:
-            #     path_route = r'monitoringfeature-detail'
+                # else:
+                #     path_route = r'monitoringfeature-detail'
                 try:
                     url = reverse(viewname=path_route,
                                   # ToDo: take off the database prefix?
@@ -295,11 +287,11 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
     Serializes a :class:`django_basin3d.synthesis.models.field.Feature`
     """
 
-    id = serializers.CharField()
-    name = serializers.CharField()
-    description = serializers.CharField()
-    feature_type = serializers.SerializerMethodField()
-    observed_property_variables = serializers.ListField()
+    id = serializers.CharField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
+    feature_type = serializers.SerializerMethodField(read_only=True)
+    observed_property_variables = serializers.ListField(read_only=True)
 
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
@@ -317,16 +309,6 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
         """
         return FeatureTypes.TYPES[obj.feature_type]
 
-    def create(self, validated_data):
-        return FeatureSerializer(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.id = validated_data.get('id', instance.id)
-        instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get('description', instance.description)
-        instance.feature_type = validated_data.get('feature_type', instance.feature_type)
-        return instance
-
     def get_url(self, obj):
         """
         Get the Site url based on the current context
@@ -338,7 +320,7 @@ class FeatureSerializer(ChooseFieldsSerializerMixin, serializers.Serializer):
             if obj.feature_type is not None:
                 feature_type = FeatureTypes.TYPES[obj.feature_type]
                 path_route = r'monitoringfeature-{}s-detail'.format(''.join(feature_type.lower().split()))
-            # else:
+                # else:
                 # path_route = r'monitoringfeature-detail'
                 try:
                     url = reverse(viewname=path_route,
@@ -364,20 +346,13 @@ class SamplingFeatureSerializer(FeatureSerializer):
         kwargs.pop('fields', None)
         super().__init__(*args, **kwargs)
 
-    def create(self, validated_data):
-        return SamplingFeatureSerializer(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.related_sampling_feature_complex = validated_data.get(
-            'related_sampling_feature_complex', instance.related_sampling_feature_complex)
-
 
 class SpatialSamplingFeatureSerializer(SamplingFeatureSerializer):
     """
     Serializes a :class:`django_basin3d.synthesis.models.field.SpatialSamplingFeature`
     """
 
-    shape = serializers.CharField()
+    shape = serializers.CharField(read_only=True)
     coordinates = ReadOnlySynthesisModelField(serializer_class=CoordinateSerializer)
 
     def __init__(self, *args, **kwargs):
@@ -385,51 +360,37 @@ class SpatialSamplingFeatureSerializer(SamplingFeatureSerializer):
         kwargs.pop('fields', None)
         super().__init__(*args, **kwargs)
 
-    def create(self, validated_data):
-        return SpatialSamplingFeatureSerializer(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.shape = validated_data.get('shape', instance.shape)
-        instance.coordinates = validated_data.get('coordinates', instance.coordinates)
-
 
 class MonitoringFeatureSerializer(SpatialSamplingFeatureSerializer):
     """
     Serializes a :class:`django_basin3d.synthesis.models.field.MonitoringFeature`
     """
-    description_reference = serializers.CharField()
+    description_reference = serializers.CharField(read_only=True)
     related_party = serializers.ListSerializer(child=ReadOnlySynthesisModelField(serializer_class=PersonSerializer))
-    utc_offset = serializers.IntegerField()
+    utc_offset = serializers.IntegerField(read_only=True)
 
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
         kwargs.pop('fields', None)
         super().__init__(*args, **kwargs)
 
-    def create(self, validated_data):
-        return MonitoringFeatureSerializer(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.description_reference = validated_data.get('description_reference', instance.description_reference)
-        instance.related_party = validated_data.get('related_party', instance.related_party)
-        instance.utc_offset = validated_data.get('utc_offset', instance.utc_offset)
-
 
 class ObservationSerializerMixin(object):
     """
     Serializes a :class:`django_basin3d.synthesis.models.measurement.Observation`
     """
+
     def __init__(self, *args, **kwargs):
         super(ObservationSerializerMixin, self).__init__(*args, **kwargs)
 
-        self.fields["id"] = serializers.CharField()
-        self.fields["type"] = serializers.CharField()
-        self.fields["utc_offset"] = serializers.IntegerField()
-        self.fields["phenomenon_time"] = TimestampField()
-        self.fields["observed_property_variable"] = serializers.CharField()
-        self.fields["result_quality"] = serializers.CharField()
+        self.fields["id"] = serializers.CharField(read_only=True)
+        self.fields["type"] = serializers.CharField(read_only=True)
+        self.fields["utc_offset"] = serializers.IntegerField(read_only=True)
+        self.fields["phenomenon_time"] = TimestampField(read_only=True)
+        self.fields["observed_property_variable"] = serializers.CharField(read_only=True)
+        self.fields["result_quality"] = serializers.CharField(read_only=True)
         self.fields["feature_of_interest"] = ReadOnlySynthesisModelField(serializer_class=MonitoringFeatureSerializer)
-        self.fields["feature_of_interest_type"] = serializers.SerializerMethodField()
+        self.fields["feature_of_interest_type"] = serializers.SerializerMethodField(read_only=True)
 
     def get_feature_of_interest_type(self, obj):
         """
@@ -445,11 +406,11 @@ class MeasurementTimeseriesTVPObservationSerializer(ObservationSerializerMixin, 
     Serializes a :class:`django_basin3d.synthesis.models.measurement.MeasurementTimeseriesTVPObservation`
 
     """
-    aggregation_duration = serializers.CharField()
-    time_reference_position = serializers.CharField()
-    statistic = serializers.CharField()
+    aggregation_duration = serializers.CharField(read_only=True)
+    time_reference_position = serializers.CharField(read_only=True)
+    statistic = serializers.CharField(read_only=True)
     result_points = serializers.SerializerMethodField()
-    unit_of_measurement = serializers.CharField()
+    unit_of_measurement = serializers.CharField(read_only=True)
 
     FIELDS_OPTIONAL = {'aggregation_duration', 'time_reference_position', 'utc_offset', 'statistic'}
 
@@ -508,5 +469,3 @@ class MeasurementTimeseriesTVPObservationSerializer(ObservationSerializerMixin, 
                            kwargs={'pk': obj.id},
                            request=self.context["request"], )
 
-    def create(self, validated_data):
-        return MeasurementTimeseriesTVPObservationSerializer(**validated_data)
