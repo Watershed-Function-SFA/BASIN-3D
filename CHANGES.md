@@ -2,6 +2,12 @@
 
 
 
+## v3.0.1 (Bug Fix)
+This release contains a single bug fix
+
++ Issue #56 - Make utc offset in measTVPobs required so that 0 is not dropped
+    
+
 ## v3.0.0 (Beta)
 Refactor to use basin3d-core.  Functionality was removed but no existing functionaly changes.
 Major release due to the fact that the changes are not backwards compatible due to
