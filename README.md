@@ -1,3 +1,9 @@
+# ======================
+This archive is has been **DISCONTINUED** and is read-only.  
+The core synthesis functionality has been moved to https://github.com/BASIN-3D/basin3d.  
+The django web application framework has been moved to https://github.com/BASIN-3D/django-basin3d.
+# ======================
+
 # BASIN-3D
 Broker for Assimilation, Synthesis and Integration of eNvironmental Diverse, Distributed Datasets
 
